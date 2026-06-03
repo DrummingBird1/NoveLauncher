@@ -10,8 +10,9 @@ A Hebrew-RTL Android launcher with on-device AI ranking, smart folders, themes, 
 - **SDK:** `minSdk 26`, `targetSdk 35`, `compileSdk 35`, Java/Kotlin target 17
 - **Version:** `versionCode 8`, `versionName "8.0.0"` ([build.gradle.kts:18-19](app/build.gradle.kts))
 - **AGP / Kotlin:** AGP 8.7.3, Kotlin 2.0.21, KSP 2.0.21-1.0.28, Compose BOM 2024.12.01
-- **Language:** Kotlin only. UI text is *mostly* hardcoded Hebrew; v8 introduced a `strings.xml` with ~30 common strings translated to en/ar/fr/ru and started replacing the most prominent UI sites (HomeScreen toolbar, AppsScreen header/search, long-press menu). Most labels (settings UI, news, personal zone bodies) are still inline Hebrew — extraction is mechanical and ongoing.
-- **No git repo:** the working directory is not under version control
+- **Language:** Kotlin only. v9 finished the i18n extraction: ~300 UI strings now resolve through `strings.xml` with full translations in en/ar/fr/ru/he. Enums and `LauncherPage` use `@StringRes Int` displayNameRes (LauncherPage + ThemePreset have a hybrid pattern — built-in entries set the res id, user-created entries keep the typed String). The four NewsSource Hebrew brand names (Walla/Haaretz/Kan/Calcalist) are kept verbatim because they are the outlets' actual names. Anything left in Hebrew today is either a brand name, a comment, or the BuiltInWallpaper data (English placeholders pending a UI consumer).
+- **Git:** Tracked in git, origin = [github.com/DrummingBird1/NoveLauncher](https://github.com/DrummingBird1/NoveLauncher). `main` is the only branch. GitHub Actions ([.github/workflows/android.yml](.github/workflows/android.yml)) runs `assembleDebug + lint + testDebugUnitTest` on every push/PR to main and uploads the debug APK + lint report as artefacts (14-day retention). Lint findings are non-blocking. Update flow: `git add . && git commit -m "…" && git push`.
+- **Dependencies:** managed via Gradle version catalog ([gradle/libs.versions.toml](gradle/libs.versions.toml)). Don't hardcode versions in build.gradle.kts — bump in the catalog instead. Glance and Material 2 were dropped in v9; re-add via the catalog if/when needed.
 
 ## Build & run
 
