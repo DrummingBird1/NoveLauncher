@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Pre-Android-12 auto-backup rules (BackupAgent / Google Drive auto-backup).
+
+    What we include: only the DataStore preferences file ("launcher_settings"),
+    which holds AES-256-GCM-encrypted SecuritySettings plus theme/page/widget
+    preferences. A fresh install on a new device can restore these.
+
+    What we exclude:
+      - cloud_auth/   — caches the signed-in Google account email and a
+                        short-lived OAuth token. Cross-device restore would
+                        attach the previous user's account email.
+      - nas_config/   — NAS address + path. Not necessarily a secret, but
+                        useless on a different network.
+      - launcher.db   — Room cache for usage stats, notification badges and ML
+                        predictions. Restoring derived caches across devices
+                        leaks usage patterns AND immediately gets stale.
+      - secure_lock_prefs / secure_lock_prefs_fallback — PBKDF2 salt. Per-install
+                        by design (see AppLockManager.getOrCreateSalt).
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="cloud_auth.xml" />
+    <exclude domain="sharedpref" path="nas_config.xml" />
+    <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
+    <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+    <exclude domain="database" path="launcher.db" />
+    <exclude domain="database" path="launcher.db-journal" />
+    <exclude domain="database" path="launcher.db-shm" />
+    <exclude domain="database" path="launcher.db-wal" />
+</full-backup-content>

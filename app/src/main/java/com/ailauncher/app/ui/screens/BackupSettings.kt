@@ -1,0 +1,113 @@
+package com.ailauncher.app.ui.screens
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Dns
+import androidx.compose.material.icons.rounded.PhoneAndroid
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.ailauncher.app.R
+import com.ailauncher.app.data.SettingsRepository
+import com.ailauncher.app.data.backup.BackupManager
+import com.ailauncher.app.domain.models.BackupDestination
+import com.ailauncher.app.domain.models.BackupSettings
+import kotlinx.coroutines.launch
+
+/**
+ * v9: extracted from SettingsActivity.kt. BACKUP SettingsPage — destinations,
+ * NAS config (address + path + credentials), restore list.
+ */
+@Composable
+fun BackupSection(
+    backup: BackupSettings,
+    backupManager: BackupManager,
+    settingsRepo: SettingsRepository,
+    onUpdate: (BackupSettings) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var status by remember { mutableStateOf<String?>(null) }
+    val backingUpText = stringResource(R.string.backup_status_in_progress)
+    val restoredText = stringResource(R.string.restore_success)
+
+    LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        item { SectionLabel(stringResource(R.string.settings_backup)) }
+        items(BackupDestination.entries.toList()) { dest ->
+            Card(Modifier.fillMaxWidth().clickable {
+                scope.launch {
+                    status = backingUpText
+                    status = when (val r = backupManager.backup(dest)) {
+                        is BackupManager.BackupResult.Success -> context.getString(R.string.backup_status_success, r.path)
+                        is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
+                    }
+                }
+            }, shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        if (dest == BackupDestination.LOCAL) Icons.Rounded.PhoneAndroid
+                        else if (dest == BackupDestination.NAS) Icons.Rounded.Dns
+                        else Icons.Rounded.Cloud,
+                        null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(stringResource(dest.displayNameRes), color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+        }
+        if (status != null) item { Text(status!!, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) }
+
+        item { SectionLabel("NAS") }
+        item { OutlinedTextField(value = backup.nasAddress, onValueChange = { onUpdate(backup.copy(nasAddress = it)) }, label = { Text(stringResource(R.string.nas_address_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true) }
+        item { OutlinedTextField(value = backup.nasPath, onValueChange = { onUpdate(backup.copy(nasPath = it)) }, label = { Text(stringResource(R.string.nas_path_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true) }
+        item { OutlinedTextField(value = backup.nasUsername, onValueChange = { onUpdate(backup.copy(nasUsername = it)) }, label = { Text(stringResource(R.string.backup_nas_username_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true) }
+        item {
+            OutlinedTextField(
+                value = backup.nasPassword,
+                onValueChange = { onUpdate(backup.copy(nasPassword = it)) },
+                label = { Text(stringResource(R.string.backup_nas_password_label)) },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
+
+        item { SectionLabel(stringResource(R.string.section_restore)) }
+        item {
+            val files = remember { backupManager.listLocalBackups() }
+            if (files.isEmpty()) {
+                Text(stringResource(R.string.no_backups), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                files.take(5).forEach { backup ->
+                    Card(Modifier.fillMaxWidth().clickable {
+                        scope.launch {
+                            status = when (val r = backupManager.restoreFromLocal(backup)) {
+                                is BackupManager.BackupResult.Success -> restoredText
+                                is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
+                            }
+                        }
+                    }, shape = RoundedCornerShape(10.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                        Row(Modifier.padding(12.dp)) {
+                            Icon(Icons.Rounded.Restore, null, tint = MaterialTheme.colorScheme.secondary)
+                            Spacer(Modifier.width(8.dp))
+                            Text(backup.displayName, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

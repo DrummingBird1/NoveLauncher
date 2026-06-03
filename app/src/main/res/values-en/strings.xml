@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoveLauncher</string>
+
+    <string name="page_home">Home</string>
+    <string name="page_apps">Apps</string>
+    <string name="page_news">News</string>
+    <string name="page_personal">Personal zone</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_widgets">Widget</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_close">Close</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Back</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_refresh">Refresh</string>
+
+    <string name="all_apps">All apps</string>
+    <string name="smart_folders">Smart folders</string>
+    <string name="search_apps_hint">Search apps…</string>
+    <string name="recommended_now">Recommended now</string>
+
+    <string name="action_hide_app">Hide app</string>
+    <string name="action_move_private">Move to personal zone</string>
+    <string name="action_toggle_lock">Toggle lock</string>
+    <string name="action_app_info">App info</string>
+    <string name="action_uninstall">Uninstall</string>
+
+    <string name="auth_required_title">Authentication required</string>
+    <string name="auth_required_subtitle">Verify your identity</string>
+    <string name="auth_prompt_pin">Enter PIN</string>
+    <string name="auth_prompt_password">Enter password</string>
+    <string name="auth_wrong">Wrong code</string>
+
+    <string name="news_error_loading">Error loading news</string>
+
+    <string name="personal_zone_title">Personal zone</string>
+    <string name="personal_zone_enter_pin">Enter PIN to access</string>
+    <string name="personal_zone_empty">No apps in personal zone</string>
+
+    <string name="clock_settings_title">Clock settings</string>
+    <string name="clock_24_hour">24-hour</string>
+    <string name="clock_show_date">Show date</string>
+    <string name="label_size">Size</string>
+    <string name="action_remove">Remove</string>
+
+    <string name="view_mode_folders">Folders</string>
+    <string name="view_mode_list">List</string>
+
+    <string name="launcher_lock_title">Launcher lock</string>
+    <string name="auth_app_locked_with_pin">This app is locked. Enter PIN:</string>
+    <string name="auth_app_locked_with_password">This app is locked. Enter password:</string>
+    <string name="auth_wrong_try_again">Wrong, try again</string>
+    <string name="toast_connected_to">Connected: %1$s</string>
+    <string name="toast_sign_in_failed">Sign-in failed: %1$s</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_themes">Themes</string>
+    <string name="settings_fonts">Fonts</string>
+    <string name="settings_icon_shapes">Icon shapes</string>
+    <string name="settings_clock">Clock</string>
+    <string name="settings_pages">Pages</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_app_lock_list">App lock</string>
+    <string name="settings_news_sources">News sources</string>
+    <string name="settings_hidden_apps">Hidden apps</string>
+    <string name="settings_wallpapers">Wallpapers</string>
+    <string name="settings_about">About</string>
+    <string name="settings_statistics">Usage statistics</string>
+    <string name="settings_icon_packs">Icon packs</string>
+    <string name="action_back">Back</string>
+
+    <string name="settings_sub_appearance">Themes, fonts, shapes, clock</string>
+    <string name="settings_sub_pages">Arrange, edit, create</string>
+    <string name="settings_sub_wallpapers">Static, per page, hour, day</string>
+    <string name="settings_sub_news">Choose which news to show</string>
+    <string name="settings_sub_backup">Local, cloud and NAS backup</string>
+    <string name="settings_sub_security">App and screen lock</string>
+    <string name="settings_sub_hidden">Hide and private folder</string>
+    <string name="settings_sub_statistics">Screen time, active apps</string>
+    <string name="settings_sub_icon_packs">Nova / ADW / Lawnchair</string>
+    <string name="settings_sub_about">Version, rating, contact</string>
+
+    <string name="icon_packs_empty_title">No icon packs installed.</string>
+    <string name="icon_packs_empty_hint">Install a Nova/ADW/Lawnchair-compatible icon pack from the Play Store and come back here.</string>
+
+    <string name="section_size">Size</string>
+    <string name="section_more_menus">More menus</string>
+    <string name="appearance_icon_size">Icon size</string>
+    <string name="appearance_app_font_size">App font size</string>
+    <string name="appearance_columns">Columns</string>
+    <string name="appearance_folder_icon_size">Folder icon size</string>
+    <string name="appearance_folder_font_size">Folder font size</string>
+    <string name="appearance_themes_and_colors">Themes &amp; colors</string>
+
+    <string name="preview_label">Preview</string>
+
+    <string name="section_theme_mode">Display mode</string>
+    <string name="section_theme_presets">Theme presets</string>
+    <string name="section_custom_colors">Custom colors</string>
+    <string name="custom_colors_toggle">Use custom colors</string>
+    <string name="color_primary">Primary color</string>
+    <string name="color_background">Background color</string>
+    <string name="color_font">Font color</string>
+    <string name="label_hex_code">HEX code</string>
+
+    <string name="fonts_target_app_names">App names</string>
+    <string name="fonts_target_folders">Folders</string>
+    <string name="fonts_target_pages">Page names</string>
+    <string name="fonts_target_ui">General UI</string>
+    <string name="font_sample">Aa Bb Cc 123</string>
+
+    <string name="section_choose_shape">Choose shape</string>
+
+    <string name="clock_size">Clock size</string>
+    <string name="clock_date_size">Date size</string>
+    <string name="clock_opacity">Opacity</string>
+    <string name="clock_show_seconds">Show seconds</string>
+    <string name="clock_color">Clock color</string>
+    <string name="section_clock_font">Clock font</string>
+
+    <string name="page_default">Default</string>
+    <string name="page_custom">Custom page</string>
+    <string name="section_order_drag">Order (drag)</string>
+    <string name="section_disabled_pages">Disabled pages</string>
+    <string name="action_enable_page">Enable: %1$s</string>
+    <string name="action_create_new_page">Create new page</string>
+    <string name="dialog_new_page_title">New page</string>
+    <string name="dialog_new_page_name_label">Page name</string>
+    <string name="action_create">Create</string>
+    <string name="action_move_up">Up</string>
+    <string name="action_move_down">Down</string>
+
+    <string name="section_choose_news_sources">Choose news sources</string>
+    <string name="news_max_articles">Max articles</string>
+
+    <string name="hidden_apps_count_label">Hidden apps (%1$d)</string>
+    <string name="hidden_apps_description">Hidden apps won\'t appear on home or in the list</string>
+    <string name="private_folder_count_label">Private folder (%1$d)</string>
+    <string name="private_folder_description">Private folder apps require authentication to open</string>
+    <string name="label_hidden">Hidden</string>
+    <string name="label_private_folder">Private folder</string>
+    <string name="action_hide">Hide</string>
+
+    <string name="section_wallpaper_mode">Wallpaper mode</string>
+    <string name="section_wallpaper_active">Active wallpapers</string>
+    <string name="wallpaper_entry_label">Wallpaper %1$d</string>
+    <string name="wallpaper_brightness">Brightness</string>
+    <string name="wallpaper_blur">Blur</string>
+    <string name="wallpaper_saturation">Saturation</string>
+    <string name="action_remove_wallpaper">Remove wallpaper</string>
+    <string name="action_add_wallpaper">Add wallpaper</string>
+    <string name="wallpaper_dim_on_scroll">Dim on scroll</string>
+    <string name="wallpaper_desc_single">One wallpaper for all screens</string>
+    <string name="wallpaper_desc_per_page">Different wallpaper per page</string>
+    <string name="wallpaper_desc_hourly">Changes hourly</string>
+    <string name="wallpaper_desc_daily">Changes daily</string>
+    <string name="wallpaper_desc_live">Live wallpaper</string>
+
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">NoveLauncher is an AI-powered Android launcher. It learns your usage habits and automatically organises your apps, folders and pages so you always find what you need. All processing runs on-device — no data is sent to external servers.</string>
+    <string name="about_rate">Rate us on Google Play</string>
+    <string name="about_support">Support the developer</string>
+    <string name="about_contact">Contact</string>
+    <string name="about_privacy">Privacy policy</string>
+    <string name="about_terms">Terms of use</string>
+    <string name="about_copyright">© 2026 NoveLauncher. All rights reserved.</string>
+    <string name="about_contact_email_subject">NoveLauncher inquiry</string>
+
+    <string name="security_method_label">Method: %1$s</string>
+    <string name="security_choose_apps">Choose apps to lock</string>
+    <string name="security_locked_count">%1$d locked</string>
+    <string name="section_screen_lock">Screen lock</string>
+    <string name="security_layout_lock">Layout lock</string>
+    <string name="section_safety_launcher_lock">Safety — launcher lock</string>
+    <string name="security_method_pin">PIN</string>
+    <string name="security_method_password">Password</string>
+    <string name="security_method_biometric">Biometric</string>
+    <string name="security_choose_apps_to_lock">Choose apps to lock</string>
+
+    <string name="dialog_set_pin">Set PIN</string>
+    <string name="dialog_confirm_pin">Confirm PIN</string>
+    <string name="pin_input_label">PIN (4–6 digits)</string>
+    <string name="pin_invalid_length">4–6 digits</string>
+    <string name="dialog_set_password">Set password</string>
+    <string name="dialog_confirm_password">Confirm password</string>
+    <string name="password_input_label">Password (4+ chars)</string>
+    <string name="password_invalid_length">Min 4</string>
+    <string name="mismatch_error">Doesn\'t match</string>
+    <string name="dialog_set_pattern">Set lock pattern</string>
+    <string name="pattern_instructions">Tap the dots in order</string>
+    <string name="action_reset">Reset</string>
+
+    <string name="backup_status_in_progress">Backing up…</string>
+    <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_status_error">✗ %1$s</string>
+    <string name="nas_address_label">Address</string>
+    <string name="nas_path_label">Path</string>
+    <string name="section_restore">Restore</string>
+    <string name="no_backups">No backups</string>
+    <string name="restore_success">✓ Restored!</string>
+
+    <string name="onboarding_welcome_title">Welcome to NoveLauncher</string>
+    <string name="onboarding_welcome_desc">A smart launcher that learns your habits and organises your phone for you with AI.\n\nEverything runs on-device — your privacy is protected.</string>
+    <string name="onboarding_usage_title">Usage permission</string>
+    <string name="onboarding_usage_desc">To learn your habits, NoveLauncher needs access to usage data.\n\nTap below to enable.</string>
+    <string name="onboarding_usage_action">Enable permission</string>
+    <string name="onboarding_gestures_title">Gestures</string>
+    <string name="onboarding_gestures_desc">• Swipe left/right between pages\n• Swipe up for the app drawer\n• Long-press an app to move or hide\n• Tap the clock for quick edit</string>
+    <string name="onboarding_personalize_title">Personalise</string>
+    <string name="onboarding_personalize_desc">In settings you\'ll find:\n• Themes and colours\n• Fonts and icon shapes\n• Wallpapers and clock\n• Security and locking\n• Automatic backup\n\nEverything is changeable at any time!</string>
+    <string name="onboarding_default_title">Set as default launcher</string>
+    <string name="onboarding_default_desc">So NoveLauncher appears every time you return home, set it as your default.</string>
+    <string name="onboarding_default_action">Set as default</string>
+    <string name="action_skip">Skip</string>
+    <string name="onboarding_start">Let\'s go!</string>
+
+    <string name="news_rss_mode">RSS mode</string>
+    <string name="news_app_mode">News app</string>
+    <string name="news_open_in_app">Open in app</string>
+
+    <string name="search_type_app">App</string>
+    <string name="search_type_contact">Contact</string>
+    <string name="search_type_web">Web search</string>
+    <string name="search_type_setting">Setting</string>
+    <string name="search_google_for">Search Google for: %1$s</string>
+    <string name="search_all_hint">Search everything…</string>
+
+    <string name="action_enter">Enter</string>
+    <string name="action_lock">Lock</string>
+    <string name="personal_zone_add_hint">Add via Settings → Hidden apps</string>
+
+    <string name="stats_screen_time">Screen time</string>
+    <string name="stats_launches">Opens</string>
+    <string name="stats_apps">Apps</string>
+    <string name="stats_top_apps">Most-used apps</string>
+    <string name="stats_launches_count">%1$d opens</string>
+    <string name="stats_range_day">Day</string>
+    <string name="stats_range_week">Week</string>
+    <string name="stats_range_month">Month</string>
+    <string name="duration_hours_minutes">%1$dh %2$dm</string>
+    <string name="duration_minutes">%1$dm</string>
+
+    <string name="backup_error_onedrive">OneDrive isn\'t supported yet. Use Google Drive or local backup.</string>
+    <string name="backup_error_box">Box isn\'t supported yet. Use Google Drive or local backup.</string>
+    <string name="backup_error_not_connected">Not connected to Google Drive.\nGo to Settings → Backup → Connect Google account</string>
+    <string name="backup_error_token_expired">Token expired. Try again or reconnect in settings.</string>
+
+    <string name="biometric_prompt_subtitle">Use your fingerprint or face</string>
+
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly_cloudy">Partly cloudy</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_showers">Showers</string>
+    <string name="weather_storm">Storm</string>
+    <string name="weather_unknown">—</string>
+
+    <string name="theme_mode_dark">Dark</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_system">System</string>
+
+    <string name="icon_shape_rounded_square">Rounded square</string>
+    <string name="icon_shape_circle">Circle</string>
+    <string name="icon_shape_squircle">Squircle</string>
+    <string name="icon_shape_teardrop">Teardrop</string>
+    <string name="icon_shape_hexagon">Hexagon</string>
+    <string name="icon_shape_square">Square</string>
+    <string name="icon_shape_diamond">Diamond</string>
+    <string name="icon_shape_shield">Shield</string>
+    <string name="icon_shape_leaf">Leaf</string>
+    <string name="icon_shape_blob">Blob</string>
+    <string name="icon_shape_clover">Clover</string>
+    <string name="icon_shape_octagon">Octagon</string>
+
+    <string name="font_system_default">System default</string>
+    <string name="font_roboto">Roboto</string>
+    <string name="font_noto_sans">Noto Sans</string>
+    <string name="font_rubik">Rubik</string>
+    <string name="font_heebo">Heebo</string>
+    <string name="font_assistant">Assistant</string>
+    <string name="font_varela_round">Varela Round</string>
+    <string name="font_open_sans">Open Sans</string>
+    <string name="font_montserrat">Montserrat</string>
+    <string name="font_poppins">Poppins</string>
+    <string name="font_cairo">Cairo</string>
+    <string name="font_frank_ruhl">Frank Ruhl Libre</string>
+    <string name="font_secular_one">Secular One</string>
+    <string name="font_monospace">Monospace</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_cursive">Handwriting</string>
+
+    <string name="clock_style_digital">Digital</string>
+    <string name="clock_style_analog">Analog</string>
+    <string name="clock_style_minimal">Minimal</string>
+
+    <string name="wallpaper_mode_single">Single</string>
+    <string name="wallpaper_mode_per_page">Per page</string>
+    <string name="wallpaper_mode_hourly">Hourly</string>
+    <string name="wallpaper_mode_daily">Daily</string>
+    <string name="wallpaper_mode_live">Live wallpaper</string>
+
+    <string name="backup_schedule_manual">Manual</string>
+    <string name="backup_schedule_daily">Daily</string>
+    <string name="backup_schedule_weekly">Weekly</string>
+    <string name="backup_schedule_monthly">Monthly</string>
+
+    <string name="backup_dest_local">Local file</string>
+    <string name="backup_dest_google_drive">Google Drive</string>
+    <string name="backup_dest_onedrive">OneDrive</string>
+    <string name="backup_dest_box">Box</string>
+    <string name="backup_dest_nas">NAS server</string>
+
+    <string name="screen_type_phone">Phone</string>
+    <string name="screen_type_tablet">Tablet</string>
+    <string name="screen_type_foldable">Foldable</string>
+    <string name="screen_type_landscape">Landscape</string>
+
+    <string name="lock_method_none">None</string>
+    <string name="lock_method_pin">PIN code</string>
+    <string name="lock_method_password">Password</string>
+    <string name="lock_method_pattern">Pattern</string>
+    <string name="lock_method_fingerprint">Fingerprint</string>
+    <string name="lock_method_face">Face unlock</string>
+
+    <string name="app_category_social">Social</string>
+    <string name="app_category_work">Work</string>
+    <string name="app_category_entertainment">Entertainment</string>
+    <string name="app_category_games">Games</string>
+    <string name="app_category_utilities">Utilities</string>
+    <string name="app_category_health">Health</string>
+    <string name="app_category_education">Education</string>
+    <string name="app_category_shopping">Shopping</string>
+    <string name="app_category_photography">Photography</string>
+    <string name="app_category_system">System</string>
+    <string name="app_category_uncategorized">Other</string>
+
+    <string name="theme_preset_indigo">Indigo</string>
+    <string name="theme_preset_crimson">Crimson</string>
+    <string name="theme_preset_emerald">Emerald</string>
+    <string name="theme_preset_amber">Amber</string>
+    <string name="theme_preset_ocean">Ocean</string>
+    <string name="theme_preset_rose">Rose</string>
+    <string name="theme_preset_slate">Slate</string>
+    <string name="theme_preset_lavender">Lavender</string>
+    <string name="theme_preset_teal">Teal</string>
+    <string name="theme_preset_sunset">Sunset</string>
+    <string name="theme_preset_midnight">Midnight</string>
+    <string name="theme_preset_snow">Snow</string>
+
+    <string name="backup_error_nas_not_configured">NAS not configured. Enter an address in settings.</string>
+    <string name="backup_error_nas_http_refused">NAS backup requires HTTPS. Use an https:// address.</string>
+    <string name="backup_error_nas_http_code">NAS error: %1$d</string>
+    <string name="backup_error_nas_io">NAS: %1$s</string>
+    <string name="backup_nas_username_label">Username (optional)</string>
+    <string name="backup_nas_password_label">Password (optional)</string>
+</resources>

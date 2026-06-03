@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- v8 FIX #4: Splash screen theme -->
+    <style name="Theme.AILauncher.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0A0A1A</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.AILauncher</item>
+    </style>
+
+    <!-- Main app theme (used after splash) -->
+    <style name="Theme.AILauncher" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">#0A0A0F</item>
+        <item name="android:supportsRtl">true</item>
+    </style>
+</resources>

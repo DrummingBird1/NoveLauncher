@@ -1,0 +1,88 @@
+# Privacy Policy URL — Hosting Guide
+
+Google Play **requires** a public HTTPS URL for your privacy policy.
+A local Markdown file is not enough. Here are 4 free ways to host yours.
+
+---
+
+## Option 1: GitHub Pages (recommended — 5 minutes)
+
+### Steps
+1. Go to https://github.com/new and create a repo named `novelauncher-legal` (public)
+2. Click **"creating a new file"**, name it `privacy.html`
+3. Paste the HTML version of the privacy policy (see `PRIVACY_POLICY.html` in this folder)
+4. Click **Settings → Pages → Source: main → Save**
+5. Within ~1 minute your URL is live at:
+   ```
+   https://YOUR_USERNAME.github.io/novelauncher-legal/privacy.html
+   ```
+
+### To update later
+Just edit `privacy.html` in the repo. Changes are live within seconds.
+
+---
+
+## Option 2: Cloudflare Pages (custom domain)
+
+If you already own `novelauncher.app` (the email in our policy):
+
+1. Go to https://dash.cloudflare.com/sign-up (free)
+2. **Pages → Create project → Direct Upload**
+3. Upload `PRIVACY_POLICY.html` and `TERMS_OF_SERVICE.html`
+4. Custom domain → `novelauncher.app/privacy`
+
+---
+
+## Option 3: Notion (zero technical knowledge)
+
+1. Open https://notion.so (free account)
+2. Create a new page, paste the privacy policy content
+3. **Share → Publish to web** → toggle on
+4. Copy the public URL — paste it into Play Console
+
+⚠️ Notion URLs change if you rename the page. Use a permanent option for production.
+
+---
+
+## Option 4: Google Sites (one-click)
+
+1. Go to https://sites.google.com (free with Google account)
+2. Create new site → paste content
+3. **Publish** → custom URL e.g. `sites.google.com/view/novelauncher-privacy`
+
+---
+
+## What to put in Play Console
+
+Play Console → **Policy → App content → Privacy policy** → paste your URL.
+
+Example: `https://yourname.github.io/novelauncher-legal/privacy.html`
+
+---
+
+## ⚠️ Domain warning
+
+The email `support@novelauncher.app` in our policy is a **placeholder**.
+Without an actual MX record on `novelauncher.app`, emails sent there will bounce.
+
+**Before submitting to Play Store**, do one of:
+- **Option A:** Buy `novelauncher.app` domain (~$30/year on Namecheap, Cloudflare Registrar)
+- **Option B:** Replace the email with a real address you control (e.g., your Gmail)
+
+To replace the email throughout the policy:
+```bash
+sed -i 's/support@novelauncher.app/your.real.email@gmail.com/g' PRIVACY_POLICY.md TERMS_OF_SERVICE.md
+```
+
+Google **will** test this email during review. Bounced emails = rejected app.
+
+---
+
+## Pre-submission checklist
+
+- [ ] Privacy policy hosted on HTTPS public URL
+- [ ] Terms of service hosted on HTTPS public URL (optional but recommended)
+- [ ] Email address in policy is real and monitored
+- [ ] Both URLs accessible without login or paywall
+- [ ] Both URLs return HTTP 200 (test with `curl -I YOUR_URL`)
+- [ ] Same content visible on mobile (test with phone browser)

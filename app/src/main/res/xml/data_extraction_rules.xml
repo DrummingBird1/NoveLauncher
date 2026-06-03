@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+ data extraction rules. Two flows are governed independently:
+      <cloud-backup>          — Google auto-backup to Drive
+      <device-transfer>       — direct device-to-device transfer (e.g. Smart Switch)
+    See backup_rules.xml for the rationale on each excluded path.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="cloud_auth.xml" />
+        <exclude domain="sharedpref" path="nas_config.xml" />
+        <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
+        <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+        <exclude domain="database" path="launcher.db" />
+        <exclude domain="database" path="launcher.db-journal" />
+        <exclude domain="database" path="launcher.db-shm" />
+        <exclude domain="database" path="launcher.db-wal" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="cloud_auth.xml" />
+        <exclude domain="sharedpref" path="nas_config.xml" />
+        <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
+        <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+        <exclude domain="database" path="launcher.db" />
+        <exclude domain="database" path="launcher.db-journal" />
+        <exclude domain="database" path="launcher.db-shm" />
+        <exclude domain="database" path="launcher.db-wal" />
+    </device-transfer>
+</data-extraction-rules>

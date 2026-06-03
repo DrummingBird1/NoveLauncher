@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoveLauncher</string>
+
+    <string name="page_home">الرئيسية</string>
+    <string name="page_apps">التطبيقات</string>
+    <string name="page_news">الأخبار</string>
+    <string name="page_personal">المنطقة الشخصية</string>
+
+    <string name="action_settings">الإعدادات</string>
+    <string name="action_search">بحث</string>
+    <string name="action_widgets">أداة</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_ok">موافق</string>
+    <string name="action_close">إغلاق</string>
+    <string name="action_next">التالي</string>
+    <string name="action_previous">السابق</string>
+    <string name="action_retry">حاول مرة أخرى</string>
+    <string name="action_refresh">تحديث</string>
+
+    <string name="all_apps">كل التطبيقات</string>
+    <string name="smart_folders">المجلدات الذكية</string>
+    <string name="search_apps_hint">ابحث في التطبيقات…</string>
+    <string name="recommended_now">مُقترح الآن</string>
+
+    <string name="action_hide_app">إخفاء التطبيق</string>
+    <string name="action_move_private">انقل إلى المنطقة الشخصية</string>
+    <string name="action_toggle_lock">تبديل القفل</string>
+    <string name="action_app_info">معلومات التطبيق</string>
+    <string name="action_uninstall">إلغاء التثبيت</string>
+
+    <string name="auth_required_title">مطلوب التحقق</string>
+    <string name="auth_required_subtitle">تحقق من هويتك</string>
+    <string name="auth_prompt_pin">أدخل رمز PIN</string>
+    <string name="auth_prompt_password">أدخل كلمة المرور</string>
+    <string name="auth_wrong">رمز خاطئ</string>
+
+    <string name="news_error_loading">خطأ في تحميل الأخبار</string>
+
+    <string name="personal_zone_title">المنطقة الشخصية</string>
+    <string name="personal_zone_enter_pin">أدخل رمز PIN للوصول</string>
+    <string name="personal_zone_empty">لا توجد تطبيقات في المنطقة الشخصية</string>
+
+    <string name="clock_settings_title">إعدادات الساعة</string>
+    <string name="clock_24_hour">تنسيق 24 ساعة</string>
+    <string name="clock_show_date">إظهار التاريخ</string>
+    <string name="label_size">الحجم</string>
+    <string name="action_remove">إزالة</string>
+
+    <string name="view_mode_folders">المجلدات</string>
+    <string name="view_mode_list">قائمة</string>
+
+    <string name="launcher_lock_title">قفل المشغل</string>
+    <string name="auth_app_locked_with_pin">هذا التطبيق مقفل. أدخل رمز PIN:</string>
+    <string name="auth_app_locked_with_password">هذا التطبيق مقفل. أدخل كلمة المرور:</string>
+    <string name="auth_wrong_try_again">خاطئ، حاول مرة أخرى</string>
+    <string name="toast_connected_to">متصل: %1$s</string>
+    <string name="toast_sign_in_failed">فشل تسجيل الدخول: %1$s</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_themes">السمات</string>
+    <string name="settings_fonts">الخطوط</string>
+    <string name="settings_icon_shapes">أشكال الأيقونات</string>
+    <string name="settings_clock">الساعة</string>
+    <string name="settings_pages">الصفحات</string>
+    <string name="settings_backup">النسخ الاحتياطي</string>
+    <string name="settings_security">الأمان</string>
+    <string name="settings_app_lock_list">قفل التطبيقات</string>
+    <string name="settings_news_sources">مصادر الأخبار</string>
+    <string name="settings_hidden_apps">التطبيقات المخفية</string>
+    <string name="settings_wallpapers">الخلفيات</string>
+    <string name="settings_about">حول</string>
+    <string name="settings_statistics">إحصاءات الاستخدام</string>
+    <string name="settings_icon_packs">حزم الأيقونات</string>
+    <string name="action_back">رجوع</string>
+
+    <string name="settings_sub_appearance">السمات، الخطوط، الأشكال، الساعة</string>
+    <string name="settings_sub_pages">الترتيب والتعديل والإنشاء</string>
+    <string name="settings_sub_wallpapers">ثابت، حسب الصفحة، الساعة، اليوم</string>
+    <string name="settings_sub_news">اختر الأخبار التي ستظهر</string>
+    <string name="settings_sub_backup">محلي، سحابي و NAS</string>
+    <string name="settings_sub_security">قفل التطبيقات والشاشة</string>
+    <string name="settings_sub_hidden">الإخفاء والمجلد الخاص</string>
+    <string name="settings_sub_statistics">وقت الشاشة، التطبيقات النشطة</string>
+    <string name="settings_sub_icon_packs">Nova / ADW / Lawnchair</string>
+    <string name="settings_sub_about">الإصدار، التقييم، التواصل</string>
+
+    <string name="icon_packs_empty_title">لم يتم العثور على حزم أيقونات مثبتة.</string>
+    <string name="icon_packs_empty_hint">ثبّت حزمة أيقونات متوافقة مع Nova/ADW/Lawnchair من Play Store ثم عُد إلى هنا.</string>
+
+    <string name="section_size">الحجم</string>
+    <string name="section_more_menus">قوائم إضافية</string>
+    <string name="appearance_icon_size">حجم الأيقونة</string>
+    <string name="appearance_app_font_size">حجم خط التطبيقات</string>
+    <string name="appearance_columns">الأعمدة</string>
+    <string name="appearance_folder_icon_size">حجم أيقونة المجلد</string>
+    <string name="appearance_folder_font_size">حجم خط المجلد</string>
+    <string name="appearance_themes_and_colors">السمات والألوان</string>
+
+    <string name="preview_label">معاينة</string>
+
+    <string name="section_theme_mode">وضع العرض</string>
+    <string name="section_theme_presets">السمات الجاهزة</string>
+    <string name="section_custom_colors">الألوان المخصصة</string>
+    <string name="custom_colors_toggle">استخدم ألوانًا مخصصة</string>
+    <string name="color_primary">اللون الأساسي</string>
+    <string name="color_background">لون الخلفية</string>
+    <string name="color_font">لون الخط</string>
+    <string name="label_hex_code">رمز HEX</string>
+
+    <string name="fonts_target_app_names">أسماء التطبيقات</string>
+    <string name="fonts_target_folders">المجلدات</string>
+    <string name="fonts_target_pages">أسماء الصفحات</string>
+    <string name="fonts_target_ui">الواجهة العامة</string>
+    <string name="font_sample">أ ب ج ABC 123</string>
+
+    <string name="section_choose_shape">اختر الشكل</string>
+
+    <string name="clock_size">حجم الساعة</string>
+    <string name="clock_date_size">حجم التاريخ</string>
+    <string name="clock_opacity">الشفافية</string>
+    <string name="clock_show_seconds">إظهار الثواني</string>
+    <string name="clock_color">لون الساعة</string>
+    <string name="section_clock_font">خط الساعة</string>
+
+    <string name="page_default">الافتراضي</string>
+    <string name="page_custom">صفحة مخصصة</string>
+    <string name="section_order_drag">الترتيب (اسحب)</string>
+    <string name="section_disabled_pages">الصفحات المعطّلة</string>
+    <string name="action_enable_page">تفعيل: %1$s</string>
+    <string name="action_create_new_page">إنشاء صفحة جديدة</string>
+    <string name="dialog_new_page_title">صفحة جديدة</string>
+    <string name="dialog_new_page_name_label">اسم الصفحة</string>
+    <string name="action_create">إنشاء</string>
+    <string name="action_move_up">للأعلى</string>
+    <string name="action_move_down">للأسفل</string>
+
+    <string name="section_choose_news_sources">اختر مصادر الأخبار</string>
+    <string name="news_max_articles">الحد الأقصى للمقالات</string>
+
+    <string name="hidden_apps_count_label">التطبيقات المخفية (%1$d)</string>
+    <string name="hidden_apps_description">لن تظهر التطبيقات المخفية في الشاشة الرئيسية أو القائمة</string>
+    <string name="private_folder_count_label">المجلد الخاص (%1$d)</string>
+    <string name="private_folder_description">تطلب التطبيقات في المجلد الخاص مصادقة للوصول</string>
+    <string name="label_hidden">مخفي</string>
+    <string name="label_private_folder">مجلد خاص</string>
+    <string name="action_hide">إخفاء</string>
+
+    <string name="section_wallpaper_mode">وضع الخلفية</string>
+    <string name="section_wallpaper_active">الخلفيات النشطة</string>
+    <string name="wallpaper_entry_label">خلفية %1$d</string>
+    <string name="wallpaper_brightness">السطوع</string>
+    <string name="wallpaper_blur">التمويه</string>
+    <string name="wallpaper_saturation">التشبع</string>
+    <string name="action_remove_wallpaper">إزالة الخلفية</string>
+    <string name="action_add_wallpaper">إضافة خلفية</string>
+    <string name="wallpaper_dim_on_scroll">تعتيم عند التمرير</string>
+    <string name="wallpaper_desc_single">خلفية واحدة لجميع الشاشات</string>
+    <string name="wallpaper_desc_per_page">خلفية مختلفة لكل صفحة</string>
+    <string name="wallpaper_desc_hourly">يتغير كل ساعة</string>
+    <string name="wallpaper_desc_daily">يتغير يوميًا</string>
+    <string name="wallpaper_desc_live">خلفية حية (Live Wallpaper)</string>
+
+    <string name="about_version">الإصدار %1$s</string>
+    <string name="about_description">NoveLauncher هو مشغل أندرويد ذكي مدعوم بالذكاء الاصطناعي. يتعلم عاداتك في الاستخدام وينظم تطبيقاتك ومجلداتك وصفحاتك تلقائيًا لتجد دائمًا ما تحتاجه. كل المعالجة تتم على الجهاز — دون إرسال بيانات إلى خوادم خارجية.</string>
+    <string name="about_rate">قيّمنا على Google Play</string>
+    <string name="about_support">ادعم المطور</string>
+    <string name="about_contact">تواصل معنا</string>
+    <string name="about_privacy">سياسة الخصوصية</string>
+    <string name="about_terms">شروط الاستخدام</string>
+    <string name="about_copyright">© 2026 NoveLauncher. جميع الحقوق محفوظة.</string>
+    <string name="about_contact_email_subject">استفسار NoveLauncher</string>
+
+    <string name="security_method_label">الطريقة: %1$s</string>
+    <string name="security_choose_apps">اختر التطبيقات للقفل</string>
+    <string name="security_locked_count">%1$d مقفلة</string>
+    <string name="section_screen_lock">قفل الشاشة</string>
+    <string name="security_layout_lock">قفل التخطيط</string>
+    <string name="section_safety_launcher_lock">الأمان — قفل المشغل</string>
+    <string name="security_method_pin">PIN</string>
+    <string name="security_method_password">كلمة المرور</string>
+    <string name="security_method_biometric">بيومترية</string>
+    <string name="security_choose_apps_to_lock">اختر التطبيقات للقفل</string>
+
+    <string name="dialog_set_pin">تعيين PIN</string>
+    <string name="dialog_confirm_pin">تأكيد PIN</string>
+    <string name="pin_input_label">PIN (4-6 أرقام)</string>
+    <string name="pin_invalid_length">4-6 أرقام</string>
+    <string name="dialog_set_password">تعيين كلمة المرور</string>
+    <string name="dialog_confirm_password">تأكيد كلمة المرور</string>
+    <string name="password_input_label">كلمة المرور (4+ أحرف)</string>
+    <string name="password_invalid_length">الحد الأدنى 4</string>
+    <string name="mismatch_error">غير متطابق</string>
+    <string name="dialog_set_pattern">تعيين نمط القفل</string>
+    <string name="pattern_instructions">اضغط النقاط بالترتيب</string>
+    <string name="action_reset">إعادة تعيين</string>
+
+    <string name="backup_status_in_progress">جارٍ النسخ…</string>
+    <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_status_error">✗ %1$s</string>
+    <string name="nas_address_label">العنوان</string>
+    <string name="nas_path_label">المسار</string>
+    <string name="section_restore">استعادة</string>
+    <string name="no_backups">لا توجد نسخ احتياطية</string>
+    <string name="restore_success">✓ تمت الاستعادة!</string>
+
+    <string name="onboarding_welcome_title">مرحبًا بك في NoveLauncher</string>
+    <string name="onboarding_welcome_desc">مشغل ذكي يتعلم عاداتك ويرتب هاتفك لك باستخدام الذكاء الاصطناعي.\n\nكل شيء يعمل على الجهاز — خصوصيتك محمية.</string>
+    <string name="onboarding_usage_title">إذن الاستخدام</string>
+    <string name="onboarding_usage_desc">لتعلم عاداتك، يحتاج NoveLauncher إلى الوصول إلى بيانات الاستخدام.\n\nاضغط أدناه للتمكين.</string>
+    <string name="onboarding_usage_action">تمكين الإذن</string>
+    <string name="onboarding_gestures_title">الإيماءات</string>
+    <string name="onboarding_gestures_desc">• اسحب يمينًا/يسارًا بين الصفحات\n• اسحب لأعلى لقائمة التطبيقات\n• اضغط مطولًا على تطبيق للنقل أو الإخفاء\n• اضغط على الساعة للتحرير السريع</string>
+    <string name="onboarding_personalize_title">تخصيص</string>
+    <string name="onboarding_personalize_desc">في الإعدادات ستجد:\n• السمات والألوان\n• الخطوط وأشكال الأيقونات\n• الخلفيات والساعة\n• الأمان والقفل\n• النسخ الاحتياطي التلقائي\n\nكل شيء قابل للتغيير في أي وقت!</string>
+    <string name="onboarding_default_title">تعيين كمشغل افتراضي</string>
+    <string name="onboarding_default_desc">حتى يظهر NoveLauncher في كل مرة تعود فيها إلى الشاشة الرئيسية، عيّنه كافتراضي.</string>
+    <string name="onboarding_default_action">تعيين كافتراضي</string>
+    <string name="action_skip">تخطّي</string>
+    <string name="onboarding_start">هيا نبدأ!</string>
+
+    <string name="news_rss_mode">وضع RSS</string>
+    <string name="news_app_mode">تطبيق الأخبار</string>
+    <string name="news_open_in_app">فتح في التطبيق</string>
+
+    <string name="search_type_app">تطبيق</string>
+    <string name="search_type_contact">جهة اتصال</string>
+    <string name="search_type_web">بحث في الويب</string>
+    <string name="search_type_setting">إعداد</string>
+    <string name="search_google_for">ابحث في Google عن: %1$s</string>
+    <string name="search_all_hint">ابحث عن كل شيء…</string>
+
+    <string name="action_enter">دخول</string>
+    <string name="action_lock">قفل</string>
+    <string name="personal_zone_add_hint">أضف عبر الإعدادات ← التطبيقات المخفية</string>
+
+    <string name="stats_screen_time">وقت الشاشة</string>
+    <string name="stats_launches">الفتحات</string>
+    <string name="stats_apps">التطبيقات</string>
+    <string name="stats_top_apps">التطبيقات الأكثر استخدامًا</string>
+    <string name="stats_launches_count">%1$d فتحة</string>
+    <string name="stats_range_day">يوم</string>
+    <string name="stats_range_week">أسبوع</string>
+    <string name="stats_range_month">شهر</string>
+    <string name="duration_hours_minutes">%1$dس %2$dد</string>
+    <string name="duration_minutes">%1$dد</string>
+
+    <string name="backup_error_onedrive">OneDrive غير مدعوم بعد. استخدم Google Drive أو النسخ الاحتياطي المحلي.</string>
+    <string name="backup_error_box">Box غير مدعوم بعد. استخدم Google Drive أو النسخ الاحتياطي المحلي.</string>
+    <string name="backup_error_not_connected">غير متصل بـ Google Drive.\nاذهب إلى الإعدادات ← النسخ الاحتياطي ← ربط حساب Google</string>
+    <string name="backup_error_token_expired">انتهت صلاحية الرمز. حاول مرة أخرى أو أعد الاتصال في الإعدادات.</string>
+
+    <string name="biometric_prompt_subtitle">استخدم بصمتك أو وجهك</string>
+
+    <string name="weather_clear">صافٍ</string>
+    <string name="weather_partly_cloudy">غائم جزئيًا</string>
+    <string name="weather_fog">ضباب</string>
+    <string name="weather_drizzle">رذاذ</string>
+    <string name="weather_rain">مطر</string>
+    <string name="weather_snow">ثلج</string>
+    <string name="weather_showers">زخات</string>
+    <string name="weather_storm">عاصفة</string>
+    <string name="weather_unknown">—</string>
+
+    <string name="theme_mode_dark">داكن</string>
+    <string name="theme_mode_light">فاتح</string>
+    <string name="theme_mode_system">حسب النظام</string>
+
+    <string name="icon_shape_rounded_square">مربع مستدير</string>
+    <string name="icon_shape_circle">دائرة</string>
+    <string name="icon_shape_squircle">سكويركل</string>
+    <string name="icon_shape_teardrop">قطرة</string>
+    <string name="icon_shape_hexagon">سداسي</string>
+    <string name="icon_shape_square">مربع</string>
+    <string name="icon_shape_diamond">معين</string>
+    <string name="icon_shape_shield">درع</string>
+    <string name="icon_shape_leaf">ورقة</string>
+    <string name="icon_shape_blob">بقعة</string>
+    <string name="icon_shape_clover">برسيم</string>
+    <string name="icon_shape_octagon">ثماني</string>
+
+    <string name="font_system_default">افتراضي النظام</string>
+    <string name="font_roboto">Roboto</string>
+    <string name="font_noto_sans">Noto Sans</string>
+    <string name="font_rubik">Rubik</string>
+    <string name="font_heebo">Heebo</string>
+    <string name="font_assistant">Assistant</string>
+    <string name="font_varela_round">Varela Round</string>
+    <string name="font_open_sans">Open Sans</string>
+    <string name="font_montserrat">Montserrat</string>
+    <string name="font_poppins">Poppins</string>
+    <string name="font_cairo">Cairo</string>
+    <string name="font_frank_ruhl">Frank Ruhl Libre</string>
+    <string name="font_secular_one">Secular One</string>
+    <string name="font_monospace">Monospace</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_cursive">خط اليد</string>
+
+    <string name="clock_style_digital">رقمي</string>
+    <string name="clock_style_analog">عقربي</string>
+    <string name="clock_style_minimal">بسيط</string>
+
+    <string name="wallpaper_mode_single">واحدة</string>
+    <string name="wallpaper_mode_per_page">حسب الصفحة</string>
+    <string name="wallpaper_mode_hourly">حسب الساعة</string>
+    <string name="wallpaper_mode_daily">حسب اليوم</string>
+    <string name="wallpaper_mode_live">خلفية حية</string>
+
+    <string name="backup_schedule_manual">يدوي</string>
+    <string name="backup_schedule_daily">يومي</string>
+    <string name="backup_schedule_weekly">أسبوعي</string>
+    <string name="backup_schedule_monthly">شهري</string>
+
+    <string name="backup_dest_local">ملف محلي</string>
+    <string name="backup_dest_google_drive">Google Drive</string>
+    <string name="backup_dest_onedrive">OneDrive</string>
+    <string name="backup_dest_box">Box</string>
+    <string name="backup_dest_nas">خادم NAS</string>
+
+    <string name="screen_type_phone">هاتف</string>
+    <string name="screen_type_tablet">جهاز لوحي</string>
+    <string name="screen_type_foldable">قابل للطي</string>
+    <string name="screen_type_landscape">شاشة عريضة</string>
+
+    <string name="lock_method_none">بدون</string>
+    <string name="lock_method_pin">رمز PIN</string>
+    <string name="lock_method_password">كلمة المرور</string>
+    <string name="lock_method_pattern">نمط</string>
+    <string name="lock_method_fingerprint">بصمة الإصبع</string>
+    <string name="lock_method_face">التعرف على الوجه</string>
+
+    <string name="app_category_social">اجتماعي</string>
+    <string name="app_category_work">عمل</string>
+    <string name="app_category_entertainment">ترفيه</string>
+    <string name="app_category_games">ألعاب</string>
+    <string name="app_category_utilities">أدوات</string>
+    <string name="app_category_health">صحة</string>
+    <string name="app_category_education">تعليم</string>
+    <string name="app_category_shopping">تسوق</string>
+    <string name="app_category_photography">تصوير</string>
+    <string name="app_category_system">نظام</string>
+    <string name="app_category_uncategorized">أخرى</string>
+
+    <string name="theme_preset_indigo">نيلي</string>
+    <string name="theme_preset_crimson">قرمزي</string>
+    <string name="theme_preset_emerald">زمردي</string>
+    <string name="theme_preset_amber">كهرماني</string>
+    <string name="theme_preset_ocean">محيط</string>
+    <string name="theme_preset_rose">وردي</string>
+    <string name="theme_preset_slate">إردواز</string>
+    <string name="theme_preset_lavender">خزامى</string>
+    <string name="theme_preset_teal">فيروزي</string>
+    <string name="theme_preset_sunset">غروب</string>
+    <string name="theme_preset_midnight">منتصف الليل</string>
+    <string name="theme_preset_snow">ثلج</string>
+
+    <string name="backup_error_nas_not_configured">لم يتم إعداد NAS. أدخل عنوانًا في الإعدادات.</string>
+    <string name="backup_error_nas_http_refused">يتطلب نسخ NAS الاحتياطي HTTPS. استخدم عنوان https://.</string>
+    <string name="backup_error_nas_http_code">خطأ NAS: %1$d</string>
+    <string name="backup_error_nas_io">NAS: %1$s</string>
+    <string name="backup_nas_username_label">اسم المستخدم (اختياري)</string>
+    <string name="backup_nas_password_label">كلمة المرور (اختياري)</string>
+</resources>

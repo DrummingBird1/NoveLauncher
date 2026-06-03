@@ -1,0 +1,4 @@
+-keepattributes *Annotation*
+-dontwarn kotlin.**
+-keep class com.ailauncher.app.domain.models.** { *; }
+-keepclassmembers class * implements kotlinx.serialization.KSerializer { *; }

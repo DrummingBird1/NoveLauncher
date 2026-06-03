@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoveLauncher</string>
+
+    <!-- Pages -->
+    <string name="page_home">בית</string>
+    <string name="page_apps">יישומים</string>
+    <string name="page_news">חדשות</string>
+    <string name="page_personal">אזור אישי</string>
+
+    <!-- Toolbar / common actions -->
+    <string name="action_settings">הגדרות</string>
+    <string name="action_search">חיפוש</string>
+    <string name="action_widgets">גאדג\'ט</string>
+    <string name="action_cancel">ביטול</string>
+    <string name="action_ok">אישור</string>
+    <string name="action_close">סגור</string>
+    <string name="action_next">הבא</string>
+    <string name="action_previous">הקודם</string>
+    <string name="action_retry">נסה שוב</string>
+    <string name="action_refresh">רענן</string>
+
+    <!-- Apps screen -->
+    <string name="all_apps">כל היישומים</string>
+    <string name="smart_folders">תיקיות חכמות</string>
+    <string name="search_apps_hint">חיפוש אפליקציה…</string>
+    <string name="recommended_now">מומלצות עכשיו</string>
+
+    <!-- Long-press menu -->
+    <string name="action_hide_app">הסתר אפליקציה</string>
+    <string name="action_move_private">העבר לאזור אישי</string>
+    <string name="action_toggle_lock">נעל/בטל נעילה</string>
+    <string name="action_app_info">מידע על האפליקציה</string>
+    <string name="action_uninstall">הסר התקנה</string>
+
+    <!-- Auth / lock -->
+    <string name="auth_required_title">אימות נדרש</string>
+    <string name="auth_required_subtitle">אמת את זהותך</string>
+    <string name="auth_prompt_pin">הכנס PIN</string>
+    <string name="auth_prompt_password">הכנס סיסמה</string>
+    <string name="auth_wrong">קוד שגוי</string>
+
+    <!-- News -->
+    <string name="news_error_loading">שגיאה בטעינת חדשות</string>
+
+    <!-- Personal zone -->
+    <string name="personal_zone_title">אזור אישי</string>
+    <string name="personal_zone_enter_pin">הכנס קוד PIN לגישה</string>
+    <string name="personal_zone_empty">אין אפליקציות באזור האישי</string>
+
+    <!-- Clock settings dialog -->
+    <string name="clock_settings_title">עיצוב שעון</string>
+    <string name="clock_24_hour">24 שעות</string>
+    <string name="clock_show_date">הצג תאריך</string>
+    <string name="label_size">גודל</string>
+    <string name="action_remove">הסר</string>
+
+    <!-- Apps screen view mode toggle -->
+    <string name="view_mode_folders">תיקיות</string>
+    <string name="view_mode_list">רשימה</string>
+
+    <!-- Launcher auth + cloud sign-in -->
+    <string name="launcher_lock_title">נעילת לאנצ\'ר</string>
+    <string name="auth_app_locked_with_pin">אפליקציה זו נעולה. הכנס PIN:</string>
+    <string name="auth_app_locked_with_password">אפליקציה זו נעולה. הכנס סיסמה:</string>
+    <string name="auth_wrong_try_again">שגוי, נסה שוב</string>
+    <string name="toast_connected_to">מחובר: %1$s</string>
+    <string name="toast_sign_in_failed">התחברות נכשלה: %1$s</string>
+
+    <!-- ═════════ Settings — page titles ═════════ -->
+    <string name="settings_title">הגדרות</string>
+    <string name="settings_appearance">עיצוב</string>
+    <string name="settings_themes">ערכות נושא</string>
+    <string name="settings_fonts">פונטים</string>
+    <string name="settings_icon_shapes">צורת אייקונים</string>
+    <string name="settings_clock">שעון</string>
+    <string name="settings_pages">עמודים</string>
+    <string name="settings_backup">גיבוי</string>
+    <string name="settings_security">אבטחה</string>
+    <string name="settings_app_lock_list">נעילת אפליקציות</string>
+    <string name="settings_news_sources">מקורות חדשות</string>
+    <string name="settings_hidden_apps">אפליקציות מוסתרות</string>
+    <string name="settings_wallpapers">רקעים</string>
+    <string name="settings_about">אודות</string>
+    <string name="settings_statistics">סטטיסטיקות שימוש</string>
+    <string name="settings_icon_packs">חבילות אייקונים</string>
+    <string name="action_back">חזרה</string>
+
+    <!-- Main menu subtitles -->
+    <string name="settings_sub_appearance">ערכות נושא, פונטים, צורות, שעון</string>
+    <string name="settings_sub_pages">סידור, עריכה ויצירה</string>
+    <string name="settings_sub_wallpapers">רקע קבוע, לפי עמוד, שעה, יום</string>
+    <string name="settings_sub_news">בחר אילו חדשות להציג</string>
+    <string name="settings_sub_backup">גיבוי מקומי, ענן ו-NAS</string>
+    <string name="settings_sub_security">נעילת אפליקציות ומסך</string>
+    <string name="settings_sub_hidden">הסתרה ותיקייה פרטית</string>
+    <string name="settings_sub_statistics">זמן מסך, אפליקציות פעילות</string>
+    <string name="settings_sub_icon_packs">Nova / ADW / Lawnchair</string>
+    <string name="settings_sub_about">גרסה, דירוג, יצירת קשר</string>
+
+    <!-- Icon packs -->
+    <string name="icon_packs_empty_title">לא נמצאו חבילות אייקונים מותקנות.</string>
+    <string name="icon_packs_empty_hint">התקן חבילת אייקונים תואמת Nova/ADW/Lawnchair מ-Play Store ותחזור לכאן.</string>
+
+    <!-- Appearance section labels -->
+    <string name="section_size">גודל</string>
+    <string name="section_more_menus">תפריטים נוספים</string>
+    <string name="appearance_icon_size">גודל אייקון</string>
+    <string name="appearance_app_font_size">גודל פונט אפליקציות</string>
+    <string name="appearance_columns">עמודות</string>
+    <string name="appearance_folder_icon_size">גודל אייקון תיקייה</string>
+    <string name="appearance_folder_font_size">גודל פונט תיקייה</string>
+    <string name="appearance_themes_and_colors">ערכות נושא וצבעים</string>
+
+    <!-- Live preview -->
+    <string name="preview_label">תצוגה מקדימה</string>
+
+    <!-- Themes section -->
+    <string name="section_theme_mode">מצב תצוגה</string>
+    <string name="section_theme_presets">ערכות עיצוב</string>
+    <string name="section_custom_colors">צבעים מותאמים אישית</string>
+    <string name="custom_colors_toggle">השתמש בצבעים מותאמים</string>
+    <string name="color_primary">צבע ראשי</string>
+    <string name="color_background">צבע רקע</string>
+    <string name="color_font">צבע פונט</string>
+    <string name="label_hex_code">קוד HEX</string>
+
+    <!-- Fonts section -->
+    <string name="fonts_target_app_names">שמות אפליקציות</string>
+    <string name="fonts_target_folders">תיקיות</string>
+    <string name="fonts_target_pages">שמות עמודים</string>
+    <string name="fonts_target_ui">ממשק כללי</string>
+    <string name="font_sample">אבגד ABC 123</string>
+
+    <!-- Icon shapes -->
+    <string name="section_choose_shape">בחר צורה</string>
+
+    <!-- Clock section -->
+    <string name="clock_size">גודל שעון</string>
+    <string name="clock_date_size">גודל תאריך</string>
+    <string name="clock_opacity">שקיפות</string>
+    <string name="clock_show_seconds">הצג שניות</string>
+    <string name="clock_color">צבע שעון</string>
+    <string name="section_clock_font">פונט שעון</string>
+
+    <!-- Pages section -->
+    <string name="page_default">ברירת מחדל</string>
+    <string name="page_custom">עמוד מותאם</string>
+    <string name="section_order_drag">סדר (גרור)</string>
+    <string name="section_disabled_pages">עמודים מושבתים</string>
+    <string name="action_enable_page">הפעל: %1$s</string>
+    <string name="action_create_new_page">צור עמוד חדש</string>
+    <string name="dialog_new_page_title">עמוד חדש</string>
+    <string name="dialog_new_page_name_label">שם העמוד</string>
+    <string name="action_create">צור</string>
+    <string name="action_move_up">למעלה</string>
+    <string name="action_move_down">למטה</string>
+
+    <!-- News sources section -->
+    <string name="section_choose_news_sources">בחר מקורות חדשות</string>
+    <string name="news_max_articles">מקסימום כתבות</string>
+
+    <!-- Hidden apps section -->
+    <string name="hidden_apps_count_label">אפליקציות מוסתרות (%1$d)</string>
+    <string name="hidden_apps_description">אפליקציות מוסתרות לא יופיעו במסך הבית או ברשימה</string>
+    <string name="private_folder_count_label">תיקייה פרטית (%1$d)</string>
+    <string name="private_folder_description">אפליקציות בתיקייה פרטית דורשות אימות לגישה</string>
+    <string name="label_hidden">מוסתר</string>
+    <string name="label_private_folder">תיקייה פרטית</string>
+    <string name="action_hide">הסתר</string>
+
+    <!-- Wallpaper section -->
+    <string name="section_wallpaper_mode">מצב רקע</string>
+    <string name="section_wallpaper_active">רקעים פעילים</string>
+    <string name="wallpaper_entry_label">רקע %1$d</string>
+    <string name="wallpaper_brightness">בהירות</string>
+    <string name="wallpaper_blur">טשטוש</string>
+    <string name="wallpaper_saturation">רוויה</string>
+    <string name="action_remove_wallpaper">הסר רקע</string>
+    <string name="action_add_wallpaper">הוסף רקע</string>
+    <string name="wallpaper_dim_on_scroll">עמעום בגלילה</string>
+    <string name="wallpaper_desc_single">רקע אחד לכל המסכים</string>
+    <string name="wallpaper_desc_per_page">רקע שונה לכל עמוד</string>
+    <string name="wallpaper_desc_hourly">מתחלף לפי שעה</string>
+    <string name="wallpaper_desc_daily">מתחלף לפי יום בשבוע</string>
+    <string name="wallpaper_desc_live">רקע חי (Live Wallpaper)</string>
+
+    <!-- About section -->
+    <string name="about_version">גרסה %1$s</string>
+    <string name="about_description">NoveLauncher הוא לאנצ\'ר חכם לאנדרואיד המופעל על ידי בינה מלאכותית. הלאנצ\'ר לומד את הרגלי השימוש שלך ומסדר את האפליקציות, התיקיות והמסכים באופן אוטומטי כדי שתמצא תמיד את מה שאתה צריך. כל העיבוד מתבצע על המכשיר — ללא שליחת נתונים לשרתים חיצוניים.</string>
+    <string name="about_rate">דרג אותנו ב-Google Play</string>
+    <string name="about_support">תמכו במפתח</string>
+    <string name="about_contact">יצירת קשר</string>
+    <string name="about_privacy">מדיניות פרטיות</string>
+    <string name="about_terms">תנאי שימוש</string>
+    <string name="about_copyright">© 2026 NoveLauncher. כל הזכויות שמורות.</string>
+    <string name="about_contact_email_subject">NoveLauncher - פנייה</string>
+
+    <!-- Security section -->
+    <string name="security_method_label">שיטה: %1$s</string>
+    <string name="security_choose_apps">בחירת אפליקציות לנעילה</string>
+    <string name="security_locked_count">%1$d נעולות</string>
+    <string name="section_screen_lock">נעילת מסך</string>
+    <string name="security_layout_lock">נעילת הזזה</string>
+    <string name="section_safety_launcher_lock">בטיחות — נעילת לאנצ\'ר</string>
+    <string name="security_method_pin">PIN</string>
+    <string name="security_method_password">סיסמה</string>
+    <string name="security_method_biometric">ביומטרי</string>
+    <string name="security_choose_apps_to_lock">בחר אפליקציות לנעילה</string>
+
+    <!-- PIN/Password/Pattern dialogs -->
+    <string name="dialog_set_pin">הגדר PIN</string>
+    <string name="dialog_confirm_pin">אשר PIN</string>
+    <string name="pin_input_label">PIN (4-6 ספרות)</string>
+    <string name="pin_invalid_length">4-6 ספרות</string>
+    <string name="dialog_set_password">הגדר סיסמה</string>
+    <string name="dialog_confirm_password">אשר סיסמה</string>
+    <string name="password_input_label">סיסמה (4+ תווים)</string>
+    <string name="password_invalid_length">מינימום 4</string>
+    <string name="mismatch_error">לא תואם</string>
+    <string name="dialog_set_pattern">הגדר דפוס נעילה</string>
+    <string name="pattern_instructions">לחץ על הנקודות בסדר הרצוי</string>
+    <string name="action_reset">אפס</string>
+
+    <!-- Backup / Restore -->
+    <string name="backup_status_in_progress">מגבה…</string>
+    <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_status_error">✗ %1$s</string>
+    <string name="nas_address_label">כתובת</string>
+    <string name="nas_path_label">נתיב</string>
+    <string name="section_restore">שחזור</string>
+    <string name="no_backups">אין גיבויים</string>
+    <string name="restore_success">✓ שוחזר!</string>
+
+    <!-- ═════════ Onboarding ═════════ -->
+    <string name="onboarding_welcome_title">ברוך הבא ל-NoveLauncher</string>
+    <string name="onboarding_welcome_desc">לאנצ\'ר חכם שלומד את ההרגלים שלך ומארגן את הטלפון עבורך באמצעות AI.\n\nהכל מתבצע על המכשיר — הפרטיות שלך מוגנת.</string>
+    <string name="onboarding_usage_title">הרשאת שימוש</string>
+    <string name="onboarding_usage_desc">כדי ללמוד את ההרגלים שלך, NoveLauncher צריך גישה לנתוני שימוש.\n\nלחץ למטה כדי להפעיל.</string>
+    <string name="onboarding_usage_action">הפעל הרשאה</string>
+    <string name="onboarding_gestures_title">מחוות ותנועות</string>
+    <string name="onboarding_gestures_desc">• החלק ימינה/שמאלה בין עמודים\n• החלק למעלה לתפריט אפליקציות\n• לחץ ארוך על אפליקציה להעברה או הסתרה\n• לחץ על השעון לעריכה מהירה</string>
+    <string name="onboarding_personalize_title">התאם אישית</string>
+    <string name="onboarding_personalize_desc">בהגדרות תמצא:\n• ערכות נושא וצבעים\n• פונטים וצורות אייקון\n• רקעים ושעון\n• אבטחה ונעילה\n• גיבוי אוטומטי\n\nהכל ניתן לשינוי בכל עת!</string>
+    <string name="onboarding_default_title">הגדר כלאנצ\'ר ברירת מחדל</string>
+    <string name="onboarding_default_desc">כדי ש-NoveLauncher יופיע בכל פעם שתחזור למסך הבית, הגדר אותו כברירת מחדל.</string>
+    <string name="onboarding_default_action">הגדר ברירת מחדל</string>
+    <string name="action_skip">דלג</string>
+    <string name="onboarding_start">בוא נתחיל!</string>
+
+    <!-- ═════════ News screen ═════════ -->
+    <string name="news_rss_mode">מצב RSS</string>
+    <string name="news_app_mode">אפליקציית חדשות</string>
+    <string name="news_open_in_app">פתח באפליקציה</string>
+
+    <!-- ═════════ Global search ═════════ -->
+    <string name="search_type_app">אפליקציה</string>
+    <string name="search_type_contact">איש קשר</string>
+    <string name="search_type_web">חיפוש ברשת</string>
+    <string name="search_type_setting">הגדרה</string>
+    <string name="search_google_for">חפש ב-Google: %1$s</string>
+    <string name="search_all_hint">חיפוש הכל…</string>
+
+    <!-- ═════════ Personal zone ═════════ -->
+    <string name="action_enter">כניסה</string>
+    <string name="action_lock">נעל</string>
+    <string name="personal_zone_add_hint">הוסף דרך הגדרות → אפליקציות מוסתרות</string>
+
+    <!-- ═════════ Statistics ═════════ -->
+    <string name="stats_screen_time">זמן מסך</string>
+    <string name="stats_launches">פתיחות</string>
+    <string name="stats_apps">אפליקציות</string>
+    <string name="stats_top_apps">האפליקציות הפעילות ביותר</string>
+    <string name="stats_launches_count">%1$d פתיחות</string>
+    <string name="stats_range_day">יום</string>
+    <string name="stats_range_week">שבוע</string>
+    <string name="stats_range_month">חודש</string>
+    <string name="duration_hours_minutes">%1$dש %2$dד</string>
+    <string name="duration_minutes">%1$dד</string>
+
+    <!-- ═════════ Backup errors (surfaced via toast) ═════════ -->
+    <string name="backup_error_onedrive">OneDrive עדיין לא נתמך. השתמש ב-Google Drive או בגיבוי מקומי.</string>
+    <string name="backup_error_box">Box עדיין לא נתמך. השתמש ב-Google Drive או בגיבוי מקומי.</string>
+    <string name="backup_error_not_connected">לא מחובר ל-Google Drive.\nעבור להגדרות → גיבוי → חבר חשבון Google</string>
+    <string name="backup_error_token_expired">טוקן פג תוקף. נסה שוב או חבר מחדש בהגדרות.</string>
+
+    <!-- ═════════ Biometric prompt ═════════ -->
+    <string name="biometric_prompt_subtitle">השתמש בטביעת אצבע או בזיהוי פנים</string>
+
+    <!-- ═════════ Weather (Open-Meteo codes) ═════════ -->
+    <string name="weather_clear">בהיר</string>
+    <string name="weather_partly_cloudy">מעונן חלקית</string>
+    <string name="weather_fog">ערפל</string>
+    <string name="weather_drizzle">טפטוף</string>
+    <string name="weather_rain">גשם</string>
+    <string name="weather_snow">שלג</string>
+    <string name="weather_showers">ממטרים</string>
+    <string name="weather_storm">סופה</string>
+    <string name="weather_unknown">—</string>
+
+    <!-- ═════════ Enum display names ═════════ -->
+    <!-- ThemeMode -->
+    <string name="theme_mode_dark">כהה</string>
+    <string name="theme_mode_light">בהיר</string>
+    <string name="theme_mode_system">לפי המערכת</string>
+
+    <!-- IconShape -->
+    <string name="icon_shape_rounded_square">מרובע מעוגל</string>
+    <string name="icon_shape_circle">עיגול</string>
+    <string name="icon_shape_squircle">סקוירקל</string>
+    <string name="icon_shape_teardrop">טיפה</string>
+    <string name="icon_shape_hexagon">משושה</string>
+    <string name="icon_shape_square">מרובע</string>
+    <string name="icon_shape_diamond">יהלום</string>
+    <string name="icon_shape_shield">מגן</string>
+    <string name="icon_shape_leaf">עלה</string>
+    <string name="icon_shape_blob">כתם</string>
+    <string name="icon_shape_clover">תלתן</string>
+    <string name="icon_shape_octagon">מתומן</string>
+
+    <!-- LauncherFont (most are brand names — kept as-is across locales) -->
+    <string name="font_system_default">ברירת מחדל</string>
+    <string name="font_roboto">Roboto</string>
+    <string name="font_noto_sans">Noto Sans</string>
+    <string name="font_rubik">Rubik</string>
+    <string name="font_heebo">Heebo</string>
+    <string name="font_assistant">Assistant</string>
+    <string name="font_varela_round">Varela Round</string>
+    <string name="font_open_sans">Open Sans</string>
+    <string name="font_montserrat">Montserrat</string>
+    <string name="font_poppins">Poppins</string>
+    <string name="font_cairo">Cairo</string>
+    <string name="font_frank_ruhl">Frank Ruhl Libre</string>
+    <string name="font_secular_one">Secular One</string>
+    <string name="font_monospace">Monospace</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_cursive">כתב יד</string>
+
+    <!-- ClockStyle -->
+    <string name="clock_style_digital">דיגיטלי</string>
+    <string name="clock_style_analog">אנלוגי</string>
+    <string name="clock_style_minimal">מינימלי</string>
+
+    <!-- WallpaperMode -->
+    <string name="wallpaper_mode_single">רקע קבוע</string>
+    <string name="wallpaper_mode_per_page">לפי עמוד</string>
+    <string name="wallpaper_mode_hourly">לפי שעה</string>
+    <string name="wallpaper_mode_daily">לפי יום</string>
+    <string name="wallpaper_mode_live">רקע חי</string>
+
+    <!-- BackupSchedule -->
+    <string name="backup_schedule_manual">ידני</string>
+    <string name="backup_schedule_daily">יומי</string>
+    <string name="backup_schedule_weekly">שבועי</string>
+    <string name="backup_schedule_monthly">חודשי</string>
+
+    <!-- BackupDestination (brand names kept as-is, "Local" and "NAS" translated) -->
+    <string name="backup_dest_local">קובץ מקומי</string>
+    <string name="backup_dest_google_drive">Google Drive</string>
+    <string name="backup_dest_onedrive">OneDrive</string>
+    <string name="backup_dest_box">Box</string>
+    <string name="backup_dest_nas">שרת NAS</string>
+
+    <!-- ScreenType -->
+    <string name="screen_type_phone">טלפון</string>
+    <string name="screen_type_tablet">טאבלט</string>
+    <string name="screen_type_foldable">מתקפל</string>
+    <string name="screen_type_landscape">מסך רחב</string>
+
+    <!-- LockMethod -->
+    <string name="lock_method_none">ללא</string>
+    <string name="lock_method_pin">קוד PIN</string>
+    <string name="lock_method_password">סיסמה</string>
+    <string name="lock_method_pattern">קו</string>
+    <string name="lock_method_fingerprint">טביעת אצבע</string>
+    <string name="lock_method_face">זיהוי פנים</string>
+
+    <!-- AppCategory -->
+    <string name="app_category_social">חברה</string>
+    <string name="app_category_work">עבודה</string>
+    <string name="app_category_entertainment">פנאי</string>
+    <string name="app_category_games">משחקים</string>
+    <string name="app_category_utilities">כלים</string>
+    <string name="app_category_health">בריאות</string>
+    <string name="app_category_education">לימודים</string>
+    <string name="app_category_shopping">קניות</string>
+    <string name="app_category_photography">צילום</string>
+    <string name="app_category_system">מערכת</string>
+    <string name="app_category_uncategorized">אחר</string>
+
+    <!-- ThemePreset names (12 built-in) -->
+    <string name="theme_preset_indigo">אינדיגו</string>
+    <string name="theme_preset_crimson">ארגמן</string>
+    <string name="theme_preset_emerald">אמרלד</string>
+    <string name="theme_preset_amber">ענבר</string>
+    <string name="theme_preset_ocean">אוקיינוס</string>
+    <string name="theme_preset_rose">ורד</string>
+    <string name="theme_preset_slate">צפחה</string>
+    <string name="theme_preset_lavender">לבנדר</string>
+    <string name="theme_preset_teal">טורקיז</string>
+    <string name="theme_preset_sunset">שקיעה</string>
+    <string name="theme_preset_midnight">חצות</string>
+    <string name="theme_preset_snow">שלג</string>
+
+    <!-- NAS backup errors / labels -->
+    <string name="backup_error_nas_not_configured">NAS לא מוגדר. הזן כתובת בהגדרות.</string>
+    <string name="backup_error_nas_http_refused">גיבוי NAS דורש HTTPS. הזן כתובת https:// בהגדרות.</string>
+    <string name="backup_error_nas_http_code">שגיאת NAS: %1$d</string>
+    <string name="backup_error_nas_io">NAS: %1$s</string>
+    <string name="backup_nas_username_label">שם משתמש (אופציונלי)</string>
+    <string name="backup_nas_password_label">סיסמה (אופציונלי)</string>
+</resources>

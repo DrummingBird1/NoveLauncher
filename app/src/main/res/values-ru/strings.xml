@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoveLauncher</string>
+
+    <string name="page_home">Главная</string>
+    <string name="page_apps">Приложения</string>
+    <string name="page_news">Новости</string>
+    <string name="page_personal">Личная зона</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_widgets">Виджет</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_ok">OK</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_next">Далее</string>
+    <string name="action_previous">Назад</string>
+    <string name="action_retry">Повторить</string>
+    <string name="action_refresh">Обновить</string>
+
+    <string name="all_apps">Все приложения</string>
+    <string name="smart_folders">Умные папки</string>
+    <string name="search_apps_hint">Поиск приложения…</string>
+    <string name="recommended_now">Рекомендации</string>
+
+    <string name="action_hide_app">Скрыть приложение</string>
+    <string name="action_move_private">В личную зону</string>
+    <string name="action_toggle_lock">Блокировка</string>
+    <string name="action_app_info">О приложении</string>
+    <string name="action_uninstall">Удалить</string>
+
+    <string name="auth_required_title">Требуется проверка</string>
+    <string name="auth_required_subtitle">Подтвердите свою личность</string>
+    <string name="auth_prompt_pin">Введите PIN</string>
+    <string name="auth_prompt_password">Введите пароль</string>
+    <string name="auth_wrong">Неверный код</string>
+
+    <string name="news_error_loading">Ошибка загрузки новостей</string>
+
+    <string name="personal_zone_title">Личная зона</string>
+    <string name="personal_zone_enter_pin">Введите PIN для доступа</string>
+    <string name="personal_zone_empty">Нет приложений в личной зоне</string>
+
+    <string name="clock_settings_title">Настройки часов</string>
+    <string name="clock_24_hour">24-часовой формат</string>
+    <string name="clock_show_date">Показывать дату</string>
+    <string name="label_size">Размер</string>
+    <string name="action_remove">Удалить</string>
+
+    <string name="view_mode_folders">Папки</string>
+    <string name="view_mode_list">Список</string>
+
+    <string name="launcher_lock_title">Блокировка лаунчера</string>
+    <string name="auth_app_locked_with_pin">Это приложение заблокировано. Введите PIN:</string>
+    <string name="auth_app_locked_with_password">Это приложение заблокировано. Введите пароль:</string>
+    <string name="auth_wrong_try_again">Неверно, попробуйте ещё раз</string>
+    <string name="toast_connected_to">Подключено: %1$s</string>
+    <string name="toast_sign_in_failed">Не удалось войти: %1$s</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_appearance">Внешний вид</string>
+    <string name="settings_themes">Темы</string>
+    <string name="settings_fonts">Шрифты</string>
+    <string name="settings_icon_shapes">Формы иконок</string>
+    <string name="settings_clock">Часы</string>
+    <string name="settings_pages">Страницы</string>
+    <string name="settings_backup">Резервная копия</string>
+    <string name="settings_security">Безопасность</string>
+    <string name="settings_app_lock_list">Блокировка приложений</string>
+    <string name="settings_news_sources">Источники новостей</string>
+    <string name="settings_hidden_apps">Скрытые приложения</string>
+    <string name="settings_wallpapers">Обои</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_statistics">Статистика использования</string>
+    <string name="settings_icon_packs">Иконпаки</string>
+    <string name="action_back">Назад</string>
+
+    <string name="settings_sub_appearance">Темы, шрифты, формы, часы</string>
+    <string name="settings_sub_pages">Порядок, редактирование, создание</string>
+    <string name="settings_sub_wallpapers">Один, по странице, часу, дню</string>
+    <string name="settings_sub_news">Выберите, какие новости показывать</string>
+    <string name="settings_sub_backup">Локально, облако и NAS</string>
+    <string name="settings_sub_security">Блокировка приложений и экрана</string>
+    <string name="settings_sub_hidden">Скрытие и личная папка</string>
+    <string name="settings_sub_statistics">Время экрана, активные приложения</string>
+    <string name="settings_sub_icon_packs">Nova / ADW / Lawnchair</string>
+    <string name="settings_sub_about">Версия, оценка, контакты</string>
+
+    <string name="icon_packs_empty_title">Иконпаки не установлены.</string>
+    <string name="icon_packs_empty_hint">Установите иконпак, совместимый с Nova/ADW/Lawnchair, из Play Store и вернитесь сюда.</string>
+
+    <string name="section_size">Размер</string>
+    <string name="section_more_menus">Дополнительные меню</string>
+    <string name="appearance_icon_size">Размер иконки</string>
+    <string name="appearance_app_font_size">Размер шрифта приложений</string>
+    <string name="appearance_columns">Колонки</string>
+    <string name="appearance_folder_icon_size">Размер иконки папки</string>
+    <string name="appearance_folder_font_size">Размер шрифта папки</string>
+    <string name="appearance_themes_and_colors">Темы и цвета</string>
+
+    <string name="preview_label">Предпросмотр</string>
+
+    <string name="section_theme_mode">Режим отображения</string>
+    <string name="section_theme_presets">Готовые темы</string>
+    <string name="section_custom_colors">Свои цвета</string>
+    <string name="custom_colors_toggle">Использовать свои цвета</string>
+    <string name="color_primary">Основной цвет</string>
+    <string name="color_background">Цвет фона</string>
+    <string name="color_font">Цвет шрифта</string>
+    <string name="label_hex_code">HEX-код</string>
+
+    <string name="fonts_target_app_names">Названия приложений</string>
+    <string name="fonts_target_folders">Папки</string>
+    <string name="fonts_target_pages">Названия страниц</string>
+    <string name="fonts_target_ui">Общий интерфейс</string>
+    <string name="font_sample">Аа Бб Вв ABC 123</string>
+
+    <string name="section_choose_shape">Выберите форму</string>
+
+    <string name="clock_size">Размер часов</string>
+    <string name="clock_date_size">Размер даты</string>
+    <string name="clock_opacity">Прозрачность</string>
+    <string name="clock_show_seconds">Показывать секунды</string>
+    <string name="clock_color">Цвет часов</string>
+    <string name="section_clock_font">Шрифт часов</string>
+
+    <string name="page_default">По умолчанию</string>
+    <string name="page_custom">Своя страница</string>
+    <string name="section_order_drag">Порядок (перетащите)</string>
+    <string name="section_disabled_pages">Отключённые страницы</string>
+    <string name="action_enable_page">Включить: %1$s</string>
+    <string name="action_create_new_page">Создать новую страницу</string>
+    <string name="dialog_new_page_title">Новая страница</string>
+    <string name="dialog_new_page_name_label">Название страницы</string>
+    <string name="action_create">Создать</string>
+    <string name="action_move_up">Вверх</string>
+    <string name="action_move_down">Вниз</string>
+
+    <string name="section_choose_news_sources">Выберите источники новостей</string>
+    <string name="news_max_articles">Макс. статей</string>
+
+    <string name="hidden_apps_count_label">Скрытые приложения (%1$d)</string>
+    <string name="hidden_apps_description">Скрытые приложения не появятся на главной или в списке</string>
+    <string name="private_folder_count_label">Личная папка (%1$d)</string>
+    <string name="private_folder_description">Приложения в личной папке требуют аутентификации</string>
+    <string name="label_hidden">Скрыто</string>
+    <string name="label_private_folder">Личная папка</string>
+    <string name="action_hide">Скрыть</string>
+
+    <string name="section_wallpaper_mode">Режим обоев</string>
+    <string name="section_wallpaper_active">Активные обои</string>
+    <string name="wallpaper_entry_label">Обои %1$d</string>
+    <string name="wallpaper_brightness">Яркость</string>
+    <string name="wallpaper_blur">Размытие</string>
+    <string name="wallpaper_saturation">Насыщенность</string>
+    <string name="action_remove_wallpaper">Удалить обои</string>
+    <string name="action_add_wallpaper">Добавить обои</string>
+    <string name="wallpaper_dim_on_scroll">Затемнять при прокрутке</string>
+    <string name="wallpaper_desc_single">Один фон для всех экранов</string>
+    <string name="wallpaper_desc_per_page">Разный фон для каждой страницы</string>
+    <string name="wallpaper_desc_hourly">Меняется по часам</string>
+    <string name="wallpaper_desc_daily">Меняется ежедневно</string>
+    <string name="wallpaper_desc_live">Живые обои</string>
+
+    <string name="about_version">Версия %1$s</string>
+    <string name="about_description">NoveLauncher — это умный лаунчер для Android с поддержкой ИИ. Он изучает ваши привычки и автоматически организует приложения, папки и страницы, чтобы вы всегда находили нужное. Вся обработка происходит на устройстве — данные не отправляются на внешние серверы.</string>
+    <string name="about_rate">Оцените нас в Google Play</string>
+    <string name="about_support">Поддержать разработчика</string>
+    <string name="about_contact">Связаться</string>
+    <string name="about_privacy">Политика конфиденциальности</string>
+    <string name="about_terms">Условия использования</string>
+    <string name="about_copyright">© 2026 NoveLauncher. Все права защищены.</string>
+    <string name="about_contact_email_subject">Запрос в NoveLauncher</string>
+
+    <string name="security_method_label">Метод: %1$s</string>
+    <string name="security_choose_apps">Выберите приложения для блокировки</string>
+    <string name="security_locked_count">Заблокировано: %1$d</string>
+    <string name="section_screen_lock">Блокировка экрана</string>
+    <string name="security_layout_lock">Блокировка раскладки</string>
+    <string name="section_safety_launcher_lock">Безопасность — блокировка лаунчера</string>
+    <string name="security_method_pin">PIN</string>
+    <string name="security_method_password">Пароль</string>
+    <string name="security_method_biometric">Биометрия</string>
+    <string name="security_choose_apps_to_lock">Выберите приложения для блокировки</string>
+
+    <string name="dialog_set_pin">Установить PIN</string>
+    <string name="dialog_confirm_pin">Подтвердите PIN</string>
+    <string name="pin_input_label">PIN (4–6 цифр)</string>
+    <string name="pin_invalid_length">4–6 цифр</string>
+    <string name="dialog_set_password">Установить пароль</string>
+    <string name="dialog_confirm_password">Подтвердите пароль</string>
+    <string name="password_input_label">Пароль (4+ символа)</string>
+    <string name="password_invalid_length">Минимум 4</string>
+    <string name="mismatch_error">Не совпадает</string>
+    <string name="dialog_set_pattern">Установить графический ключ</string>
+    <string name="pattern_instructions">Нажимайте на точки по порядку</string>
+    <string name="action_reset">Сбросить</string>
+
+    <string name="backup_status_in_progress">Создаётся резервная копия…</string>
+    <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_status_error">✗ %1$s</string>
+    <string name="nas_address_label">Адрес</string>
+    <string name="nas_path_label">Путь</string>
+    <string name="section_restore">Восстановление</string>
+    <string name="no_backups">Нет резервных копий</string>
+    <string name="restore_success">✓ Восстановлено!</string>
+
+    <string name="onboarding_welcome_title">Добро пожаловать в NoveLauncher</string>
+    <string name="onboarding_welcome_desc">Умный лаунчер, который изучает ваши привычки и организует телефон с помощью ИИ.\n\nВсё работает на устройстве — ваша конфиденциальность защищена.</string>
+    <string name="onboarding_usage_title">Разрешение на использование</string>
+    <string name="onboarding_usage_desc">Чтобы изучать ваши привычки, NoveLauncher нужен доступ к данным использования.\n\nНажмите ниже, чтобы включить.</string>
+    <string name="onboarding_usage_action">Включить разрешение</string>
+    <string name="onboarding_gestures_title">Жесты</string>
+    <string name="onboarding_gestures_desc">• Свайпайте влево/вправо между страницами\n• Свайпните вверх для списка приложений\n• Долгое нажатие на приложение — переместить или скрыть\n• Нажмите на часы для быстрого редактирования</string>
+    <string name="onboarding_personalize_title">Персонализация</string>
+    <string name="onboarding_personalize_desc">В настройках вы найдёте:\n• Темы и цвета\n• Шрифты и формы иконок\n• Обои и часы\n• Безопасность и блокировку\n• Автоматическую резервную копию\n\nВсё можно менять в любое время!</string>
+    <string name="onboarding_default_title">Сделать лаунчером по умолчанию</string>
+    <string name="onboarding_default_desc">Чтобы NoveLauncher появлялся каждый раз, когда вы возвращаетесь на главный экран, установите его по умолчанию.</string>
+    <string name="onboarding_default_action">Установить по умолчанию</string>
+    <string name="action_skip">Пропустить</string>
+    <string name="onboarding_start">Начнём!</string>
+
+    <string name="news_rss_mode">Режим RSS</string>
+    <string name="news_app_mode">Приложение новостей</string>
+    <string name="news_open_in_app">Открыть в приложении</string>
+
+    <string name="search_type_app">Приложение</string>
+    <string name="search_type_contact">Контакт</string>
+    <string name="search_type_web">Поиск в сети</string>
+    <string name="search_type_setting">Настройка</string>
+    <string name="search_google_for">Искать в Google: %1$s</string>
+    <string name="search_all_hint">Искать везде…</string>
+
+    <string name="action_enter">Войти</string>
+    <string name="action_lock">Заблокировать</string>
+    <string name="personal_zone_add_hint">Добавьте через Настройки → Скрытые приложения</string>
+
+    <string name="stats_screen_time">Время экрана</string>
+    <string name="stats_launches">Открытий</string>
+    <string name="stats_apps">Приложений</string>
+    <string name="stats_top_apps">Самые активные приложения</string>
+    <string name="stats_launches_count">Открытий: %1$d</string>
+    <string name="stats_range_day">День</string>
+    <string name="stats_range_week">Неделя</string>
+    <string name="stats_range_month">Месяц</string>
+    <string name="duration_hours_minutes">%1$dч %2$dм</string>
+    <string name="duration_minutes">%1$dм</string>
+
+    <string name="backup_error_onedrive">OneDrive пока не поддерживается. Используйте Google Drive или локальную резервную копию.</string>
+    <string name="backup_error_box">Box пока не поддерживается. Используйте Google Drive или локальную резервную копию.</string>
+    <string name="backup_error_not_connected">Не подключено к Google Drive.\nПерейдите в Настройки → Резервная копия → Подключить аккаунт Google</string>
+    <string name="backup_error_token_expired">Токен истёк. Попробуйте снова или переподключитесь в настройках.</string>
+
+    <string name="biometric_prompt_subtitle">Используйте отпечаток или лицо</string>
+
+    <string name="weather_clear">Ясно</string>
+    <string name="weather_partly_cloudy">Переменная облачность</string>
+    <string name="weather_fog">Туман</string>
+    <string name="weather_drizzle">Морось</string>
+    <string name="weather_rain">Дождь</string>
+    <string name="weather_snow">Снег</string>
+    <string name="weather_showers">Ливни</string>
+    <string name="weather_storm">Гроза</string>
+    <string name="weather_unknown">—</string>
+
+    <string name="theme_mode_dark">Тёмная</string>
+    <string name="theme_mode_light">Светлая</string>
+    <string name="theme_mode_system">Системная</string>
+
+    <string name="icon_shape_rounded_square">Скруглённый квадрат</string>
+    <string name="icon_shape_circle">Круг</string>
+    <string name="icon_shape_squircle">Сквиркл</string>
+    <string name="icon_shape_teardrop">Капля</string>
+    <string name="icon_shape_hexagon">Шестиугольник</string>
+    <string name="icon_shape_square">Квадрат</string>
+    <string name="icon_shape_diamond">Ромб</string>
+    <string name="icon_shape_shield">Щит</string>
+    <string name="icon_shape_leaf">Лист</string>
+    <string name="icon_shape_blob">Клякса</string>
+    <string name="icon_shape_clover">Клевер</string>
+    <string name="icon_shape_octagon">Восьмиугольник</string>
+
+    <string name="font_system_default">По умолчанию</string>
+    <string name="font_roboto">Roboto</string>
+    <string name="font_noto_sans">Noto Sans</string>
+    <string name="font_rubik">Rubik</string>
+    <string name="font_heebo">Heebo</string>
+    <string name="font_assistant">Assistant</string>
+    <string name="font_varela_round">Varela Round</string>
+    <string name="font_open_sans">Open Sans</string>
+    <string name="font_montserrat">Montserrat</string>
+    <string name="font_poppins">Poppins</string>
+    <string name="font_cairo">Cairo</string>
+    <string name="font_frank_ruhl">Frank Ruhl Libre</string>
+    <string name="font_secular_one">Secular One</string>
+    <string name="font_monospace">Monospace</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_cursive">Рукописный</string>
+
+    <string name="clock_style_digital">Цифровые</string>
+    <string name="clock_style_analog">Стрелочные</string>
+    <string name="clock_style_minimal">Минимальные</string>
+
+    <string name="wallpaper_mode_single">Один фон</string>
+    <string name="wallpaper_mode_per_page">По страницам</string>
+    <string name="wallpaper_mode_hourly">По часам</string>
+    <string name="wallpaper_mode_daily">По дням</string>
+    <string name="wallpaper_mode_live">Живые обои</string>
+
+    <string name="backup_schedule_manual">Вручную</string>
+    <string name="backup_schedule_daily">Ежедневно</string>
+    <string name="backup_schedule_weekly">Еженедельно</string>
+    <string name="backup_schedule_monthly">Ежемесячно</string>
+
+    <string name="backup_dest_local">Локальный файл</string>
+    <string name="backup_dest_google_drive">Google Drive</string>
+    <string name="backup_dest_onedrive">OneDrive</string>
+    <string name="backup_dest_box">Box</string>
+    <string name="backup_dest_nas">NAS-сервер</string>
+
+    <string name="screen_type_phone">Телефон</string>
+    <string name="screen_type_tablet">Планшет</string>
+    <string name="screen_type_foldable">Складной</string>
+    <string name="screen_type_landscape">Альбомный</string>
+
+    <string name="lock_method_none">Нет</string>
+    <string name="lock_method_pin">PIN-код</string>
+    <string name="lock_method_password">Пароль</string>
+    <string name="lock_method_pattern">Графический ключ</string>
+    <string name="lock_method_fingerprint">Отпечаток пальца</string>
+    <string name="lock_method_face">Распознавание лица</string>
+
+    <string name="app_category_social">Социальные</string>
+    <string name="app_category_work">Работа</string>
+    <string name="app_category_entertainment">Развлечения</string>
+    <string name="app_category_games">Игры</string>
+    <string name="app_category_utilities">Утилиты</string>
+    <string name="app_category_health">Здоровье</string>
+    <string name="app_category_education">Образование</string>
+    <string name="app_category_shopping">Покупки</string>
+    <string name="app_category_photography">Фото</string>
+    <string name="app_category_system">Система</string>
+    <string name="app_category_uncategorized">Другое</string>
+
+    <string name="theme_preset_indigo">Индиго</string>
+    <string name="theme_preset_crimson">Багровый</string>
+    <string name="theme_preset_emerald">Изумруд</string>
+    <string name="theme_preset_amber">Янтарь</string>
+    <string name="theme_preset_ocean">Океан</string>
+    <string name="theme_preset_rose">Роза</string>
+    <string name="theme_preset_slate">Сланец</string>
+    <string name="theme_preset_lavender">Лаванда</string>
+    <string name="theme_preset_teal">Бирюза</string>
+    <string name="theme_preset_sunset">Закат</string>
+    <string name="theme_preset_midnight">Полночь</string>
+    <string name="theme_preset_snow">Снег</string>
+
+    <string name="backup_error_nas_not_configured">NAS не настроен. Укажите адрес в настройках.</string>
+    <string name="backup_error_nas_http_refused">Резервная копия NAS требует HTTPS. Используйте адрес https://.</string>
+    <string name="backup_error_nas_http_code">Ошибка NAS: %1$d</string>
+    <string name="backup_error_nas_io">NAS: %1$s</string>
+    <string name="backup_nas_username_label">Имя пользователя (необязательно)</string>
+    <string name="backup_nas_password_label">Пароль (необязательно)</string>
+</resources>
