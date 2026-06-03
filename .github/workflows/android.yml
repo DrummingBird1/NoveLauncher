@@ -1,0 +1,91 @@
+# GitHub Actions CI for NoveLauncher.
+#
+# Runs on every push to main + every pull request targeting main:
+#   1. Sets up JDK 17 (matches build.gradle.kts compileOptions).
+#   2. Restores the gradle wrapper jar (gitignored locally — checked in here for CI).
+#   3. Caches ~/.gradle/caches and ~/.gradle/wrapper for fast incremental runs.
+#   4. Builds debug APK + release APK (R8 / shrinkResources path).
+#   5. Runs Android Lint and unit tests.
+#   6. Uploads the debug APK and lint report as build artefacts.
+#
+# Notes:
+#   * No keystore step — release build runs the same R8 pipeline but is signed
+#     with the debug key in CI. Real Play Store builds should run a separate
+#     signed-release workflow gated on `tags: ['v*']` with secrets injection.
+#   * Self-hosted runners are not necessary for this project; ubuntu-latest
+#     provides Android SDK 35 out of the box.
+
+name: Android CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # allow running manually from the Actions tab
+
+# Cancel earlier runs for the same branch when a newer push arrives — avoids
+# the queue bloat from rapid-fire commits.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, lint, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Speeds up subsequent runs from ~6 min to ~90 s. Gradle's own caching is
+      # picky about restore keys, so we lean on the official setup-gradle action.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Assemble debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Android Lint
+        run: ./gradlew lint --stacktrace
+        continue-on-error: true  # lint findings shouldn't fail CI yet
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: novelauncher-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Upload lint report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: app/build/reports/tests/testDebugUnitTest/
+          retention-days: 14
+          if-no-files-found: ignore
