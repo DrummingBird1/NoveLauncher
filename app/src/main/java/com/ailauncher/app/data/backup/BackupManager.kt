@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.BackupDestination
@@ -106,7 +107,14 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
      * v8 FIX: Write via MediaStore.Downloads on API 29+ so the backup respects
      * scoped storage. The legacy Environment.getExternalStoragePublicDirectory
      * path silently fails on most Android 11+ devices.
+     *
+     * v9: @RequiresApi documents the API-29 contract that [backupToLocal] already
+     * enforces with its SDK_INT >= Q guard. Lint's interprocedural analysis
+     * doesn't follow that guard across the method boundary, so without this
+     * annotation it flags MediaStore.Downloads.EXTERNAL_CONTENT_URI as a NewApi
+     * error and (with abortOnError) fails the build.
      */
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun backupToMediaStore(fileName: String, data: String): BackupResult {
         val values = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, fileName)
@@ -246,6 +254,7 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
             ?: emptyList()
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun listMediaStoreBackups(): List<BackupFile> {
         val results = mutableListOf<BackupFile>()
         val projection = arrayOf(

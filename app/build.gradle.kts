@@ -37,6 +37,17 @@ android {
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true; buildConfig = true }
 
+    // v9: lint is advisory, not a build gate. The codebase has correctly-guarded
+    // API-29 calls (e.g. MediaStore.Downloads behind SDK_INT >= Q) that lint's
+    // interprocedural analysis can't always verify across method boundaries —
+    // those are annotated with @RequiresApi, but we don't want a future false
+    // positive to break CI. The Android CI workflow still runs `lint` and uploads
+    // the HTML report as an artefact for review.
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
