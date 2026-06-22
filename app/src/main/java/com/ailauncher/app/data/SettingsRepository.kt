@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "launcher_settings")
+private val Context.defaultDataStore: DataStore<Preferences> by preferencesDataStore(name = "launcher_settings")
 
 /**
  * v9: now implements [com.ailauncher.app.domain.repository.SettingsRepository] so
@@ -21,9 +21,16 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * call sites that import `com.ailauncher.app.data.SettingsRepository` are
  * unaffected. New code that wants the domain abstraction should import the
  * interface from `com.ailauncher.app.domain.repository` instead.
+ *
+ * v9: [dataStore] is injectable (defaults to the per-process "launcher_settings"
+ * store) purely so Robolectric tests can pass a unique temp-file DataStore and
+ * exercise the import/export/atomicity logic in isolation. Production always uses
+ * the default.
  */
-class SettingsRepository(private val context: Context)
-    : com.ailauncher.app.domain.repository.SettingsRepository {
+class SettingsRepository(
+    private val context: Context,
+    private val dataStore: DataStore<Preferences> = context.defaultDataStore
+) : com.ailauncher.app.domain.repository.SettingsRepository {
 
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true; prettyPrint = true }
 
@@ -47,12 +54,12 @@ class SettingsRepository(private val context: Context)
     }
 
     private inline fun <reified T> flow(key: Preferences.Key<String>, default: T): Flow<T> where T : Any =
-        context.dataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             prefs[key]?.let { runCatching { json.decodeFromString<T>(it) }.getOrNull() } ?: default
         }
 
     private suspend inline fun <reified T> save(key: Preferences.Key<String>, value: T) where T : Any {
-        context.dataStore.edit { it[key] = json.encodeToString(kotlinx.serialization.serializer<T>(), value) }
+        dataStore.edit { it[key] = json.encodeToString(kotlinx.serialization.serializer<T>(), value) }
     }
 
     override val appearanceFlow: Flow<AppearanceSettings> = flow(K_APPEARANCE, AppearanceSettings())
@@ -71,7 +78,7 @@ class SettingsRepository(private val context: Context)
      * SecuritySettings) and skip the work when the ciphertext hasn't changed.
      */
     @Volatile private var securityCache: Pair<String, SecuritySettings>? = null
-    override val securityFlow: Flow<SecuritySettings> = context.dataStore.data.map { prefs ->
+    override val securityFlow: Flow<SecuritySettings> = dataStore.data.map { prefs ->
         val raw = prefs[K_SECURITY] ?: return@map SecuritySettings()
         securityCache?.takeIf { it.first == raw }?.second?.let { return@map it }
         val plain = secureCrypto.decryptOrNull(raw) ?: raw  // legacy
@@ -86,7 +93,7 @@ class SettingsRepository(private val context: Context)
     // still readable and get re-encrypted on the next saveBackup. Decrypt is memoised
     // per ciphertext to avoid re-running AES-GCM on every collector emission.
     @Volatile private var backupCache: Pair<String, BackupSettings>? = null
-    override val backupFlow: Flow<BackupSettings> = context.dataStore.data.map { prefs ->
+    override val backupFlow: Flow<BackupSettings> = dataStore.data.map { prefs ->
         val raw = prefs[K_BACKUP] ?: return@map BackupSettings()
         backupCache?.takeIf { it.first == raw }?.second?.let { return@map it }
         val plain = secureCrypto.decryptOrNull(raw) ?: raw  // legacy plain JSON
@@ -109,12 +116,12 @@ class SettingsRepository(private val context: Context)
     override suspend fun saveSecurity(s: SecuritySettings) {
         val plain = json.encodeToString(SecuritySettings.serializer(), s)
         val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
-        context.dataStore.edit { it[K_SECURITY] = encrypted }
+        dataStore.edit { it[K_SECURITY] = encrypted }
     }
     override suspend fun saveBackup(s: BackupSettings) {
         val plain = json.encodeToString(BackupSettings.serializer(), s)
         val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
-        context.dataStore.edit { it[K_BACKUP] = encrypted }
+        dataStore.edit { it[K_BACKUP] = encrypted }
     }
     override suspend fun saveWidgets(w: List<WidgetSlot>) = save(K_WIDGETS, w)
     override suspend fun saveNews(s: NewsSettings) = save(K_NEWS, s)
@@ -133,7 +140,7 @@ class SettingsRepository(private val context: Context)
      * exactly the same on-disk moment.
      */
     override suspend fun exportAllSettings(): String {
-        val prefs = context.dataStore.data.first()
+        val prefs = dataStore.data.first()
         fun <T> decode(key: Preferences.Key<String>, default: T, serializer: kotlinx.serialization.KSerializer<T>): T {
             val raw = prefs[key] ?: return default
             return runCatching { json.decodeFromString(serializer, raw) }.getOrNull() ?: default
@@ -185,7 +192,7 @@ class SettingsRepository(private val context: Context)
         val s = try { json.decodeFromString<LauncherSettings>(jsonStr) }
                 catch (_: Exception) { return false }
         return try {
-            context.dataStore.edit { prefs ->
+            dataStore.edit { prefs ->
                 fun <T> putJson(key: Preferences.Key<String>, value: T, serializer: kotlinx.serialization.KSerializer<T>) {
                     prefs[key] = json.encodeToString(serializer, value)
                 }
@@ -210,7 +217,7 @@ class SettingsRepository(private val context: Context)
 
     /** Reset everything to defaults */
     override suspend fun resetAll() {
-        context.dataStore.edit { it.clear() }
+        dataStore.edit { it.clear() }
     }
 
     /** Increment crash counter for repair system */

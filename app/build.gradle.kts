@@ -55,6 +55,12 @@ android {
             excludes += "/META-INF/INDEX.LIST"
         }
     }
+
+    // v9: Robolectric needs Android resources on the unit-test classpath
+    // (SettingsRepositoryTest exercises DataStore against a temp file).
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -135,6 +141,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 }
