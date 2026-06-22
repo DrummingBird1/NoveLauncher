@@ -58,8 +58,9 @@ object AppModule {
     @Provides @Singleton
     fun provideInstalledAppsRepository(
         @ApplicationContext context: Context,
-        categoryProvider: AppCategoryProvider
-    ): InstalledAppsRepository = InstalledAppsRepository(context, categoryProvider)
+        categoryProvider: AppCategoryProvider,
+        iconCache: com.ailauncher.app.data.IconCache
+    ): InstalledAppsRepository = InstalledAppsRepository(context, categoryProvider, iconCache)
 
     @Provides @Singleton
     fun provideAppLockManager(

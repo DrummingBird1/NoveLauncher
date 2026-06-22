@@ -33,7 +33,8 @@ import java.util.concurrent.atomic.AtomicReference
  */
 class InstalledAppsRepository(
     private val context: Context,
-    private val categoryProvider: AppCategoryProvider
+    private val categoryProvider: AppCategoryProvider,
+    private val iconCache: IconCache
 ) : com.ailauncher.app.domain.repository.InstalledAppsRepository {
 
     private val cache = AtomicReference<List<AppInfo>?>(null)
@@ -50,6 +51,12 @@ class InstalledAppsRepository(
             if (action != null) {
                 Timber.d("Package broadcast: %s — invalidating cached app list", action)
                 cache.set(null)
+                // v9: also drop the changed package's icon so an app update doesn't
+                // keep showing the old icon until LRU eviction. The broadcast data is
+                // a `package:<name>` Uri.
+                intent.data?.schemeSpecificPart
+                    ?.let { pkg -> iconCache.invalidate(pkg) }
+                    ?: iconCache.invalidateAll()
             }
         }
     }

@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import android.appwidget.AppWidgetHost
 import androidx.fragment.app.FragmentActivity
@@ -145,6 +146,10 @@ class LauncherActivity : FragmentActivity() {
         // and the home screen renders its first frame.
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        // v9: draw behind the system bars. Android 15 (targetSdk 35) enforces this
+        // anyway; calling it explicitly keeps behaviour consistent on older OS too.
+        // Screens already apply statusBarsPadding()/navigationBarsPadding() insets.
+        enableEdgeToEdge()
 
         // v9: Crash handler moved to AILauncherApp.installCrashHandler — it now
         // registers exactly once per process instead of leaking a wrapped handler
