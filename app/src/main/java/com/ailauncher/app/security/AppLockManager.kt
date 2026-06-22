@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.crypto.SecretKeyFactory
@@ -37,25 +38,56 @@ class AppLockManager(
     private val launcherUnlockedUntil = AtomicLong(0L)
 
     // v8: Failed-attempt lockout. Resets on success.
+    // v9: persisted to securePrefs (EncryptedSharedPreferences) so the exponential
+    // backoff survives a process restart. Previously the counter lived only in memory,
+    // which let an attacker with physical access reset the backoff by force-stopping
+    // the app between guesses — defeating brute-force protection on a tiny PIN keyspace.
     private val failedAttempts = AtomicInteger(0)
     private val lockoutUntil = AtomicLong(0L)
+    private val lockoutHydrated = AtomicBoolean(false)
     private val MAX_ATTEMPTS = 5
     private val LOCKOUT_DURATION_MS = 30_000L  // 30 sec — grows after repeated trips
 
+    /** Lazily load persisted lockout state on first access (off the constructor path). */
+    private fun hydrateLockoutIfNeeded() {
+        if (lockoutHydrated.compareAndSet(false, true)) {
+            runCatching {
+                failedAttempts.set(securePrefs.getInt(ATTEMPTS_KEY, 0))
+                lockoutUntil.set(securePrefs.getLong(LOCKOUT_UNTIL_KEY, 0L))
+            }
+        }
+    }
+
+    private fun persistLockout() {
+        runCatching {
+            securePrefs.edit()
+                .putInt(ATTEMPTS_KEY, failedAttempts.get())
+                .putLong(LOCKOUT_UNTIL_KEY, lockoutUntil.get())
+                .apply()
+        }
+    }
+
     /** Returns ms remaining if locked out, else 0. */
-    fun lockoutRemainingMs(): Long = (lockoutUntil.get() - System.currentTimeMillis()).coerceAtLeast(0L)
+    fun lockoutRemainingMs(): Long {
+        hydrateLockoutIfNeeded()
+        return (lockoutUntil.get() - System.currentTimeMillis()).coerceAtLeast(0L)
+    }
 
     private fun recordFailure() {
+        hydrateLockoutIfNeeded()
         val attempts = failedAttempts.incrementAndGet()
         if (attempts >= MAX_ATTEMPTS) {
             val backoff = LOCKOUT_DURATION_MS * (1 shl (attempts - MAX_ATTEMPTS).coerceAtMost(5))
             lockoutUntil.set(System.currentTimeMillis() + backoff)
         }
+        persistLockout()
     }
 
     private fun recordSuccess() {
+        lockoutHydrated.set(true)
         failedAttempts.set(0)
         lockoutUntil.set(0L)
+        persistLockout()
     }
 
     /** Clear all in-memory unlock state. Called on screen-off so locked apps re-prompt. */
@@ -72,6 +104,8 @@ class AppLockManager(
         private const val KEY_LENGTH_BITS = 256
         private const val SECURE_PREFS = "secure_lock_prefs"
         private const val SALT_KEY = "salt"
+        private const val ATTEMPTS_KEY = "failed_attempts"
+        private const val LOCKOUT_UNTIL_KEY = "lockout_until"
     }
 
     private val secureRandom = SecureRandom()
@@ -180,8 +214,20 @@ class AppLockManager(
 
     suspend fun verifyPattern(p: List<Int>): Boolean {
         if (lockoutRemainingMs() > 0) return false
-        val ok = p == settingsRepo.securityFlow.first().appLockPattern
-        if (ok) recordSuccess() else recordFailure()
+        val sec = settingsRepo.securityFlow.first()
+        val candidate = p.joinToString("-")
+        val ok = when {
+            sec.appLockPatternHash.isNotEmpty() -> hash(candidate) == sec.appLockPatternHash
+            sec.appLockPattern.isNotEmpty() -> p == sec.appLockPattern  // legacy plaintext
+            else -> false
+        }
+        if (ok) {
+            // Migrate a legacy plaintext pattern to a hash on first successful verify.
+            if (sec.appLockPatternHash.isEmpty() && sec.appLockPattern.isNotEmpty()) {
+                settingsRepo.saveSecurity(sec.copy(appLockPatternHash = hash(candidate), appLockPattern = emptyList()))
+            }
+            recordSuccess()
+        } else recordFailure()
         return ok
     }
 
@@ -239,7 +285,11 @@ class AppLockManager(
 
     suspend fun setAppLockPattern(pattern: List<Int>) {
         val c = settingsRepo.securityFlow.first()
-        settingsRepo.saveSecurity(c.copy(appLockMethod = LockMethod.PATTERN, appLockPattern = pattern))
+        settingsRepo.saveSecurity(c.copy(
+            appLockMethod = LockMethod.PATTERN,
+            appLockPatternHash = hash(pattern.joinToString("-")),
+            appLockPattern = emptyList()  // never persist the raw pattern
+        ))
     }
 
     /**

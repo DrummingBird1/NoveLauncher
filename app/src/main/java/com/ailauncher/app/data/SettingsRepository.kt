@@ -80,7 +80,21 @@ class SettingsRepository(private val context: Context)
         securityCache = raw to decoded
         decoded
     }
-    override val backupFlow: Flow<BackupSettings> = flow(K_BACKUP, BackupSettings())
+    // v9: BackupSettings is encrypted at rest, same as SecuritySettings — it carries
+    // the NAS password (nasPassword), which must not sit in plaintext in DataStore
+    // (and therefore in the auto-backup feed to Drive). Legacy plain-JSON values are
+    // still readable and get re-encrypted on the next saveBackup. Decrypt is memoised
+    // per ciphertext to avoid re-running AES-GCM on every collector emission.
+    @Volatile private var backupCache: Pair<String, BackupSettings>? = null
+    override val backupFlow: Flow<BackupSettings> = context.dataStore.data.map { prefs ->
+        val raw = prefs[K_BACKUP] ?: return@map BackupSettings()
+        backupCache?.takeIf { it.first == raw }?.second?.let { return@map it }
+        val plain = secureCrypto.decryptOrNull(raw) ?: raw  // legacy plain JSON
+        val decoded = runCatching { json.decodeFromString<BackupSettings>(plain) }
+            .getOrNull() ?: BackupSettings()
+        backupCache = raw to decoded
+        decoded
+    }
     override val widgetsFlow: Flow<List<WidgetSlot>> = flow(K_WIDGETS, emptyList<WidgetSlot>())
     override val newsFlow: Flow<NewsSettings> = flow(K_NEWS, NewsSettings())
     override val hiddenAppsFlow: Flow<HiddenAppsSettings> = flow(K_HIDDEN, HiddenAppsSettings())
@@ -97,7 +111,11 @@ class SettingsRepository(private val context: Context)
         val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
         context.dataStore.edit { it[K_SECURITY] = encrypted }
     }
-    override suspend fun saveBackup(s: BackupSettings) = save(K_BACKUP, s)
+    override suspend fun saveBackup(s: BackupSettings) {
+        val plain = json.encodeToString(BackupSettings.serializer(), s)
+        val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
+        context.dataStore.edit { it[K_BACKUP] = encrypted }
+    }
     override suspend fun saveWidgets(w: List<WidgetSlot>) = save(K_WIDGETS, w)
     override suspend fun saveNews(s: NewsSettings) = save(K_NEWS, s)
     override suspend fun saveHiddenApps(s: HiddenAppsSettings) = save(K_HIDDEN, s)
@@ -120,7 +138,7 @@ class SettingsRepository(private val context: Context)
             val raw = prefs[key] ?: return default
             return runCatching { json.decodeFromString(serializer, raw) }.getOrNull() ?: default
         }
-        // SecuritySettings has the special encrypted-or-legacy decode path.
+        // SecuritySettings + BackupSettings both use the encrypted-or-legacy decode path.
         val security = run {
             val raw = prefs[K_SECURITY] ?: return@run SecuritySettings()
             securityCache?.takeIf { it.first == raw }?.second ?: run {
@@ -129,11 +147,23 @@ class SettingsRepository(private val context: Context)
                     ?: SecuritySettings()
             }
         }
+        val backup = run {
+            val raw = prefs[K_BACKUP] ?: return@run BackupSettings()
+            val decoded = backupCache?.takeIf { it.first == raw }?.second ?: run {
+                val plain = secureCrypto.decryptOrNull(raw) ?: raw
+                runCatching { json.decodeFromString<BackupSettings>(plain) }.getOrNull()
+                    ?: BackupSettings()
+            }
+            // A portable backup file (local .json or Drive) must never carry the NAS
+            // password. Address/path/username are not secrets and stay so a restore
+            // only needs the password re-entered.
+            decoded.copy(nasPassword = "")
+        }
         val full = LauncherSettings(
             appearance = decode(K_APPEARANCE, AppearanceSettings(), AppearanceSettings.serializer()),
             pages = decode(K_PAGES, PagesSettings(), PagesSettings.serializer()),
             security = security,
-            backup = decode(K_BACKUP, BackupSettings(), BackupSettings.serializer()),
+            backup = backup,
             widgets = decode(K_WIDGETS, emptyList(), kotlinx.serialization.builtins.ListSerializer(WidgetSlot.serializer())),
             news = decode(K_NEWS, NewsSettings(), NewsSettings.serializer()),
             hiddenApps = decode(K_HIDDEN, HiddenAppsSettings(), HiddenAppsSettings.serializer()),
@@ -161,10 +191,11 @@ class SettingsRepository(private val context: Context)
                 }
                 putJson(K_APPEARANCE, s.appearance, AppearanceSettings.serializer())
                 putJson(K_PAGES, s.pages, PagesSettings.serializer())
-                // SecuritySettings must go through the encrypted path.
+                // SecuritySettings + BackupSettings must go through the encrypted path.
                 val secPlain = json.encodeToString(SecuritySettings.serializer(), s.security)
                 prefs[K_SECURITY] = try { secureCrypto.encrypt(secPlain) } catch (_: Exception) { secPlain }
-                putJson(K_BACKUP, s.backup, BackupSettings.serializer())
+                val backupPlain = json.encodeToString(BackupSettings.serializer(), s.backup)
+                prefs[K_BACKUP] = try { secureCrypto.encrypt(backupPlain) } catch (_: Exception) { backupPlain }
                 putJson(K_WIDGETS, s.widgets, kotlinx.serialization.builtins.ListSerializer(WidgetSlot.serializer()))
                 putJson(K_NEWS, s.news, NewsSettings.serializer())
                 putJson(K_HIDDEN, s.hiddenApps, HiddenAppsSettings.serializer())

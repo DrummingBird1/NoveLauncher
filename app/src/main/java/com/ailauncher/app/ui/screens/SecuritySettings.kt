@@ -253,11 +253,15 @@ fun PasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
 }
 
 @Composable
-fun PatternDialog(onDismiss: () -> Unit, onConfirm: (List<Int>) -> Unit) {
+fun PatternDialog(
+    onDismiss: () -> Unit,
+    title: String = stringResource(R.string.dialog_set_pattern),
+    onConfirm: (List<Int>) -> Unit
+) {
     var pattern by remember { mutableStateOf(listOf<Int>()) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_set_pattern)) },
+        title = { Text(title) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.pattern_instructions), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)

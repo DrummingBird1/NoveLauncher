@@ -23,7 +23,11 @@ import kotlinx.serialization.Serializable
     val appLockMethod: LockMethod = LockMethod.NONE,
     val appLockPin: String = "",
     val appLockPassword: String = "",
+    // v9: pattern is now PBKDF2-hashed like PIN/password. [appLockPattern] (raw list)
+    // is retained only to migrate legacy installs on the next successful verify; new
+    // patterns write [appLockPatternHash] and leave the list empty.
     val appLockPattern: List<Int> = emptyList(),
+    val appLockPatternHash: String = "",
     val lockedAppPackages: Set<String> = emptySet(),
     val isLayoutLocked: Boolean = false,
     val launcherLockMethod: LockMethod = LockMethod.NONE,

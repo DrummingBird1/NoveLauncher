@@ -326,6 +326,38 @@ class LauncherActivity : FragmentActivity() {
             val scope = rememberCoroutineScope()
 
             val wrongText = stringResource(R.string.auth_wrong_try_again)
+
+            // v9: FLAG_SECURE while any unlock dialog is on screen — keeps the
+            // credential entry out of screenshots and the recents thumbnail.
+            // Scoped to the dialog's lifetime so the home screen stays screenshottable.
+            DisposableEffect(Unit) {
+                window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                onDispose { window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE) }
+            }
+
+            // v9: PATTERN unlock previously fell through to `else -> false` in the
+            // verify branch below, so a pattern-locked app could never be opened —
+            // the user locked themselves out. Render the 3x3 grid and verify it.
+            if (method == LockMethod.PATTERN) {
+                PatternDialog(
+                    onDismiss = { _pendingUnlockApp.value = null },
+                    title = stringResource(R.string.auth_required_title)
+                ) { drawn ->
+                    scope.launch {
+                        if (viewModel.appLockManager.verifyPattern(drawn)) {
+                            viewModel.appLockManager.grantAppUnlock(pkg)
+                            viewModel.markAppOpened(pkg)
+                            _pendingUnlockApp.value = null
+                            launchAppDirect(pkg)
+                        } else {
+                            Toast.makeText(this@LauncherActivity, wrongText, Toast.LENGTH_SHORT).show()
+                            _pendingUnlockApp.value = null
+                        }
+                    }
+                }
+                return
+            }
+
             AlertDialog(
                 onDismissRequest = { _pendingUnlockApp.value = null },
                 title = { Text(stringResource(R.string.auth_required_title)) },

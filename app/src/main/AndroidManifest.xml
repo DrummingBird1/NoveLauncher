@@ -4,8 +4,10 @@
 
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <!-- v9: weather uses only coarse location (WeatherService checks ACCESS_COARSE_LOCATION).
+         ACCESS_FINE_LOCATION was declared but never used — removed to avoid over-permissioning
+         and the associated Play Console privacy declaration. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
@@ -16,7 +18,10 @@
     <!-- v8: CALL_PHONE removed — GlobalSearchScreen uses ACTION_DIAL, which doesn't
          require it. Keeping the permission would have triggered "Privacy & Security"
          warnings in the Play Store listing for no benefit. -->
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- v9: CAMERA removed — there is no Camera-API usage anywhere in the codebase.
+         The search bar's optional camera button launches the camera via intent, which
+         does NOT require the CAMERA permission. Declaring it was an unused dangerous
+         permission (extra attack surface + Play privacy flag). -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
