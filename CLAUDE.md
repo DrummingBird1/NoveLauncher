@@ -76,19 +76,27 @@ AILauncherApp.kt               ← @HiltAndroidApp + WorkManager Configuration.P
 
 ### Conventions
 
-- **All UI strings are Hebrew, hardcoded inline** in Kotlin files (e.g. `"מומלצות עכשיו"`, `"אזור אישי"`). `res/values/strings.xml` only contains `app_name`. The `values-{ar,en,fr,ru}/strings.xml` folders exist but contain nothing useful. `AppearanceSettings.appLanguage` is read but never applied. **Don't assume strings come from resources.**
+- **UI strings live in `strings.xml`** (v9 i18n is complete — ~240 keys in he/en/ar/fr/ru). Add new strings as resources, not inline literals. Enums expose `@StringRes displayNameRes`; `LauncherPage`/`ThemePreset` use the hybrid `localizedName(context)` (built-in = res id, user-created = typed String). The only intentional inline Hebrew left is the four NewsSource brand names.
 - **RTL-aware layout**: `android:supportsRtl="true"` in manifest, locale-sensitive padding via Compose.
 - **Activity is `singleTask` + `category.HOME`** — this is a real home-screen launcher, not a regular app.
-- **Hilt everywhere except `SettingsActivity`** which manually constructs `SettingsRepository`/`AppLockManager`/`BackupManager` ([SettingsActivity.kt:47-49](app/src/main/java/com/ailauncher/app/ui/screens/SettingsActivity.kt)). When adding code here, follow this manual pattern or refactor the whole Activity to use Hilt.
-- **Static singletons**: `AILauncherApp.instance` (Application) and `widgetHost` (AppWidgetHost) are exposed via the companion. Used from non-DI sites — be careful with refactors.
+- **Hilt everywhere**, including `SettingsActivity` (`@AndroidEntryPoint` + `@Inject` since v8) and `LauncherActivity`. Repositories have domain-layer interfaces in `domain/repository/` (impls in `data/`), though `AppModule` still provides the concrete classes — bind the interface if you want to fake it in tests.
+- **`SettingsActivity` is split** (v9): the Activity + `SettingsPage` enum + `SettingsRoot` Scaffold live in `SettingsActivity.kt`; each section is its own file (`AppearanceSettings.kt`, `PagesSettings.kt`, `SecuritySettings.kt`, `BackupSettings.kt`, `MiscSettings.kt`, shared widgets in `SettingsComponents.kt`). Same for `Models.kt` → 5 domain files.
+- **`AppWidgetHost`** is provided by Hilt and reaches Composables via `LocalAppWidgetHost`; `IconCache` via `LocalIconCache`. The old `AILauncherApp.instance` static was removed in v8 — don't reintroduce static singletons.
 
 ### Permissions (in [AndroidManifest.xml](app/src/main/AndroidManifest.xml))
 
-Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_LISTENER_SERVICE`, `READ_CONTACTS`, `CALL_PHONE`, `CAMERA`, `ACCESS_FINE_LOCATION`. `READ_EXTERNAL_STORAGE` only up to API 32 — see Pitfalls about backup storage on API 33+.
+Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_LISTENER_SERVICE`, `READ_CONTACTS`, `ACCESS_COARSE_LOCATION`. `READ_EXTERNAL_STORAGE` only up to API 32 — see Pitfalls about backup storage on API 33+. v8 removed `CALL_PHONE`; v9 removed `CAMERA` (camera button uses an intent) and `ACCESS_FINE_LOCATION` (weather only needs COARSE). Don't re-add a dangerous permission without a real API consumer — Play flags unused ones.
+
+## Security model (read before touching lock/crypto code)
+
+- **App-lock / private folder / hidden apps are a deterrent, NOT a sandbox.** They only intercept launches routed through `LauncherActivity.launchAppWithLockCheck`. A "locked" app is still reachable from recents, notifications, another launcher, `adb am start`, app links, widgets, or the assistant. This is inherent to every third-party launcher — never describe it as a security guarantee. Real isolation needs an OS-level mechanism (work profile / Android per-app lock), which a launcher can't provide.
+- **At rest**: `SecuritySettings` and `BackupSettings` are AES-256-GCM encrypted (AndroidKeyStore, `SecureCrypto`) before DataStore — the rest of the groups are plain JSON. PIN/password/**pattern** are PBKDF2-HMAC-SHA256 (`appLockPatternHash`). Legacy unsalted-SHA-256 and plaintext patterns migrate on first successful verify.
+- **Brute-force**: failed-attempt count + exponential lockout are persisted to EncryptedSharedPreferences (`secure_lock_prefs`), so force-stop can't reset them. PBKDF2 is 100k iterations — deliberately not raised, because a 4–6 digit PIN is keyspace-bound, not iteration-bound; the lockout is the real defense.
+- **Backups**: `exportAllSettings` blanks `nasPassword` so portable `.json` files never carry it. `dataExtractionRules`/`backup_rules.xml` exclude `cloud_auth`, `secure_lock_prefs`, and `launcher.db` from auto-backup.
 
 ## Pitfalls / non-obvious
 
-1. **Crash handler creates a fresh `SettingsRepository`** in the uncaught-exception path — bypasses Hilt by design (Hilt graph may already be torn down) but is fragile.
+1. **Crash handler lives in `AILauncherApp.installCrashHandler`** (v9) — registered once per process, records via a background `Thread` + `join(2s)` so it can't deadlock the Main thread. Don't move it back into the Activity (it leaked a wrapped handler chain on every recreation).
 2. **Hebrew weekend in category boost**: `AppCategoryProvider.computeCategoryBoost()` treats Friday+Saturday as weekend. Hardcoded; don't surprise yourself when porting.
 3. **UsageStats permission prompt fires once per process** ([LauncherActivity.onResume](app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt)) — if the user denies, they need to grant from Settings → Apps → NoveLauncher → Usage manually until the next app restart.
 4. **OneDrive and Box backups are explicitly disabled** until Microsoft/Box OAuth flows are wired up; the manifest still lists them in `BackupDestination` but `backup()` returns a clear error.
