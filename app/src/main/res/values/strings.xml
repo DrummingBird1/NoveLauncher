@@ -190,6 +190,7 @@
     <string name="about_description">NoveLauncher הוא לאנצ\'ר חכם לאנדרואיד המופעל על ידי בינה מלאכותית. הלאנצ\'ר לומד את הרגלי השימוש שלך ומסדר את האפליקציות, התיקיות והמסכים באופן אוטומטי כדי שתמצא תמיד את מה שאתה צריך. כל העיבוד מתבצע על המכשיר — ללא שליחת נתונים לשרתים חיצוניים.</string>
     <string name="about_rate">דרג אותנו ב-Google Play</string>
     <string name="about_support">תמכו במפתח</string>
+    <string name="about_patreon">תמיכה ב-Patreon</string>
     <string name="about_contact">יצירת קשר</string>
     <string name="about_privacy">מדיניות פרטיות</string>
     <string name="about_terms">תנאי שימוש</string>

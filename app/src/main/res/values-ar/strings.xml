@@ -166,6 +166,7 @@
     <string name="about_description">NoveLauncher هو مشغل أندرويد ذكي مدعوم بالذكاء الاصطناعي. يتعلم عاداتك في الاستخدام وينظم تطبيقاتك ومجلداتك وصفحاتك تلقائيًا لتجد دائمًا ما تحتاجه. كل المعالجة تتم على الجهاز — دون إرسال بيانات إلى خوادم خارجية.</string>
     <string name="about_rate">قيّمنا على Google Play</string>
     <string name="about_support">ادعم المطور</string>
+    <string name="about_patreon">ادعمنا على Patreon</string>
     <string name="about_contact">تواصل معنا</string>
     <string name="about_privacy">سياسة الخصوصية</string>
     <string name="about_terms">شروط الاستخدام</string>

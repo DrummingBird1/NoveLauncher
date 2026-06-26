@@ -166,6 +166,7 @@
     <string name="about_description">NoveLauncher est un lanceur Android intelligent piloté par IA. Il apprend vos habitudes d\'utilisation et organise automatiquement vos applis, dossiers et pages pour que vous trouviez toujours ce qu\'il vous faut. Tout le traitement est effectué sur l\'appareil — aucune donnée n\'est envoyée à des serveurs externes.</string>
     <string name="about_rate">Évaluez-nous sur Google Play</string>
     <string name="about_support">Soutenir le développeur</string>
+    <string name="about_patreon">Soutenir sur Patreon</string>
     <string name="about_contact">Contact</string>
     <string name="about_privacy">Politique de confidentialité</string>
     <string name="about_terms">Conditions d\'utilisation</string>

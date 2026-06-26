@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Policy
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.*
@@ -259,6 +260,12 @@ fun AboutSection() {
             val supportLabel = stringResource(R.string.about_support)
             AboutButton(Icons.Rounded.Favorite, supportLabel) {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://buymeacoffee.com/novelauncher")))
+            }
+        }
+        item {
+            val patreonLabel = stringResource(R.string.about_patreon)
+            AboutButton(Icons.Rounded.VolunteerActivism, patreonLabel) {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.patreon.com/cw/MrIdan")))
             }
         }
         item {

@@ -166,6 +166,7 @@
     <string name="about_description">NoveLauncher is an AI-powered Android launcher. It learns your usage habits and automatically organises your apps, folders and pages so you always find what you need. All processing runs on-device — no data is sent to external servers.</string>
     <string name="about_rate">Rate us on Google Play</string>
     <string name="about_support">Support the developer</string>
+    <string name="about_patreon">Support on Patreon</string>
     <string name="about_contact">Contact</string>
     <string name="about_privacy">Privacy policy</string>
     <string name="about_terms">Terms of use</string>

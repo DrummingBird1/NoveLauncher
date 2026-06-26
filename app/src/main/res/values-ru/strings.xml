@@ -166,6 +166,7 @@
     <string name="about_description">NoveLauncher — это умный лаунчер для Android с поддержкой ИИ. Он изучает ваши привычки и автоматически организует приложения, папки и страницы, чтобы вы всегда находили нужное. Вся обработка происходит на устройстве — данные не отправляются на внешние серверы.</string>
     <string name="about_rate">Оцените нас в Google Play</string>
     <string name="about_support">Поддержать разработчика</string>
+    <string name="about_patreon">Поддержать на Patreon</string>
     <string name="about_contact">Связаться</string>
     <string name="about_privacy">Политика конфиденциальности</string>
     <string name="about_terms">Условия использования</string>
