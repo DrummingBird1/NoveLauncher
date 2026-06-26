@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import com.ailauncher.app.R
@@ -40,6 +42,15 @@ fun AppsScreen(viewModel: LauncherViewModel, gridColumns: Int) {
     val context = LocalContext.current
     // v8: long-press target shared between grid + folders.
     var longPressTarget by remember { mutableStateOf<RankedApp?>(null) }
+
+    // v9: honour the SmartControl haptic setting on long-press (see HomeScreen).
+    val smartControl by viewModel.smartControl.collectAsState()
+    val haptics = LocalHapticFeedback.current
+    LaunchedEffect(longPressTarget) {
+        if (longPressTarget != null && smartControl.hapticFeedback) {
+            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+    }
 
     Column(
         modifier = Modifier

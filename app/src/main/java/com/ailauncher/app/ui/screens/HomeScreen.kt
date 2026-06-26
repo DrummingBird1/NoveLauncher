@@ -23,7 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import com.ailauncher.app.R
 import androidx.compose.ui.text.style.TextAlign
@@ -64,6 +66,16 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
     var showGlobalSearch by remember { mutableStateOf(false) }
     // v8: Long-press menu target
     var longPressTarget by remember { mutableStateOf<RankedApp?>(null) }
+
+    // v9: honour the SmartControl haptic setting (previously read but never applied).
+    // Fire one LongPress haptic when the long-press menu opens.
+    val smartControl by viewModel.smartControl.collectAsState()
+    val haptics = LocalHapticFeedback.current
+    LaunchedEffect(longPressTarget) {
+        if (longPressTarget != null && smartControl.hapticFeedback) {
+            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+    }
 
     Column(Modifier.fillMaxSize()) {
         LazyVerticalGrid(

@@ -232,7 +232,8 @@ fun AboutSection() {
                 }
                 Spacer(Modifier.height(12.dp))
                 Text("NoveLauncher", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Text(stringResource(R.string.about_version, "1.0.0"), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                // v9: show the real build version instead of a hardcoded "1.0.0".
+                Text(stringResource(R.string.about_version, com.ailauncher.app.BuildConfig.VERSION_NAME), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
