@@ -24,6 +24,11 @@
          permission (extra attack surface + Play privacy flag). -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- v9.1: scheduled-backup failure notifications (ScheduledBackupWorker). No
+         runtime request flow exists yet — on API 33+ without an explicit grant,
+         NotificationManagerCompat.notify() is caught and silently skipped, same
+         as before this permission existed. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".AILauncherApp"
@@ -62,6 +67,18 @@
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- v9.1: Quick Settings Tile — "Lock NoveLauncher now" -->
+        <service
+            android:name=".ui.components.LockLauncherTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher_monochrome"
+            android:label="@string/qs_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
 

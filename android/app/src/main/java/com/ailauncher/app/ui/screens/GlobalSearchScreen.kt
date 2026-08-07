@@ -54,11 +54,29 @@ enum class ResultType(@StringRes val displayNameRes: Int) {
     SETTING(R.string.search_type_setting)
 }
 
+private val SEARCHABLE_SETTINGS_PAGES = listOf(
+    SettingsPage.APPEARANCE to R.string.settings_appearance,
+    SettingsPage.THEMES to R.string.settings_themes,
+    SettingsPage.FONTS to R.string.settings_fonts,
+    SettingsPage.ICON_SHAPES to R.string.settings_icon_shapes,
+    SettingsPage.CLOCK to R.string.settings_clock,
+    SettingsPage.PAGES to R.string.settings_pages,
+    SettingsPage.BACKUP to R.string.settings_backup,
+    SettingsPage.SECURITY to R.string.settings_security,
+    SettingsPage.NEWS_SOURCES to R.string.settings_news_sources,
+    SettingsPage.HIDDEN_APPS to R.string.settings_hidden_apps,
+    SettingsPage.WALLPAPER to R.string.settings_wallpapers,
+    SettingsPage.ABOUT to R.string.settings_about,
+    SettingsPage.STATISTICS to R.string.settings_statistics,
+    SettingsPage.ICON_PACKS to R.string.settings_icon_packs
+)
+
 @Composable
 fun GlobalSearchScreen(onDismiss: () -> Unit) {
     val context = LocalContext.current
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf<List<SearchResult>>(emptyList()) }
+    var hasLocalMatches by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
@@ -115,7 +133,22 @@ fun GlobalSearchScreen(onDismiss: () -> Unit) {
             }
             combined.addAll(contacts)
 
-            // Web search fallback
+            // Settings pages
+            val settingsMatches = SEARCHABLE_SETTINGS_PAGES.mapNotNull { (page, labelRes) ->
+                val label = context.getString(labelRes)
+                if (label.contains(query, ignoreCase = true)) {
+                    SearchResult(ResultType.SETTING, label, "", Icons.Rounded.Settings) {
+                        context.startActivity(Intent(context, SettingsActivity::class.java).apply {
+                            putExtra(SettingsActivity.EXTRA_SHORTCUT_PAGE, page.name)
+                        })
+                    }
+                } else null
+            }
+            combined.addAll(settingsMatches)
+
+            hasLocalMatches = combined.isNotEmpty()
+
+            // Web search fallback — always offered, even when nothing local matched.
             combined.add(SearchResult(ResultType.WEB, context.getString(R.string.search_google_for, query), "", Icons.Rounded.Search) {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=${Uri.encode(query)}")))
             })
@@ -143,6 +176,16 @@ fun GlobalSearchScreen(onDismiss: () -> Unit) {
             Spacer(Modifier.height(16.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                if (query.isNotBlank() && !hasLocalMatches) {
+                    item {
+                        Text(
+                            stringResource(R.string.search_no_local_matches),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                }
                 val grouped = results.groupBy { it.type }
                 grouped.forEach { (type, items) ->
                     item {

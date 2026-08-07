@@ -1,6 +1,9 @@
 package com.ailauncher.app
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -39,6 +42,21 @@ class AILauncherApp : Application(), Configuration.Provider {
         }
         installCrashHandler()
         applyConfiguredLanguage()
+        createNotificationChannels()
+    }
+
+    /** No NotificationChannel existed anywhere in the app before v9.1 — this is
+     *  the first, currently only used by ScheduledBackupWorker's failure alert. */
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        val manager = getSystemService(NotificationManager::class.java) ?: return
+        manager.createNotificationChannel(
+            NotificationChannel(
+                BACKUP_CHANNEL_ID,
+                getString(R.string.notification_channel_backup),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply { description = getString(R.string.notification_channel_backup_desc) }
+        )
     }
 
     /**
@@ -126,5 +144,6 @@ class AILauncherApp : Application(), Configuration.Provider {
 
     companion object {
         const val WIDGET_HOST_ID = 1024
+        const val BACKUP_CHANNEL_ID = "backup_alerts"
     }
 }

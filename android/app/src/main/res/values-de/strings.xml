@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoveLauncher</string>
+
+    <string name="whats_new_title">Neuigkeiten</string>
+    <string-array name="whats_new_items">
+        <item>Sprache der App wählbar — jetzt 7 Sprachen, neu mit Spanisch und Deutsch</item>
+        <item>Eigene RSS-Nachrichtenquellen hinzufügen</item>
+        <item>Schnelleinstellungen-Kachel zum sofortigen Sperren des Launchers</item>
+        <item>Benachrichtigungsabzeichen für eine Stunde oder bis morgen stummschalten</item>
+        <item>Intelligentere Sicherungen: automatisches Aufräumen alter Sicherungen, bessere NAS/WebDAV-Unterstützung und Warnung bei fehlgeschlagener geplanter Sicherung</item>
+    </string-array>
+
+    <string name="page_home">Start</string>
+    <string name="page_apps">Apps</string>
+    <string name="page_news">Nachrichten</string>
+    <string name="page_personal">Persönlicher Bereich</string>
+
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_search">Suchen</string>
+    <string name="action_widgets">Widget</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_ok">OK</string>
+    <string name="action_close">Schließen</string>
+    <string name="action_next">Weiter</string>
+    <string name="action_previous">Zurück</string>
+    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_refresh">Aktualisieren</string>
+
+    <string name="all_apps">Alle Apps</string>
+    <string name="smart_folders">Intelligente Ordner</string>
+    <string name="search_apps_hint">Apps suchen…</string>
+    <string name="recommended_now">Jetzt empfohlen</string>
+
+    <string name="action_hide_app">App ausblenden</string>
+    <string name="action_move_private">In persönlichen Bereich verschieben</string>
+    <string name="action_toggle_lock">Sperre umschalten</string>
+    <string name="action_app_info">App-Infos</string>
+    <string name="action_uninstall">Deinstallieren</string>
+
+    <string name="auth_required_title">Authentifizierung erforderlich</string>
+    <string name="auth_required_subtitle">Identität bestätigen</string>
+    <string name="auth_prompt_pin">PIN eingeben</string>
+    <string name="auth_prompt_password">Passwort eingeben</string>
+    <string name="auth_wrong">Falscher Code</string>
+
+    <string name="news_error_loading">Fehler beim Laden der Nachrichten</string>
+
+    <string name="personal_zone_title">Persönlicher Bereich</string>
+    <string name="personal_zone_enter_pin">PIN zum Zugriff eingeben</string>
+    <string name="personal_zone_empty">Keine Apps im persönlichen Bereich</string>
+
+    <string name="clock_settings_title">Uhr-Einstellungen</string>
+    <string name="clock_24_hour">24-Stunden-Format</string>
+    <string name="clock_show_date">Datum anzeigen</string>
+    <string name="label_size">Größe</string>
+    <string name="action_remove">Entfernen</string>
+
+    <string name="view_mode_folders">Ordner</string>
+    <string name="view_mode_list">Liste</string>
+
+    <string name="launcher_lock_title">Launcher-Sperre</string>
+    <string name="auth_app_locked_with_pin">Diese App ist gesperrt. PIN eingeben:</string>
+    <string name="auth_app_locked_with_password">Diese App ist gesperrt. Passwort eingeben:</string>
+    <string name="auth_wrong_try_again">Falsch, erneut versuchen</string>
+    <string name="toast_connected_to">Verbunden: %1$s</string>
+    <string name="toast_sign_in_failed">Anmeldung fehlgeschlagen: %1$s</string>
+
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_themes">Designs</string>
+    <string name="settings_fonts">Schriftarten</string>
+    <string name="settings_icon_shapes">Symbolformen</string>
+    <string name="settings_clock">Uhr</string>
+    <string name="settings_pages">Seiten</string>
+    <string name="settings_backup">Sicherung</string>
+    <string name="settings_security">Sicherheit</string>
+    <string name="settings_app_lock_list">App-Sperre</string>
+    <string name="settings_news_sources">Nachrichtenquellen</string>
+    <string name="settings_hidden_apps">Ausgeblendete Apps</string>
+    <string name="settings_wallpapers">Hintergründe</string>
+    <string name="settings_about">Info</string>
+    <string name="settings_statistics">Nutzungsstatistik</string>
+    <string name="settings_icon_packs">Icon-Pakete</string>
+    <string name="action_back">Zurück</string>
+
+    <string name="settings_sub_appearance">Designs, Schriften, Formen, Uhr</string>
+    <string name="settings_sub_pages">Anordnen, bearbeiten, erstellen</string>
+    <string name="settings_sub_wallpapers">Statisch, pro Seite, stündlich, täglich</string>
+    <string name="settings_sub_news">Wähle, welche Nachrichten angezeigt werden</string>
+    <string name="settings_sub_backup">Lokale, Cloud- und NAS-Sicherung</string>
+    <string name="settings_sub_security">App- und Bildschirmsperre</string>
+    <string name="settings_sub_hidden">Ausblenden und privater Ordner</string>
+    <string name="settings_sub_statistics">Bildschirmzeit, aktive Apps</string>
+    <string name="settings_sub_icon_packs">Nova / ADW / Lawnchair</string>
+    <string name="settings_sub_about">Version, Bewertung, Kontakt</string>
+
+    <string name="icon_packs_empty_title">Keine Icon-Pakete installiert.</string>
+    <string name="icon_packs_empty_hint">Installiere ein Nova/ADW/Lawnchair-kompatibles Icon-Paket aus dem Play Store und komm hierher zurück.</string>
+
+    <string name="section_size">Größe</string>
+    <string name="section_accessibility">Barrierefreiheit</string>
+    <string name="appearance_reduce_motion">Animationen reduzieren</string>
+    <string name="section_more_menus">Weitere Menüs</string>
+    <string name="appearance_icon_size">Symbolgröße</string>
+    <string name="appearance_app_font_size">Schriftgröße für Apps</string>
+    <string name="appearance_columns">Spalten</string>
+    <string name="appearance_folder_icon_size">Ordnersymbolgröße</string>
+    <string name="appearance_folder_font_size">Ordnerschriftgröße</string>
+    <string name="appearance_themes_and_colors">Designs &amp; Farben</string>
+
+    <string name="preview_label">Vorschau</string>
+
+    <string name="section_theme_mode">Anzeigemodus</string>
+    <string name="appearance_dynamic_color">Dynamische Farben (Material You)</string>
+    <string name="section_theme_presets">Design-Vorlagen</string>
+    <string name="section_custom_colors">Eigene Farben</string>
+    <string name="custom_colors_toggle">Eigene Farben verwenden</string>
+    <string name="color_primary">Primärfarbe</string>
+    <string name="color_background">Hintergrundfarbe</string>
+    <string name="color_font">Schriftfarbe</string>
+    <string name="label_hex_code">HEX-Code</string>
+
+    <string name="fonts_target_app_names">App-Namen</string>
+    <string name="fonts_target_folders">Ordner</string>
+    <string name="fonts_target_pages">Seitennamen</string>
+    <string name="fonts_target_ui">Allgemeine Oberfläche</string>
+    <string name="font_sample">Aa Bb Cc 123</string>
+
+    <string name="section_choose_shape">Form wählen</string>
+
+    <string name="clock_size">Uhrgröße</string>
+    <string name="clock_date_size">Datumsgröße</string>
+    <string name="clock_opacity">Deckkraft</string>
+    <string name="clock_show_seconds">Sekunden anzeigen</string>
+    <string name="clock_color">Uhrfarbe</string>
+    <string name="section_clock_font">Uhr-Schriftart</string>
+
+    <string name="page_default">Standard</string>
+    <string name="page_custom">Eigene Seite</string>
+    <string name="section_order_drag">Reihenfolge (ziehen)</string>
+    <string name="section_disabled_pages">Deaktivierte Seiten</string>
+    <string name="action_enable_page">Aktivieren: %1$s</string>
+    <string name="action_create_new_page">Neue Seite erstellen</string>
+    <string name="dialog_new_page_title">Neue Seite</string>
+    <string name="dialog_new_page_name_label">Seitenname</string>
+    <string name="action_create">Erstellen</string>
+    <string name="action_move_up">Nach oben</string>
+    <string name="action_move_down">Nach unten</string>
+
+    <string name="section_choose_news_sources">Nachrichtenquellen wählen</string>
+    <string name="news_max_articles">Max. Artikel</string>
+    <string name="section_custom_news_sources">Eigene Quellen</string>
+    <string name="action_add_custom_news_source">RSS-Quelle hinzufügen</string>
+    <string name="dialog_add_news_source_title">Nachrichtenquelle hinzufügen</string>
+    <string name="dialog_news_source_name_label">Name</string>
+    <string name="dialog_news_source_url_label">RSS-URL (https://)</string>
+    <string name="news_showing_cached">Zeigt gespeicherte Ergebnisse — könnten veraltet sein</string>
+
+    <string name="hidden_apps_count_label">Ausgeblendete Apps (%1$d)</string>
+    <string name="hidden_apps_description">Ausgeblendete Apps erscheinen nicht auf dem Start oder in der Liste</string>
+    <string name="private_folder_count_label">Privater Ordner (%1$d)</string>
+    <string name="private_folder_description">Apps im privaten Ordner erfordern eine Authentifizierung zum Öffnen</string>
+    <string name="label_hidden">Ausgeblendet</string>
+    <string name="label_private_folder">Privater Ordner</string>
+    <string name="action_hide">Ausblenden</string>
+
+    <string name="section_wallpaper_mode">Hintergrundmodus</string>
+    <string name="section_wallpaper_active">Aktive Hintergründe</string>
+    <string name="wallpaper_entry_label">Hintergrund %1$d</string>
+    <string name="wallpaper_brightness">Helligkeit</string>
+    <string name="wallpaper_blur">Unschärfe</string>
+    <string name="wallpaper_saturation">Sättigung</string>
+    <string name="action_remove_wallpaper">Hintergrund entfernen</string>
+    <string name="action_add_wallpaper">Hintergrund hinzufügen</string>
+    <string name="wallpaper_dim_on_scroll">Beim Scrollen abdunkeln</string>
+    <string name="wallpaper_desc_single">Ein Hintergrund für alle Bildschirme</string>
+    <string name="wallpaper_desc_per_page">Unterschiedlicher Hintergrund pro Seite</string>
+    <string name="wallpaper_desc_hourly">Wechselt stündlich</string>
+    <string name="wallpaper_desc_daily">Wechselt täglich</string>
+    <string name="wallpaper_desc_live">Live-Hintergrund</string>
+
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">NoveLauncher ist ein KI-gestützter Android-Launcher. Er lernt deine Nutzungsgewohnheiten und organisiert automatisch deine Apps, Ordner und Seiten, damit du immer findest, was du brauchst. Die gesamte Verarbeitung erfolgt auf dem Gerät — es werden keine Daten an externe Server gesendet.</string>
+    <string name="about_rate">Bewerte uns auf Google Play</string>
+    <string name="about_support">Entwickler unterstützen</string>
+    <string name="about_patreon">Auf Patreon unterstützen</string>
+    <string name="about_contact">Kontakt</string>
+    <string name="about_privacy">Datenschutzerklärung</string>
+    <string name="about_terms">Nutzungsbedingungen</string>
+    <string name="about_copyright">© 2026 NoveLauncher. Alle Rechte vorbehalten.</string>
+    <string name="about_contact_email_subject">NoveLauncher-Anfrage</string>
+
+    <string name="security_method_label">Methode: %1$s</string>
+    <string name="security_choose_apps">Zu sperrende Apps wählen</string>
+    <string name="security_locked_count">%1$d gesperrt</string>
+    <string name="security_isolation_notice">App-Sperre und der private Ordner wirken abschreckend, sind aber keine sichere Sandbox — eine „gesperrte" App ist weiterhin über die letzten Apps, Benachrichtigungen, einen anderen Launcher oder ADB erreichbar. Für eine echte Isolation sensibler Apps empfiehlt sich das in Android integrierte Arbeitsprofil.</string>
+    <string name="section_screen_lock">Bildschirmsperre</string>
+    <string name="security_layout_lock">Layout-Sperre</string>
+    <string name="section_safety_launcher_lock">Sicherheit — Launcher-Sperre</string>
+    <string name="security_method_pin">PIN</string>
+    <string name="security_method_password">Passwort</string>
+    <string name="security_method_biometric">Biometrie</string>
+    <string name="security_choose_apps_to_lock">Zu sperrende Apps wählen</string>
+
+    <string name="dialog_set_pin">PIN festlegen</string>
+    <string name="dialog_confirm_pin">PIN bestätigen</string>
+    <string name="pin_input_label">PIN (4–6 Ziffern)</string>
+    <string name="pin_invalid_length">4–6 Ziffern</string>
+    <string name="dialog_set_password">Passwort festlegen</string>
+    <string name="dialog_confirm_password">Passwort bestätigen</string>
+    <string name="password_input_label">Passwort (mind. 4 Zeichen)</string>
+    <string name="password_invalid_length">Mind. 4</string>
+    <string name="mismatch_error">Stimmt nicht überein</string>
+    <string name="dialog_set_pattern">Sperrmuster festlegen</string>
+    <string name="pattern_instructions">Punkte in der richtigen Reihenfolge berühren</string>
+    <string name="action_reset">Zurücksetzen</string>
+
+    <string name="backup_status_in_progress">Sicherung läuft…</string>
+    <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_status_error">✗ %1$s</string>
+    <string name="nas_address_label">Adresse</string>
+    <string name="nas_path_label">Pfad</string>
+    <string name="section_restore">Wiederherstellen</string>
+    <string name="no_backups">Keine Sicherungen</string>
+    <string name="restore_success">✓ Wiederhergestellt!</string>
+
+    <string name="onboarding_welcome_title">Willkommen bei NoveLauncher</string>
+    <string name="onboarding_welcome_desc">Ein intelligenter Launcher, der deine Gewohnheiten lernt und dein Smartphone mit KI für dich organisiert.\n\nAlles läuft auf dem Gerät — deine Privatsphäre ist geschützt.</string>
+    <string name="onboarding_usage_title">Nutzungsberechtigung</string>
+    <string name="onboarding_usage_desc">Um deine Gewohnheiten zu lernen, benötigt NoveLauncher Zugriff auf Nutzungsdaten.\n\nTippe unten, um sie zu aktivieren.</string>
+    <string name="onboarding_usage_action">Berechtigung aktivieren</string>
+    <string name="onboarding_gestures_title">Gesten</string>
+    <string name="onboarding_gestures_desc">• Nach links/rechts wischen, um Seiten zu wechseln\n• Nach oben wischen für die App-Übersicht\n• App lange drücken, um sie zu verschieben oder auszublenden\n• Uhr antippen für Schnellbearbeitung</string>
+    <string name="onboarding_personalize_title">Personalisieren</string>
+    <string name="onboarding_personalize_desc">In den Einstellungen findest du:\n• Designs und Farben\n• Schriftarten und Symbolformen\n• Hintergründe und Uhr\n• Sicherheit und Sperre\n• Automatische Sicherung\n\nAlles kann jederzeit geändert werden!</string>
+    <string name="onboarding_default_title">Als Standard-Launcher festlegen</string>
+    <string name="onboarding_default_desc">Damit NoveLauncher jedes Mal erscheint, wenn du zum Start zurückkehrst, lege ihn als Standard fest.</string>
+    <string name="onboarding_default_action">Als Standard festlegen</string>
+    <string name="action_skip">Überspringen</string>
+    <string name="onboarding_start">Los geht\'s!</string>
+
+    <string name="news_rss_mode">RSS-Modus</string>
+    <string name="news_app_mode">Nachrichten-App</string>
+    <string name="news_open_in_app">In App öffnen</string>
+
+    <string name="search_type_app">App</string>
+    <string name="search_type_contact">Kontakt</string>
+    <string name="search_type_web">Websuche</string>
+    <string name="search_type_setting">Einstellung</string>
+    <string name="search_google_for">Bei Google suchen: %1$s</string>
+    <string name="search_no_local_matches">Keine Treffer bei Apps, Kontakten oder Einstellungen</string>
+    <string name="section_language">Sprache</string>
+    <string name="language_system_default">Systemstandard</string>
+    <string name="search_all_hint">Alles durchsuchen…</string>
+
+    <string name="action_enter">Öffnen</string>
+    <string name="action_lock">Sperren</string>
+    <string name="personal_zone_add_hint">Hinzufügen über Einstellungen → Ausgeblendete Apps</string>
+
+    <string name="stats_screen_time">Bildschirmzeit</string>
+    <string name="stats_launches">Aufrufe</string>
+    <string name="stats_apps">Apps</string>
+    <string name="stats_top_apps">Meistgenutzte Apps</string>
+    <string name="stats_launches_count">%1$d Aufrufe</string>
+    <string name="stats_range_day">Tag</string>
+    <string name="stats_range_week">Woche</string>
+    <string name="stats_range_month">Monat</string>
+    <string name="duration_hours_minutes">%1$dh %2$dm</string>
+    <string name="duration_minutes">%1$dm</string>
+
+    <string name="backup_error_onedrive">OneDrive wird noch nicht unterstützt. Nutze Google Drive oder eine lokale Sicherung.</string>
+    <string name="backup_error_box">Box wird noch nicht unterstützt. Nutze Google Drive oder eine lokale Sicherung.</string>
+    <string name="backup_error_not_connected">Nicht mit Google Drive verbunden.\nGehe zu Einstellungen → Sicherung → Google-Konto verbinden</string>
+    <string name="backup_error_token_expired">Token abgelaufen. Erneut versuchen oder in den Einstellungen neu verbinden.</string>
+
+    <string name="biometric_prompt_subtitle">Nutze deinen Fingerabdruck oder dein Gesicht</string>
+
+    <string name="weather_clear">Klar</string>
+    <string name="weather_partly_cloudy">Teilweise bewölkt</string>
+    <string name="weather_fog">Nebel</string>
+    <string name="weather_drizzle">Nieselregen</string>
+    <string name="weather_rain">Regen</string>
+    <string name="weather_snow">Schnee</string>
+    <string name="weather_showers">Schauer</string>
+    <string name="weather_storm">Gewitter</string>
+    <string name="weather_unknown">—</string>
+
+    <string name="theme_mode_dark">Dunkel</string>
+    <string name="theme_mode_light">Hell</string>
+    <string name="theme_mode_system">System</string>
+
+    <string name="icon_shape_rounded_square">Abgerundetes Quadrat</string>
+    <string name="icon_shape_circle">Kreis</string>
+    <string name="icon_shape_squircle">Squircle</string>
+    <string name="icon_shape_teardrop">Tropfen</string>
+    <string name="icon_shape_hexagon">Sechseck</string>
+    <string name="icon_shape_square">Quadrat</string>
+    <string name="icon_shape_diamond">Raute</string>
+    <string name="icon_shape_shield">Schild</string>
+    <string name="icon_shape_leaf">Blatt</string>
+    <string name="icon_shape_blob">Blob</string>
+    <string name="icon_shape_clover">Kleeblatt</string>
+    <string name="icon_shape_octagon">Achteck</string>
+
+    <string name="font_system_default">Systemstandard</string>
+    <string name="font_roboto">Roboto</string>
+    <string name="font_noto_sans">Noto Sans</string>
+    <string name="font_rubik">Rubik</string>
+    <string name="font_heebo">Heebo</string>
+    <string name="font_assistant">Assistant</string>
+    <string name="font_varela_round">Varela Round</string>
+    <string name="font_open_sans">Open Sans</string>
+    <string name="font_montserrat">Montserrat</string>
+    <string name="font_poppins">Poppins</string>
+    <string name="font_cairo">Cairo</string>
+    <string name="font_frank_ruhl">Frank Ruhl Libre</string>
+    <string name="font_secular_one">Secular One</string>
+    <string name="font_monospace">Monospace</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_cursive">Handschrift</string>
+
+    <string name="clock_style_digital">Digital</string>
+    <string name="clock_style_analog">Analog</string>
+    <string name="clock_style_minimal">Minimalistisch</string>
+
+    <string name="wallpaper_mode_single">Einzeln</string>
+    <string name="wallpaper_mode_per_page">Pro Seite</string>
+    <string name="wallpaper_mode_hourly">Stündlich</string>
+    <string name="wallpaper_mode_daily">Täglich</string>
+    <string name="wallpaper_mode_live">Live-Hintergrund</string>
+
+    <string name="backup_schedule_manual">Manuell</string>
+    <string name="backup_schedule_daily">Täglich</string>
+    <string name="backup_schedule_weekly">Wöchentlich</string>
+    <string name="backup_schedule_monthly">Monatlich</string>
+
+    <string name="backup_dest_local">Lokale Datei</string>
+    <string name="backup_dest_google_drive">Google Drive</string>
+    <string name="backup_dest_onedrive">OneDrive</string>
+    <string name="backup_dest_box">Box</string>
+    <string name="backup_dest_nas">NAS-Server</string>
+
+    <string name="screen_type_phone">Smartphone</string>
+    <string name="screen_type_tablet">Tablet</string>
+    <string name="screen_type_foldable">Faltbar</string>
+    <string name="screen_type_landscape">Querformat</string>
+
+    <string name="lock_method_none">Keine</string>
+    <string name="lock_method_pin">PIN-Code</string>
+    <string name="lock_method_password">Passwort</string>
+    <string name="lock_method_pattern">Muster</string>
+    <string name="lock_method_fingerprint">Fingerabdruck</string>
+    <string name="lock_method_face">Gesichtsentsperrung</string>
+
+    <string name="app_category_social">Soziales</string>
+    <string name="app_category_work">Arbeit</string>
+    <string name="app_category_entertainment">Unterhaltung</string>
+    <string name="app_category_games">Spiele</string>
+    <string name="app_category_utilities">Dienstprogramme</string>
+    <string name="app_category_health">Gesundheit</string>
+    <string name="app_category_education">Bildung</string>
+    <string name="app_category_shopping">Einkaufen</string>
+    <string name="app_category_photography">Fotografie</string>
+    <string name="app_category_system">System</string>
+    <string name="app_category_uncategorized">Sonstiges</string>
+
+    <string name="theme_preset_indigo">Indigo</string>
+    <string name="theme_preset_crimson">Karmesinrot</string>
+    <string name="theme_preset_emerald">Smaragd</string>
+    <string name="theme_preset_amber">Bernstein</string>
+    <string name="theme_preset_ocean">Ozean</string>
+    <string name="theme_preset_rose">Rosé</string>
+    <string name="theme_preset_slate">Schiefer</string>
+    <string name="theme_preset_lavender">Lavendel</string>
+    <string name="theme_preset_teal">Petrol</string>
+    <string name="theme_preset_sunset">Sonnenuntergang</string>
+    <string name="theme_preset_midnight">Mitternacht</string>
+    <string name="theme_preset_snow">Schnee</string>
+
+    <string name="backup_error_nas_not_configured">NAS nicht konfiguriert. Adresse in den Einstellungen eingeben.</string>
+    <string name="backup_error_nas_http_refused">NAS-Sicherung erfordert HTTPS. Verwende eine https://-Adresse.</string>
+    <string name="backup_error_nas_http_code">NAS-Fehler: %1$d</string>
+    <string name="backup_error_nas_io">NAS: %1$s</string>
+    <string name="backup_nas_username_label">Benutzername (optional)</string>
+    <string name="backup_nas_password_label">Passwort (optional)</string>
+    <string name="backup_encryption_section">Verschlüsselung</string>
+    <string name="backup_password_label">Sicherungspasswort (optional)</string>
+    <string name="backup_password_hint">Falls festgelegt, wird die Sicherungsdatei verschlüsselt. Zum Wiederherstellen wird dasselbe Passwort benötigt.</string>
+    <string name="backup_local_retention_section">Aufbewahrung lokaler Sicherungen</string>
+    <string name="backup_retention_label">Aufzubewahrende Sicherungen</string>
+    <string name="backup_retention_unlimited">Unbegrenzt</string>
+    <string name="backup_retention_count">Letzte %1$d</string>
+    <string name="qs_tile_label">NoveLauncher sperren</string>
+    <string name="qs_tile_no_lock_configured">Keine Launcher-Sperre eingerichtet unter Einstellungen > Sicherheit</string>
+    <string name="qs_tile_locked">Launcher gesperrt</string>
+    <string name="section_notifications">Benachrichtigungen</string>
+    <string name="appearance_show_badges">Benachrichtigungsabzeichen auf Symbolen anzeigen</string>
+    <string name="badges_snoozed_status">Benachrichtigungsabzeichen sind derzeit stummgeschaltet</string>
+    <string name="badges_snooze_1h">1 Stunde stummschalten</string>
+    <string name="badges_snooze_tomorrow">Bis morgen stummschalten</string>
+    <string name="badges_snooze_cancel">Stummschaltung aufheben</string>
+    <string name="notification_channel_backup">Sicherungswarnungen</string>
+    <string name="notification_channel_backup_desc">Warnungen, wenn eine geplante Sicherung fehlschlägt</string>
+    <string name="notification_backup_failed_title">Geplante Sicherung fehlgeschlagen</string>
+    <string name="notification_backup_failed_unknown">Unbekannter Fehler</string>
+    <string name="shortcut_settings_short">Einstellungen</string>
+    <string name="shortcut_settings_long">Einstellungen öffnen</string>
+    <string name="shortcut_backup_short">Sicherung</string>
+    <string name="shortcut_backup_long">Sicherungsbildschirm öffnen</string>
+</resources>

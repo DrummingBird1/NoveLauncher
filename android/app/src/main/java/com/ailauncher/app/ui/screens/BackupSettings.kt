@@ -109,6 +109,19 @@ fun BackupSection(
             )
         }
 
+        item { SectionLabel(stringResource(R.string.backup_local_retention_section)) }
+        item {
+            val keepLabel = if (backup.maxLocalBackupsToKeep <= 0) stringResource(R.string.backup_retention_unlimited)
+                else stringResource(R.string.backup_retention_count, backup.maxLocalBackupsToKeep)
+            SliderSetting(
+                stringResource(R.string.backup_retention_label),
+                backup.maxLocalBackupsToKeep.toFloat(),
+                0f..30f,
+                keepLabel,
+                steps = 29
+            ) { onUpdate(backup.copy(maxLocalBackupsToKeep = it.toInt())) }
+        }
+
         item { SectionLabel(stringResource(R.string.section_restore)) }
         item {
             val files = remember { backupManager.listLocalBackups() }

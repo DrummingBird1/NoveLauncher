@@ -49,8 +49,11 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
         try {
             val jsonData = if (password.isNotBlank()) settingsRepo.exportAllSettingsEncrypted(password) else settingsRepo.exportAllSettings()
             val fileName = "novelauncher_backup_${dateFormat.format(Date())}.json"
+            val backupSettings = settingsRepo.backupFlow.first()
             when (destination) {
-                BackupDestination.LOCAL -> backupToLocal(fileName, jsonData)
+                BackupDestination.LOCAL -> backupToLocal(fileName, jsonData).also {
+                    if (it is BackupResult.Success) pruneLocalBackups(backupSettings.maxLocalBackupsToKeep)
+                }
                 BackupDestination.GOOGLE_DRIVE -> backupToGoogleDrive(fileName, jsonData)
                 // OneDrive: graph.microsoft.com path-upload requires a Microsoft OAuth flow
                 // we haven't wired up yet. Returns a clear error rather than silently
@@ -63,9 +66,26 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
                 BackupDestination.BOX -> BackupResult.Error(
                     context.getString(R.string.backup_error_box)
                 )
-                BackupDestination.NAS -> backupToNas(fileName, jsonData, settingsRepo.backupFlow.first())
+                BackupDestination.NAS -> backupToNas(fileName, jsonData, backupSettings)
             }
         } catch (e: Exception) { BackupResult.Error(e.message ?: "Unknown error") }
+    }
+
+    /** Deletes the oldest local backups beyond [keep] (0 = unlimited, no-op).
+     *  Only LOCAL is pruned — Drive/NAS pruning would need a list+delete API
+     *  round-trip per destination, out of scope for now. */
+    private fun pruneLocalBackups(keep: Int) {
+        if (keep <= 0) return
+        val files = listLocalBackups()
+        if (files.size <= keep) return
+        files.drop(keep).forEach { old ->
+            try {
+                when {
+                    old.uri != null -> context.contentResolver.delete(old.uri, null, null)
+                    old.file != null -> old.file.delete()
+                }
+            } catch (_: Exception) {}
+        }
     }
 
     /** [password] is only used if the file turns out to be a [PortableBackupCrypto]
@@ -211,6 +231,52 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
      * is the same as publishing it. Self-signed certs on a private network
      * still work via the user's trust store (Network Security Config).
      */
+    private fun nasAuthHeader(backup: com.ailauncher.app.domain.models.BackupSettings): String? {
+        if (backup.nasUsername.isEmpty()) return null
+        val creds = "${backup.nasUsername}:${backup.nasPassword}"
+        return "Basic " + android.util.Base64.encodeToString(creds.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
+    }
+
+    private fun putNasFile(fileUrl: String, data: String, backup: com.ailauncher.app.domain.models.BackupSettings): Int {
+        val conn = URL(fileUrl).openConnection() as HttpURLConnection
+        return try {
+            conn.requestMethod = "PUT"
+            conn.setRequestProperty("Content-Type", "application/json")
+            nasAuthHeader(backup)?.let { conn.setRequestProperty("Authorization", it) }
+            conn.doOutput = true; conn.connectTimeout = 10000; conn.readTimeout = 10000
+            OutputStreamWriter(conn.outputStream).use { it.write(data) }
+            conn.responseCode
+        } finally { conn.disconnect() }
+    }
+
+    /**
+     * WebDAV MKCOL to create the target directory when the PUT above 404s/409s
+     * (Nextcloud/Synology and most WebDAV servers refuse to PUT into a directory
+     * that doesn't exist yet). Best-effort: `HttpURLConnection.setRequestMethod`
+     * only allow-lists standard HTTP verbs and throws on "MKCOL", so this falls
+     * back to setting the private `method` field via reflection — if that's
+     * blocked on a given Android version, we silently no-op and the caller's
+     * retried PUT just fails with the same error as before this existed.
+     */
+    private fun tryCreateNasDirectory(dirUrl: String, backup: com.ailauncher.app.domain.models.BackupSettings) {
+        val conn = URL(dirUrl).openConnection() as HttpURLConnection
+        try {
+            try {
+                conn.requestMethod = "MKCOL"
+            } catch (_: java.net.ProtocolException) {
+                val methodField = HttpURLConnection::class.java.getDeclaredField("method")
+                methodField.isAccessible = true
+                methodField.set(conn, "MKCOL")
+            }
+            nasAuthHeader(backup)?.let { conn.setRequestProperty("Authorization", it) }
+            conn.connectTimeout = 10000; conn.readTimeout = 10000
+            conn.responseCode // triggers the request; response otherwise unused
+        } catch (_: Exception) {
+            // Nothing more to do — the retried PUT below will surface whatever
+            // the real problem is if this genuinely didn't fix it.
+        } finally { conn.disconnect() }
+    }
+
     private fun backupToNas(fileName: String, data: String, backup: com.ailauncher.app.domain.models.BackupSettings): BackupResult {
         val addr = backup.nasAddress.trim()
         if (addr.isEmpty()) return BackupResult.Error(context.getString(R.string.backup_error_nas_not_configured))
@@ -218,27 +284,19 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
             return BackupResult.Error(context.getString(R.string.backup_error_nas_http_refused))
         }
         val path = backup.nasPath.ifBlank { "/backup/novelauncher" }
-        val url = URL("$addr$path/$fileName")
-        val conn = url.openConnection() as HttpURLConnection
+        val dirUrl = "$addr$path"
+        val fileUrl = "$dirUrl/$fileName"
         return try {
-            conn.requestMethod = "PUT"
-            conn.setRequestProperty("Content-Type", "application/json")
-            // Basic Auth header — only attached if the user provided credentials.
-            if (backup.nasUsername.isNotEmpty()) {
-                val creds = "${backup.nasUsername}:${backup.nasPassword}"
-                val encoded = android.util.Base64.encodeToString(
-                    creds.toByteArray(Charsets.UTF_8),
-                    android.util.Base64.NO_WRAP
-                )
-                conn.setRequestProperty("Authorization", "Basic $encoded")
+            var code = putNasFile(fileUrl, data, backup)
+            if (code == 404 || code == 409) {
+                tryCreateNasDirectory(dirUrl, backup)
+                code = putNasFile(fileUrl, data, backup)
             }
-            conn.doOutput = true; conn.connectTimeout = 10000; conn.readTimeout = 10000
-            OutputStreamWriter(conn.outputStream).use { it.write(data) }
-            if (conn.responseCode in 200..299) BackupResult.Success("NAS: $addr")
-            else BackupResult.Error(context.getString(R.string.backup_error_nas_http_code, conn.responseCode))
+            if (code in 200..299) BackupResult.Success("NAS: $addr")
+            else BackupResult.Error(context.getString(R.string.backup_error_nas_http_code, code))
         } catch (e: Exception) {
             BackupResult.Error(context.getString(R.string.backup_error_nas_io, e.message ?: ""))
-        } finally { conn.disconnect() }
+        }
     }
 
     fun listLocalBackups(): List<BackupFile> {

@@ -4,11 +4,11 @@
 
     <string name="whats_new_title">מה חדש</string>
     <string-array name="whats_new_items">
-        <item>עיצוב דינמי לפי הטפט (Material You) באנדרואיד 12 ומעלה</item>
-        <item>אפשרות להצפין קובצי גיבוי בסיסמה</item>
-        <item>קיצורי דרך בלחיצה ארוכה על סמל האפליקציה</item>
-        <item>הפחתת אנימציות בהגדרות מראה, לנגישות טובה יותר</item>
-        <item>שיפורי נגישות, ביצועים ותיקוני יציבות</item>
+        <item>בחירת שפת האפליקציה — כולל ספרדית וגרמנית חדשות (7 שפות בסך הכול)</item>
+        <item>הוספת מקורות חדשות RSS מותאמים אישית</item>
+        <item>אריח בהגדרות מהירות לנעילת הלאנצ\'ר באופן מיידי</item>
+        <item>השתקת תגי התראות לשעה או עד מחר</item>
+        <item>גיבוי חכם יותר: ניקוי גיבויים ישנים אוטומטית, תמיכה טובה יותר בשרתי NAS, והתראה כשגיבוי מתוזמן נכשל</item>
     </string-array>
 
     <!-- Pages -->
@@ -171,6 +171,12 @@
     <!-- News sources section -->
     <string name="section_choose_news_sources">בחר מקורות חדשות</string>
     <string name="news_max_articles">מקסימום כתבות</string>
+    <string name="section_custom_news_sources">מקורות מותאמים אישית</string>
+    <string name="action_add_custom_news_source">הוספת מקור RSS</string>
+    <string name="dialog_add_news_source_title">הוספת מקור חדשות</string>
+    <string name="dialog_news_source_name_label">שם</string>
+    <string name="dialog_news_source_url_label">כתובת RSS (https://)</string>
+    <string name="news_showing_cached">מציג תוצאות שמורות — ייתכן שאינן עדכניות</string>
 
     <!-- Hidden apps section -->
     <string name="hidden_apps_count_label">אפליקציות מוסתרות (%1$d)</string>
@@ -273,6 +279,9 @@
     <string name="search_type_web">חיפוש ברשת</string>
     <string name="search_type_setting">הגדרה</string>
     <string name="search_google_for">חפש ב-Google: %1$s</string>
+    <string name="search_no_local_matches">אין התאמות באפליקציות, אנשי קשר או הגדרות</string>
+    <string name="section_language">שפה</string>
+    <string name="language_system_default">ברירת מחדל של המערכת</string>
     <string name="search_all_hint">חיפוש הכל…</string>
 
     <!-- ═════════ Personal zone ═════════ -->
@@ -426,6 +435,23 @@
     <string name="backup_encryption_section">הצפנה</string>
     <string name="backup_password_label">סיסמת גיבוי (אופציונלי)</string>
     <string name="backup_password_hint">אם תוזן סיסמה, קובץ הגיבוי יוצפן. יש להזין את אותה סיסמה בעת שחזור.</string>
+    <string name="backup_local_retention_section">שמירת גיבויים מקומיים</string>
+    <string name="backup_retention_label">כמות גיבויים לשמירה</string>
+    <string name="backup_retention_unlimited">ללא הגבלה</string>
+    <string name="backup_retention_count">%1$d אחרונים</string>
+    <string name="qs_tile_label">נעילת NoveLauncher</string>
+    <string name="qs_tile_no_lock_configured">לא הוגדרה נעילת לאנצ\'ר בהגדרות > אבטחה</string>
+    <string name="qs_tile_locked">הלאנצ\'ר ננעל</string>
+    <string name="section_notifications">התראות</string>
+    <string name="appearance_show_badges">הצגת תגי התראות על סמלים</string>
+    <string name="badges_snoozed_status">תגי ההתראות מושתקים כרגע</string>
+    <string name="badges_snooze_1h">השתקה לשעה</string>
+    <string name="badges_snooze_tomorrow">השתקה עד מחר</string>
+    <string name="badges_snooze_cancel">ביטול השתקה</string>
+    <string name="notification_channel_backup">התראות גיבוי</string>
+    <string name="notification_channel_backup_desc">התראות כשגיבוי מתוזמן נכשל</string>
+    <string name="notification_backup_failed_title">גיבוי מתוזמן נכשל</string>
+    <string name="notification_backup_failed_unknown">שגיאה לא ידועה</string>
     <string name="shortcut_settings_short">הגדרות</string>
     <string name="shortcut_settings_long">פתח הגדרות</string>
     <string name="shortcut_backup_short">גיבוי</string>

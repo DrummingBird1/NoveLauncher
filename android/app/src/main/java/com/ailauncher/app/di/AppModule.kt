@@ -85,8 +85,9 @@ object AppModule {
         usageRepo: UsageStatsRepository,
         categoryProvider: AppCategoryProvider,
         notificationDao: NotificationDao,
-        predictionEngine: AppPredictionEngine
+        predictionEngine: AppPredictionEngine,
+        settingsRepo: SettingsRepository
     ): GetRankedAppsUseCase = GetRankedAppsUseCase(
-        appsRepo, usageRepo, categoryProvider, notificationDao, predictionEngine
+        appsRepo, usageRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo
     )
 }

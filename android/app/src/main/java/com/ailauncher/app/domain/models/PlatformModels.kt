@@ -33,7 +33,8 @@ import kotlinx.serialization.Serializable
     val nasPath: String = "",
     val nasUsername: String = "",
     val nasPassword: String = "",
-    val lastBackupTimestamp: Long = 0L
+    val lastBackupTimestamp: Long = 0L,
+    val maxLocalBackupsToKeep: Int = 10 // 0 = unlimited, no pruning
 )
 
 @Serializable enum class ScreenType(@StringRes val displayNameRes: Int) {
@@ -97,5 +98,6 @@ import kotlinx.serialization.Serializable
     val enabledSourceIds: Set<String> = setOf("ynet","walla","google_il"),
     val maxArticles: Int = 50,
     val useEmbeddedApp: Boolean = false,
-    val embeddedAppPackage: String = "com.google.android.googlequicksearchbox"
+    val embeddedAppPackage: String = "com.google.android.googlequicksearchbox",
+    val customSources: List<NewsSource> = emptyList() // user-added RSS feeds, beyond NewsSource.ALL_SOURCES
 )

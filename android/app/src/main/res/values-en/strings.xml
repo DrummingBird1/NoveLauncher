@@ -4,11 +4,11 @@
 
     <string name="whats_new_title">What\'s new</string>
     <string-array name="whats_new_items">
-        <item>Dynamic colors from your wallpaper (Material You) on Android 12+</item>
-        <item>Optional password-protected backup files</item>
-        <item>App shortcuts on long-press of the launcher icon</item>
-        <item>Reduce Motion toggle in Appearance settings</item>
-        <item>Accessibility, performance, and stability improvements</item>
+        <item>Choose the app\'s language — now 7 languages, including new Spanish and German</item>
+        <item>Add your own custom RSS news sources</item>
+        <item>Quick Settings tile to lock the launcher instantly</item>
+        <item>Snooze notification badges for an hour or until tomorrow</item>
+        <item>Smarter backups: automatic pruning of old backups, better NAS/WebDAV support, and an alert when a scheduled backup fails</item>
     </string-array>
 
     <string name="page_home">Home</string>
@@ -150,6 +150,12 @@
 
     <string name="section_choose_news_sources">Choose news sources</string>
     <string name="news_max_articles">Max articles</string>
+    <string name="section_custom_news_sources">Custom sources</string>
+    <string name="action_add_custom_news_source">Add RSS source</string>
+    <string name="dialog_add_news_source_title">Add news source</string>
+    <string name="dialog_news_source_name_label">Name</string>
+    <string name="dialog_news_source_url_label">RSS URL (https://)</string>
+    <string name="news_showing_cached">Showing saved results — may be out of date</string>
 
     <string name="hidden_apps_count_label">Hidden apps (%1$d)</string>
     <string name="hidden_apps_description">Hidden apps won\'t appear on home or in the list</string>
@@ -243,6 +249,9 @@
     <string name="search_type_web">Web search</string>
     <string name="search_type_setting">Setting</string>
     <string name="search_google_for">Search Google for: %1$s</string>
+    <string name="search_no_local_matches">No matches in apps, contacts, or settings</string>
+    <string name="section_language">Language</string>
+    <string name="language_system_default">System default</string>
     <string name="search_all_hint">Search everything…</string>
 
     <string name="action_enter">Enter</string>
@@ -378,6 +387,23 @@
     <string name="backup_encryption_section">Encryption</string>
     <string name="backup_password_label">Backup password (optional)</string>
     <string name="backup_password_hint">If set, the backup file is encrypted. You\'ll need the same password to restore it.</string>
+    <string name="backup_local_retention_section">Local backup retention</string>
+    <string name="backup_retention_label">Backups to keep</string>
+    <string name="backup_retention_unlimited">Unlimited</string>
+    <string name="backup_retention_count">Last %1$d</string>
+    <string name="qs_tile_label">Lock NoveLauncher</string>
+    <string name="qs_tile_no_lock_configured">No launcher lock is set up in Settings > Security</string>
+    <string name="qs_tile_locked">Launcher locked</string>
+    <string name="section_notifications">Notifications</string>
+    <string name="appearance_show_badges">Show notification badges on icons</string>
+    <string name="badges_snoozed_status">Notification badges are currently snoozed</string>
+    <string name="badges_snooze_1h">Snooze 1 hour</string>
+    <string name="badges_snooze_tomorrow">Snooze until tomorrow</string>
+    <string name="badges_snooze_cancel">Cancel snooze</string>
+    <string name="notification_channel_backup">Backup alerts</string>
+    <string name="notification_channel_backup_desc">Alerts when a scheduled backup fails</string>
+    <string name="notification_backup_failed_title">Scheduled backup failed</string>
+    <string name="notification_backup_failed_unknown">Unknown error</string>
     <string name="shortcut_settings_short">Settings</string>
     <string name="shortcut_settings_long">Open Settings</string>
     <string name="shortcut_backup_short">Backup</string>

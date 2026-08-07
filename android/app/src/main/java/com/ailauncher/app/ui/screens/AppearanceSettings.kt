@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Crop
 import androidx.compose.material.icons.rounded.FontDownload
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,11 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.ClockSettings
@@ -56,13 +59,76 @@ fun AppearanceSection(
     smartControl: SmartControlSettings = SmartControlSettings(),
     onUpdateSmartControl: (SmartControlSettings) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { LivePreview(appearance) }
+
+        item { SectionLabel(stringResource(R.string.section_language)) }
+        item {
+            val languages = listOf(
+                "" to stringResource(R.string.language_system_default),
+                "he" to "עברית", "en" to "English", "ar" to "العربية",
+                "fr" to "Français", "ru" to "Русский", "es" to "Español", "de" to "Deutsch"
+            )
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(languages) { (code, label) ->
+                    FilterChip(
+                        selected = appearance.appLanguage == code,
+                        onClick = {
+                            onUpdate(appearance.copy(appLanguage = code))
+                            // Neither Activity in this app is an AppCompatActivity, so the
+                            // usual "AppCompat recreates it for you" locale-change behavior
+                            // doesn't apply — recreate explicitly for an immediate effect
+                            // instead of waiting for the next natural activity recreation.
+                            val locales = if (code.isBlank()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(code)
+                            AppCompatDelegate.setApplicationLocales(locales)
+                            (context as? android.app.Activity)?.recreate()
+                        },
+                        label = { Text(label) }
+                    )
+                }
+            }
+        }
 
         item { SectionLabel(stringResource(R.string.section_accessibility)) }
         item {
             SwitchSetting(stringResource(R.string.appearance_reduce_motion), smartControl.reduceMotion) {
                 onUpdateSmartControl(smartControl.copy(reduceMotion = it))
+            }
+        }
+
+        item { SectionLabel(stringResource(R.string.section_notifications)) }
+        item {
+            SwitchSetting(stringResource(R.string.appearance_show_badges), appearance.showNotificationBadges) {
+                onUpdate(appearance.copy(showNotificationBadges = it))
+            }
+        }
+        item {
+            val isSnoozed = appearance.badgeSnoozedUntil > System.currentTimeMillis()
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (isSnoozed) {
+                    Text(stringResource(R.string.badges_snoozed_status), fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = {
+                        onUpdate(appearance.copy(badgeSnoozedUntil = System.currentTimeMillis() + 3_600_000L))
+                    }) { Text(stringResource(R.string.badges_snooze_1h)) }
+                    OutlinedButton(onClick = {
+                        val cal = java.util.Calendar.getInstance().apply {
+                            add(java.util.Calendar.DAY_OF_YEAR, 1)
+                            set(java.util.Calendar.HOUR_OF_DAY, 8)
+                            set(java.util.Calendar.MINUTE, 0)
+                            set(java.util.Calendar.SECOND, 0)
+                        }
+                        onUpdate(appearance.copy(badgeSnoozedUntil = cal.timeInMillis))
+                    }) { Text(stringResource(R.string.badges_snooze_tomorrow)) }
+                    if (isSnoozed) {
+                        TextButton(onClick = { onUpdate(appearance.copy(badgeSnoozedUntil = 0L)) }) {
+                            Text(stringResource(R.string.badges_snooze_cancel))
+                        }
+                    }
+                }
             }
         }
 

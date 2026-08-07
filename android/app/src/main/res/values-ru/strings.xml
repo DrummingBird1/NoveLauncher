@@ -4,11 +4,11 @@
 
     <string name="whats_new_title">Что нового</string>
     <string-array name="whats_new_items">
-        <item>Динамические цвета по обоям (Material You) на Android 12+</item>
-        <item>Резервные копии можно защитить паролем</item>
-        <item>Ярлыки приложения при долгом нажатии на значок лаунчера</item>
-        <item>Переключатель «Уменьшить анимацию» в настройках оформления</item>
-        <item>Улучшения специальных возможностей, производительности и стабильности</item>
+        <item>Выбор языка приложения — теперь 7 языков, включая новые испанский и немецкий</item>
+        <item>Добавление собственных RSS-источников новостей</item>
+        <item>Плитка в быстрых настройках для мгновенной блокировки лаунчера</item>
+        <item>Отключение значков уведомлений на час или до завтра</item>
+        <item>Более умное резервное копирование: автоочистка старых копий, улучшенная поддержка NAS/WebDAV и оповещение при сбое запланированного копирования</item>
     </string-array>
 
     <string name="page_home">Главная</string>
@@ -150,6 +150,12 @@
 
     <string name="section_choose_news_sources">Выберите источники новостей</string>
     <string name="news_max_articles">Макс. статей</string>
+    <string name="section_custom_news_sources">Свои источники</string>
+    <string name="action_add_custom_news_source">Добавить RSS-источник</string>
+    <string name="dialog_add_news_source_title">Добавить источник новостей</string>
+    <string name="dialog_news_source_name_label">Название</string>
+    <string name="dialog_news_source_url_label">Ссылка RSS (https://)</string>
+    <string name="news_showing_cached">Показаны сохранённые результаты — возможно, устарели</string>
 
     <string name="hidden_apps_count_label">Скрытые приложения (%1$d)</string>
     <string name="hidden_apps_description">Скрытые приложения не появятся на главной или в списке</string>
@@ -243,6 +249,9 @@
     <string name="search_type_web">Поиск в сети</string>
     <string name="search_type_setting">Настройка</string>
     <string name="search_google_for">Искать в Google: %1$s</string>
+    <string name="search_no_local_matches">Нет совпадений в приложениях, контактах или настройках</string>
+    <string name="section_language">Язык</string>
+    <string name="language_system_default">Как в системе</string>
     <string name="search_all_hint">Искать везде…</string>
 
     <string name="action_enter">Войти</string>
@@ -378,6 +387,23 @@
     <string name="backup_encryption_section">Шифрование</string>
     <string name="backup_password_label">Пароль резервной копии (необязательно)</string>
     <string name="backup_password_hint">Если указан, файл резервной копии будет зашифрован. Для восстановления потребуется тот же пароль.</string>
+    <string name="backup_local_retention_section">Хранение локальных резервных копий</string>
+    <string name="backup_retention_label">Сколько копий хранить</string>
+    <string name="backup_retention_unlimited">Без ограничений</string>
+    <string name="backup_retention_count">Последние %1$d</string>
+    <string name="qs_tile_label">Заблокировать NoveLauncher</string>
+    <string name="qs_tile_no_lock_configured">Блокировка лаунчера не настроена в Настройки > Безопасность</string>
+    <string name="qs_tile_locked">Лаунчер заблокирован</string>
+    <string name="section_notifications">Уведомления</string>
+    <string name="appearance_show_badges">Показывать значки уведомлений на иконках</string>
+    <string name="badges_snoozed_status">Значки уведомлений сейчас отключены</string>
+    <string name="badges_snooze_1h">Отключить на 1 час</string>
+    <string name="badges_snooze_tomorrow">Отключить до завтра</string>
+    <string name="badges_snooze_cancel">Включить обратно</string>
+    <string name="notification_channel_backup">Оповещения о резервном копировании</string>
+    <string name="notification_channel_backup_desc">Оповещения о сбое запланированного резервного копирования</string>
+    <string name="notification_backup_failed_title">Не удалось выполнить резервное копирование</string>
+    <string name="notification_backup_failed_unknown">Неизвестная ошибка</string>
     <string name="shortcut_settings_short">Настройки</string>
     <string name="shortcut_settings_long">Открыть настройки</string>
     <string name="shortcut_backup_short">Резервная копия</string>

@@ -67,12 +67,11 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Static shortcuts (res/xml/shortcuts.xml) can deep-link straight to a page,
-        // e.g. long-press launcher icon → Backup.
-        val initialPage = when (intent?.getStringExtra(EXTRA_SHORTCUT_PAGE)) {
-            "BACKUP" -> SettingsPage.BACKUP
-            else -> SettingsPage.MAIN
-        }
+        // Static shortcuts (res/xml/shortcuts.xml) and Global Search's settings
+        // results both deep-link straight to a page by SettingsPage enum name.
+        val initialPage = try {
+            SettingsPage.valueOf(intent?.getStringExtra(EXTRA_SHORTCUT_PAGE) ?: "MAIN")
+        } catch (_: IllegalArgumentException) { SettingsPage.MAIN }
         setContent {
             val appearance by settingsRepo.appearanceFlow.collectAsState(initial = AppearanceSettings())
             AILauncherTheme(appearance = appearance) {

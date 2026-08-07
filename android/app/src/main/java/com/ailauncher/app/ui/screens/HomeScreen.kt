@@ -421,11 +421,31 @@ fun HomeAppItem(
         val bitmap = icon?.let { drw ->
             com.ailauncher.app.ui.LocalIconCache.current.getOrLoad(rankedApp.app.packageName) { drw }
         }
-        if (bitmap != null) {
-            Image(bitmap = bitmap, contentDescription = rankedApp.app.label, modifier = Modifier.size(iconSizeDp.dp).clip(shape))
-        } else {
-            Box(Modifier.size(iconSizeDp.dp).clip(shape).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
-                Text(rankedApp.app.label.take(1), fontSize = 22.sp, color = MaterialTheme.colorScheme.primary)
+        Box(Modifier.size(iconSizeDp.dp)) {
+            if (bitmap != null) {
+                Image(bitmap = bitmap, contentDescription = rankedApp.app.label, modifier = Modifier.size(iconSizeDp.dp).clip(shape))
+            } else {
+                Box(Modifier.size(iconSizeDp.dp).clip(shape).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
+                    Text(rankedApp.app.label.take(1), fontSize = 22.sp, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            // v9.1: notification badge — GetRankedAppsUseCase already zeroes this
+            // out when badges are off or snoozed, so a plain count>0 check is enough.
+            if (rankedApp.notificationCount > 0) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .size(16.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.error),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        if (rankedApp.notificationCount > 9) "9+" else rankedApp.notificationCount.toString(),
+                        fontSize = 9.sp,
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
             }
         }
         Spacer(Modifier.height(4.dp))

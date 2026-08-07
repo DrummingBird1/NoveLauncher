@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AppShortcut
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Favorite
@@ -52,6 +53,8 @@ import com.ailauncher.app.domain.models.WallpaperSettings
 
 @Composable
 fun NewsSourcesSection(settings: NewsSettings, onUpdate: (NewsSettings) -> Unit) {
+    var showAddDialog by remember { mutableStateOf(false) }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item { SectionLabel(stringResource(R.string.section_choose_news_sources)) }
         items(NewsSource.ALL_SOURCES) { source ->
@@ -75,11 +78,79 @@ fun NewsSourcesSection(settings: NewsSettings, onUpdate: (NewsSettings) -> Unit)
                 }
             }
         }
+
+        if (settings.customSources.isNotEmpty()) {
+            item { SectionLabel(stringResource(R.string.section_custom_news_sources)) }
+            items(settings.customSources) { source ->
+                val enabled = source.id in settings.enabledSourceIds
+                Card(
+                    Modifier.fillMaxWidth().clickable {
+                        val newIds = settings.enabledSourceIds.toMutableSet()
+                        if (enabled) newIds.remove(source.id) else newIds.add(source.id)
+                        onUpdate(settings.copy(enabledSourceIds = newIds))
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = enabled, onCheckedChange = null)
+                        Spacer(Modifier.width(8.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(source.name, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium)
+                            Text(source.url, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                        }
+                        IconButton(onClick = {
+                            onUpdate(settings.copy(
+                                customSources = settings.customSources.filter { it.id != source.id },
+                                enabledSourceIds = settings.enabledSourceIds - source.id
+                            ))
+                        }) { Icon(Icons.Rounded.Close, stringResource(R.string.action_remove), modifier = Modifier.size(18.dp)) }
+                    }
+                }
+            }
+        }
+
+        item {
+            OutlinedButton(onClick = { showAddDialog = true }, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Rounded.Add, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.action_add_custom_news_source))
+            }
+        }
+
         item {
             SliderSetting(stringResource(R.string.news_max_articles), settings.maxArticles.toFloat(), 10f..100f, "${settings.maxArticles}", steps = 8) {
                 onUpdate(settings.copy(maxArticles = it.toInt()))
             }
         }
+    }
+
+    if (showAddDialog) {
+        var name by remember { mutableStateOf("") }
+        var url by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showAddDialog = false },
+            title = { Text(stringResource(R.string.dialog_add_news_source_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.dialog_news_source_name_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text(stringResource(R.string.dialog_news_source_url_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val trimmedUrl = url.trim()
+                    if (name.isNotBlank() && (trimmedUrl.startsWith("http://") || trimmedUrl.startsWith("https://"))) {
+                        val id = "custom_${System.currentTimeMillis()}"
+                        val newSource = NewsSource(id, name.trim(), trimmedUrl, language = "he")
+                        onUpdate(settings.copy(
+                            customSources = settings.customSources + newSource,
+                            enabledSourceIds = settings.enabledSourceIds + id
+                        ))
+                        showAddDialog = false
+                    }
+                }) { Text(stringResource(R.string.action_create)) }
+            },
+            dismissButton = { TextButton(onClick = { showAddDialog = false }) { Text(stringResource(R.string.action_cancel)) } }
+        )
     }
 }
 

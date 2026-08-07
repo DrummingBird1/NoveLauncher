@@ -1,8 +1,12 @@
 package com.ailauncher.app.data.backup
 
 import android.content.Context
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
+import com.ailauncher.app.AILauncherApp
+import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.BackupSchedule
 import dagger.assisted.Assisted
@@ -33,13 +37,39 @@ class ScheduledBackupWorker @AssistedInject constructor(
                     settingsRepo.saveBackup(settings.copy(lastBackupTimestamp = System.currentTimeMillis()))
                     Result.success()
                 }
-                is BackupManager.BackupResult.Error -> Result.retry()
+                is BackupManager.BackupResult.Error -> {
+                    notifyFailure(result.message)
+                    Result.retry()
+                }
             }
-        } catch (_: Exception) { Result.retry() }
+        } catch (e: Exception) {
+            notifyFailure(e.message ?: applicationContext.getString(R.string.notification_backup_failed_unknown))
+            Result.retry()
+        }
+    }
+
+    /** Previously silent — a scheduled backup could fail indefinitely with no
+     *  user-visible signal beyond a stale lastBackupTimestamp nobody checks. */
+    private fun notifyFailure(message: String) {
+        try {
+            val notification = NotificationCompat.Builder(applicationContext, AILauncherApp.BACKUP_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_monochrome)
+                .setContentTitle(applicationContext.getString(R.string.notification_backup_failed_title))
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
+            NotificationManagerCompat.from(applicationContext).notify(BACKUP_FAILURE_NOTIFICATION_ID, notification)
+        } catch (_: SecurityException) {
+            // POST_NOTIFICATIONS not granted (API 33+, no runtime request flow yet) —
+            // same silent outcome as before this feature existed, not a regression.
+        }
     }
 
     companion object {
         const val WORK_NAME = "scheduled_backup"
+        private const val BACKUP_FAILURE_NOTIFICATION_ID = 2001
 
         fun schedule(context: Context, schedule: BackupSchedule) {
             val wm = WorkManager.getInstance(context)

@@ -264,6 +264,11 @@ class AppLockManager(
     fun grantLauncherUnlock() { launcherUnlockedUntil.set(System.currentTimeMillis() + UNLOCK_DURATION_MS) }
     fun isLauncherUnlocked(): Boolean = System.currentTimeMillis() < launcherUnlockedUntil.get()
 
+    /** Quick Settings Tile "lock now" action — expires the unlock grace period
+     *  immediately without touching the configured launcherLockMethod, so the
+     *  next resume re-prompts even if it's well within the normal TTL. */
+    fun revokeLauncherUnlock() { launcherUnlockedUntil.set(0L) }
+
     /**
      * FIX: Called after successful BiometricPrompt authentication.
      * Grants unlock just like PIN/password verification does.

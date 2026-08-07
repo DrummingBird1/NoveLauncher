@@ -4,11 +4,11 @@
 
     <string name="whats_new_title">ما الجديد</string>
     <string-array name="whats_new_items">
-        <item>ألوان ديناميكية من الخلفية (Material You) في أندرويد 12 وما فوق</item>
-        <item>إمكانية حماية ملفات النسخ الاحتياطي بكلمة مرور</item>
-        <item>اختصارات تطبيق عند الضغط المطول على أيقونة المشغّل</item>
-        <item>خيار تقليل الحركة في إعدادات المظهر</item>
-        <item>تحسينات في إمكانية الوصول والأداء والاستقرار</item>
+        <item>اختيار لغة التطبيق — أصبح الآن 7 لغات، بما في ذلك الإسبانية والألمانية الجديدتان</item>
+        <item>إضافة مصادر أخبار RSS مخصصة خاصة بك</item>
+        <item>بلاطة في الإعدادات السريعة لقفل المشغّل فورًا</item>
+        <item>كتم شارات الإشعارات لمدة ساعة أو حتى الغد</item>
+        <item>نسخ احتياطي أذكى: حذف تلقائي للنسخ القديمة، دعم أفضل لخوادم NAS/WebDAV، وتنبيه عند فشل نسخة احتياطية مجدولة</item>
     </string-array>
 
     <string name="page_home">الرئيسية</string>
@@ -150,6 +150,12 @@
 
     <string name="section_choose_news_sources">اختر مصادر الأخبار</string>
     <string name="news_max_articles">الحد الأقصى للمقالات</string>
+    <string name="section_custom_news_sources">مصادر مخصصة</string>
+    <string name="action_add_custom_news_source">إضافة مصدر RSS</string>
+    <string name="dialog_add_news_source_title">إضافة مصدر أخبار</string>
+    <string name="dialog_news_source_name_label">الاسم</string>
+    <string name="dialog_news_source_url_label">رابط RSS (https://)</string>
+    <string name="news_showing_cached">يتم عرض نتائج محفوظة — قد تكون قديمة</string>
 
     <string name="hidden_apps_count_label">التطبيقات المخفية (%1$d)</string>
     <string name="hidden_apps_description">لن تظهر التطبيقات المخفية في الشاشة الرئيسية أو القائمة</string>
@@ -243,6 +249,9 @@
     <string name="search_type_web">بحث في الويب</string>
     <string name="search_type_setting">إعداد</string>
     <string name="search_google_for">ابحث في Google عن: %1$s</string>
+    <string name="search_no_local_matches">لا توجد نتائج في التطبيقات أو جهات الاتصال أو الإعدادات</string>
+    <string name="section_language">اللغة</string>
+    <string name="language_system_default">افتراضي النظام</string>
     <string name="search_all_hint">ابحث عن كل شيء…</string>
 
     <string name="action_enter">دخول</string>
@@ -378,6 +387,23 @@
     <string name="backup_encryption_section">التشفير</string>
     <string name="backup_password_label">كلمة مرور النسخ الاحتياطي (اختياري)</string>
     <string name="backup_password_hint">إذا تم إدخالها، سيتم تشفير ملف النسخ الاحتياطي. ستحتاج إلى نفس كلمة المرور لاستعادته.</string>
+    <string name="backup_local_retention_section">الاحتفاظ بالنسخ الاحتياطية المحلية</string>
+    <string name="backup_retention_label">عدد النسخ الاحتياطية للاحتفاظ بها</string>
+    <string name="backup_retention_unlimited">غير محدود</string>
+    <string name="backup_retention_count">آخر %1$d</string>
+    <string name="qs_tile_label">قفل NoveLauncher</string>
+    <string name="qs_tile_no_lock_configured">لم يتم إعداد قفل المشغّل في الإعدادات > الأمان</string>
+    <string name="qs_tile_locked">تم قفل المشغّل</string>
+    <string name="section_notifications">الإشعارات</string>
+    <string name="appearance_show_badges">إظهار شارات الإشعارات على الأيقونات</string>
+    <string name="badges_snoozed_status">شارات الإشعارات مكتومة حاليًا</string>
+    <string name="badges_snooze_1h">كتم لمدة ساعة</string>
+    <string name="badges_snooze_tomorrow">كتم حتى الغد</string>
+    <string name="badges_snooze_cancel">إلغاء الكتم</string>
+    <string name="notification_channel_backup">تنبيهات النسخ الاحتياطي</string>
+    <string name="notification_channel_backup_desc">تنبيهات عند فشل نسخة احتياطية مجدولة</string>
+    <string name="notification_backup_failed_title">فشلت النسخة الاحتياطية المجدولة</string>
+    <string name="notification_backup_failed_unknown">خطأ غير معروف</string>
     <string name="shortcut_settings_short">الإعدادات</string>
     <string name="shortcut_settings_long">فتح الإعدادات</string>
     <string name="shortcut_backup_short">نسخ احتياطي</string>

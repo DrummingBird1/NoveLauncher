@@ -50,6 +50,10 @@ private object NewsCache {
         return if (key == cachedKey && now - cachedAt < TTL_MS) cached else null
     }
 
+    /** Ignores TTL — an error-path fallback, since a stale list beats a bare
+     *  error screen when the network drops but we fetched successfully before. */
+    fun getStale(key: String): List<NewsItem>? = if (key == cachedKey && cached.isNotEmpty()) cached else null
+
     fun put(key: String, items: List<NewsItem>) {
         cachedKey = key
         cachedAt = System.currentTimeMillis()
@@ -142,20 +146,27 @@ private fun RssFeedView(newsSettings: NewsSettings, onSwitchToApp: () -> Unit) {
     var news by remember { mutableStateOf<List<NewsItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var isStale by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     fun load(forceRefresh: Boolean = false) {
         scope.launch {
             isLoading = true; error = null
+            val sources = (NewsSource.ALL_SOURCES + newsSettings.customSources).filter { it.id in newsSettings.enabledSourceIds }
+            val cacheKey = sources.joinToString(",") { it.id } + "|${newsSettings.maxArticles}"
             try {
-                val sources = NewsSource.ALL_SOURCES.filter { it.id in newsSettings.enabledSourceIds }
-                val cacheKey = sources.joinToString(",") { it.id } + "|${newsSettings.maxArticles}"
                 if (forceRefresh) NewsCache.invalidate()
                 val cached = NewsCache.get(cacheKey)
                 news = cached ?: fetchRssFeeds(sources, newsSettings.maxArticles).also {
                     NewsCache.put(cacheKey, it)
                 }
-            } catch (e: Exception) { error = e.message }
+                isStale = false
+            } catch (e: Exception) {
+                // A live fetch failed (offline, DNS, timeout...) — a stale cached
+                // list is still more useful than a bare error screen.
+                val stale = NewsCache.getStale(cacheKey)
+                if (stale != null) { news = stale; isStale = true } else { error = e.message }
+            }
             isLoading = false
         }
     }
@@ -181,6 +192,15 @@ private fun RssFeedView(newsSettings: NewsSettings, onSwitchToApp: () -> Unit) {
             }
         }
         Spacer(Modifier.height(12.dp))
+
+        if (isStale) {
+            Text(
+                stringResource(R.string.news_showing_cached),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
         when {
             isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) }

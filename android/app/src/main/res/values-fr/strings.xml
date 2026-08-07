@@ -4,11 +4,11 @@
 
     <string name="whats_new_title">Nouveautés</string>
     <string-array name="whats_new_items">
-        <item>Couleurs dynamiques basées sur le fond d\'écran (Material You) sur Android 12+</item>
-        <item>Fichiers de sauvegarde protégés par mot de passe (facultatif)</item>
-        <item>Raccourcis d\'application par appui long sur l\'icône du launcher</item>
-        <item>Option Réduire les animations dans les réglages d\'apparence</item>
-        <item>Améliorations d\'accessibilité, de performance et de stabilité</item>
+        <item>Choix de la langue de l\'application — désormais 7 langues, avec l\'espagnol et l\'allemand en plus</item>
+        <item>Ajoutez vos propres sources RSS personnalisées</item>
+        <item>Tuile dans les réglages rapides pour verrouiller le launcher instantanément</item>
+        <item>Suspendre les badges de notification pendant une heure ou jusqu\'à demain</item>
+        <item>Sauvegardes plus intelligentes : suppression automatique des anciennes sauvegardes, meilleur support NAS/WebDAV, et alerte en cas d\'échec d\'une sauvegarde planifiée</item>
     </string-array>
 
     <string name="page_home">Accueil</string>
@@ -150,6 +150,12 @@
 
     <string name="section_choose_news_sources">Choisir les sources d\'actualités</string>
     <string name="news_max_articles">Articles max</string>
+    <string name="section_custom_news_sources">Sources personnalisées</string>
+    <string name="action_add_custom_news_source">Ajouter une source RSS</string>
+    <string name="dialog_add_news_source_title">Ajouter une source d\'actualités</string>
+    <string name="dialog_news_source_name_label">Nom</string>
+    <string name="dialog_news_source_url_label">URL RSS (https://)</string>
+    <string name="news_showing_cached">Résultats enregistrés affichés — peuvent être obsolètes</string>
 
     <string name="hidden_apps_count_label">Applis masquées (%1$d)</string>
     <string name="hidden_apps_description">Les applis masquées n\'apparaissent ni sur l\'accueil ni dans la liste</string>
@@ -243,6 +249,9 @@
     <string name="search_type_web">Recherche web</string>
     <string name="search_type_setting">Réglage</string>
     <string name="search_google_for">Rechercher sur Google : %1$s</string>
+    <string name="search_no_local_matches">Aucune correspondance dans les applications, contacts ou réglages</string>
+    <string name="section_language">Langue</string>
+    <string name="language_system_default">Langue du système</string>
     <string name="search_all_hint">Rechercher partout…</string>
 
     <string name="action_enter">Entrer</string>
@@ -378,6 +387,23 @@
     <string name="backup_encryption_section">Chiffrement</string>
     <string name="backup_password_label">Mot de passe de sauvegarde (facultatif)</string>
     <string name="backup_password_hint">Si renseigné, le fichier de sauvegarde sera chiffré. Le même mot de passe sera nécessaire pour le restaurer.</string>
+    <string name="backup_local_retention_section">Conservation des sauvegardes locales</string>
+    <string name="backup_retention_label">Nombre de sauvegardes à conserver</string>
+    <string name="backup_retention_unlimited">Illimité</string>
+    <string name="backup_retention_count">%1$d dernières</string>
+    <string name="qs_tile_label">Verrouiller NoveLauncher</string>
+    <string name="qs_tile_no_lock_configured">Aucun verrouillage du launcher configuré dans Réglages > Sécurité</string>
+    <string name="qs_tile_locked">Launcher verrouillé</string>
+    <string name="section_notifications">Notifications</string>
+    <string name="appearance_show_badges">Afficher les badges de notification sur les icônes</string>
+    <string name="badges_snoozed_status">Les badges de notification sont actuellement en pause</string>
+    <string name="badges_snooze_1h">Suspendre 1 heure</string>
+    <string name="badges_snooze_tomorrow">Suspendre jusqu\'à demain</string>
+    <string name="badges_snooze_cancel">Annuler la suspension</string>
+    <string name="notification_channel_backup">Alertes de sauvegarde</string>
+    <string name="notification_channel_backup_desc">Alertes en cas d\'échec d\'une sauvegarde planifiée</string>
+    <string name="notification_backup_failed_title">Échec de la sauvegarde planifiée</string>
+    <string name="notification_backup_failed_unknown">Erreur inconnue</string>
     <string name="shortcut_settings_short">Réglages</string>
     <string name="shortcut_settings_long">Ouvrir les réglages</string>
     <string name="shortcut_backup_short">Sauvegarde</string>

@@ -183,6 +183,7 @@ data class WallpaperSettings(
     val clock: ClockSettings = ClockSettings(), val wallpaper: WallpaperSettings = WallpaperSettings(),
     val lockScreen: LockScreenSettings = LockScreenSettings(), val searchBar: SearchBarSettings = SearchBarSettings(),
     val sortAppsByCategory: Boolean = true, val showNotificationBadges: Boolean = true,
+    val badgeSnoozedUntil: Long = 0L, // epoch millis; 0 or past = not snoozed
     val categoryTabs: CategoryTabSettings = CategoryTabSettings(),
     val appLanguage: String = "" // empty = system default
 )

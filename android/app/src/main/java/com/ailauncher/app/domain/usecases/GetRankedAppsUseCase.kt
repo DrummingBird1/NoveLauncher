@@ -2,11 +2,13 @@ package com.ailauncher.app.domain.usecases
 
 import com.ailauncher.app.data.AppCategoryProvider
 import com.ailauncher.app.data.InstalledAppsRepository
+import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.UsageStatsRepository
 import com.ailauncher.app.data.db.NotificationDao
 import com.ailauncher.app.data.ml.AppPredictionEngine
 import com.ailauncher.app.domain.models.RankedApp
 import com.ailauncher.app.domain.models.SmartFolder
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +22,8 @@ class GetRankedAppsUseCase @Inject constructor(
     private val usageStatsRepo: UsageStatsRepository,
     private val categoryProvider: AppCategoryProvider,
     private val notificationDao: NotificationDao,
-    private val predictionEngine: AppPredictionEngine
+    private val predictionEngine: AppPredictionEngine,
+    private val settingsRepo: SettingsRepository
 ) {
     data class Result(
         val rankedApps: List<RankedApp>,
@@ -33,8 +36,13 @@ class GetRankedAppsUseCase @Inject constructor(
         val apps = installedAppsRepo.getInstalledApps()
         val snapshots = if (hasPermission) usageStatsRepo.getUsageSnapshots() else emptyMap()
 
-        // Get notification counts (v7 — feature #15)
-        val notificationCounts = try {
+        // Get notification counts (v7 — feature #15). Suppressed entirely while
+        // badges are off or snoozed, rather than computing them and hiding them
+        // at render time — cheaper, and keeps "snoozed" meaning what it says.
+        val appearance = settingsRepo.appearanceFlow.first()
+        val badgesSuppressed = !appearance.showNotificationBadges ||
+            appearance.badgeSnoozedUntil > System.currentTimeMillis()
+        val notificationCounts = if (badgesSuppressed) emptyMap() else try {
             notificationDao.getAppsWithUnread().associateWith { pkg ->
                 notificationDao.get(pkg)?.unreadCount ?: 0
             }
