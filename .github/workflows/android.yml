@@ -37,6 +37,11 @@ jobs:
     name: Build, lint, test
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # `secrets` isn't a valid context inside step-level `if:` conditions (GitHub
+    # rejects the workflow at parse time with "Unrecognized named-value: secrets").
+    # Route it through `env` instead, which `if:` can read.
+    env:
+      HAS_RELEASE_SIGNING: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
 
     steps:
       - name: Checkout
@@ -77,7 +82,7 @@ jobs:
       # in repo secrets. Absent that secret, this step is skipped and the release
       # build below stays unsigned, exactly like before.
       - name: Decode release keystore
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: env.HAS_RELEASE_SIGNING == 'true'
         run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "${{ runner.temp }}/release.keystore"
 
       # Runs R8/resource-shrinking on the release build so keep-rule problems
@@ -105,7 +110,7 @@ jobs:
       # to upload here, so a missing file is expected, not an error.
       - name: Upload release APK
         uses: actions/upload-artifact@v4
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: env.HAS_RELEASE_SIGNING == 'true'
         with:
           name: novelauncher-release-apk
           path: app/build/outputs/apk/release/*.apk
