@@ -12,8 +12,8 @@
 #   * Release signing is opt-in via repo secrets (RELEASE_KEYSTORE_BASE64,
 #     RELEASE_KEYSTORE_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_KEY_PASSWORD). Until
 #     those are added, the release build is unsigned — same as before — because
-#     app/build.gradle.kts only wires up signingConfigs["release"] when a real
-#     keystore file is present. No keystore is generated or stored by this repo.
+#     android/app/build.gradle.kts only wires up signingConfigs["release"] when a
+#     real keystore file is present. No keystore is generated or stored by this repo.
 #   * Self-hosted runners are not necessary for this project; ubuntu-latest
 #     provides Android SDK 35 out of the box.
 
@@ -42,6 +42,13 @@ jobs:
     # Route it through `env` instead, which `if:` can read.
     env:
       HAS_RELEASE_SIGNING: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+    # v9.1: the Gradle project moved into android/ (repo root now holds only
+    # android/ + assets/). `run:` steps execute here; upload-artifact `path:`
+    # values are NOT affected by working-directory, so those still need an
+    # explicit android/ prefix below.
+    defaults:
+      run:
+        working-directory: android
 
     steps:
       - name: Checkout
@@ -101,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: novelauncher-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 14
           if-no-files-found: warn
 
@@ -113,7 +120,7 @@ jobs:
         if: env.HAS_RELEASE_SIGNING == 'true'
         with:
           name: novelauncher-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: android/app/build/outputs/apk/release/*.apk
           retention-days: 14
           if-no-files-found: warn
 
@@ -122,7 +129,7 @@ jobs:
         if: always()
         with:
           name: lint-report
-          path: app/build/reports/lint-results-debug.html
+          path: android/app/build/reports/lint-results-debug.html
           retention-days: 14
           if-no-files-found: ignore
 
@@ -131,7 +138,7 @@ jobs:
         if: always()
         with:
           name: ktlint-report
-          path: app/build/reports/ktlint/
+          path: android/app/build/reports/ktlint/
           retention-days: 14
           if-no-files-found: ignore
 
@@ -140,7 +147,7 @@ jobs:
         if: always()
         with:
           name: test-report
-          path: app/build/reports/tests/testDebugUnitTest/
+          path: android/app/build/reports/tests/testDebugUnitTest/
           retention-days: 14
           if-no-files-found: ignore
 
@@ -149,6 +156,6 @@ jobs:
         if: always()
         with:
           name: jacoco-coverage-report
-          path: app/build/reports/jacoco/jacocoTestReport/
+          path: android/app/build/reports/jacoco/jacocoTestReport/
           retention-days: 14
           if-no-files-found: ignore

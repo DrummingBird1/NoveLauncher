@@ -5,29 +5,29 @@ A Hebrew-RTL Android launcher with on-device AI ranking, smart folders, themes, 
 ## Quick facts
 
 - **App ID:** `com.ailauncher.app` (label "NoveLauncher")
-- **Gradle root:** the repository root (flattened in v8; the previous `NoveLauncher-v8/v8/` nesting was removed)
-- **Module:** single Android app module `:app` (declared in [settings.gradle.kts](settings.gradle.kts))
+- **Gradle root:** [android/](android/) (v9.1 — moved off the repo root so the repo root could hold just `android/` + `assets/`; flattened out of `NoveLauncher-v8/v8/` back in v8, for context on why this keeps getting revisited)
+- **Module:** single Android app module `:app` (declared in [settings.gradle.kts](android/settings.gradle.kts))
 - **SDK:** `minSdk 26`, `targetSdk 35`, `compileSdk 35`, Java/Kotlin target 17
-- **Version:** `versionCode 10`, `versionName "9.1.0"` ([build.gradle.kts](app/build.gradle.kts))
+- **Version:** `versionCode 10`, `versionName "9.1.0"` ([build.gradle.kts](android/app/build.gradle.kts))
 - **AGP / Kotlin:** AGP 8.7.3, Kotlin 2.0.21, KSP 2.0.21-1.0.28, Compose BOM 2024.12.01
 - **Language:** Kotlin only. v9 finished the i18n extraction: ~300 UI strings now resolve through `strings.xml` with full translations in en/ar/fr/ru/he. Enums and `LauncherPage` use `@StringRes Int` displayNameRes (LauncherPage + ThemePreset have a hybrid pattern — built-in entries set the res id, user-created entries keep the typed String). The four NewsSource Hebrew brand names (Walla/Haaretz/Kan/Calcalist) are kept verbatim because they are the outlets' actual names. Anything left in Hebrew today is either a brand name, a comment, or the BuiltInWallpaper data (English placeholders pending a UI consumer).
 - **Git:** Tracked in git, origin = [github.com/DrummingBird1/NoveLauncher](https://github.com/DrummingBird1/NoveLauncher). `main` is the only branch. GitHub Actions ([.github/workflows/android.yml](.github/workflows/android.yml)) runs `assembleDebug + lint + ktlintCheck + testDebugUnitTest + jacocoTestReport + assembleRelease` on every push/PR to main and uploads the debug APK, lint/ktlint/test/coverage reports as artefacts (14-day retention). Lint and ktlint findings are both non-blocking (`continue-on-error`) — the codebase predates both and hasn't been mass-reformatted. [.github/dependabot.yml](.github/dependabot.yml) opens weekly PRs for Gradle + Actions dependency bumps. Update flow: `git add . && git commit -m "…" && git push`.
-- **Release signing** is opt-in via env vars read in [app/build.gradle.kts](app/build.gradle.kts) (`RELEASE_KEYSTORE_PATH`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`) — absent any of them, `assembleRelease` stays unsigned exactly like before. To actually sign a release: generate a keystore yourself (`keytool -genkeypair -v -keystore release.keystore -alias novelauncher -keyalg RSA -keysize 2048 -validity 10000`), keep it out of git, and either export those four env vars locally or add `RELEASE_KEYSTORE_BASE64` (base64 of the keystore file) + the three password/alias secrets to the GitHub repo's Actions secrets — CI decodes and signs automatically once present (see the "Decode release keystore" step in android.yml). No keystore is generated or stored by this repo.
-- **Dependencies:** managed via Gradle version catalog ([gradle/libs.versions.toml](gradle/libs.versions.toml)). Don't hardcode versions in build.gradle.kts — bump in the catalog instead. Glance and Material 2 were dropped in v9; re-add via the catalog if/when needed.
-- **Repo root layout:** only `app/` (+ `gradle/`, build files) is the actual Gradle/Android Studio project. [distribution/](distribution/) holds Play Store submission text (listing copy, privacy policy, terms, checklist) and [assets/](assets/) holds the binary/generated design files (icons, feature graphic, screenshots, `generate_graphics.py`) — split (v9.1) so neither clutters the app module tree in Android Studio. Formerly one combined `playstore/` folder.
+- **Release signing** is opt-in via env vars read in [android/app/build.gradle.kts](android/app/build.gradle.kts) (`RELEASE_KEYSTORE_PATH`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`) — absent any of them, `assembleRelease` stays unsigned exactly like before. To actually sign a release: generate a keystore yourself (`keytool -genkeypair -v -keystore release.keystore -alias novelauncher -keyalg RSA -keysize 2048 -validity 10000`), keep it out of git, and either export those four env vars locally or add `RELEASE_KEYSTORE_BASE64` (base64 of the keystore file) + the three password/alias secrets to the GitHub repo's Actions secrets — CI decodes and signs automatically once present (see the "Decode release keystore" step in android.yml). No keystore is generated or stored by this repo.
+- **Dependencies:** managed via Gradle version catalog ([gradle/libs.versions.toml](android/gradle/libs.versions.toml)). Don't hardcode versions in build.gradle.kts — bump in the catalog instead. Glance and Material 2 were dropped in v9; re-add via the catalog if/when needed.
+- **Repo root layout (v9.1):** exactly two folders at the true repo root. [android/](android/) is the entire Gradle/Android Studio project (open **this** folder in Android Studio, not the repo root) — root build files, `gradle/`, and the single `:app` module live inside it. [assets/](assets/) holds everything else non-code: design source (`generate_graphics.py`, `graphics/`, `screenshots/`) and [assets/distribution/](assets/distribution/) (Play Store submission text — listing copy, privacy policy, terms, checklist). `.github/` stays at the true repo root regardless (GitHub only reads workflows/dependabot config from `<repo-root>/.github/`), as do `CLAUDE.md`/`AGENTS.md` (Claude Code / Codex only auto-load project instructions from the root they're opened in). Formerly one combined `playstore/` folder at the root alongside `android/app/`.
 
 ## Build & run
 
 ```powershell
-# From v8/
+# From android/ (open THIS folder in Android Studio, not the repo root)
 .\gradlew.bat assembleDebug        # APK
 .\gradlew.bat bundleRelease        # AAB for Play Store
 .\gradlew.bat installDebug         # install on connected device
 .\gradlew.bat lint                 # AGP lint
-.\gradlew.bat test                 # unit tests (none currently)
+.\gradlew.bat test                 # unit tests
 ```
 
-Open in Android Studio Ladybug+. The release build runs R8 shrinking ([build.gradle.kts:24-29](app/build.gradle.kts)) — ProGuard keep rules for serialization models live in [proguard-rules.pro](app/proguard-rules.pro).
+Open `android/` in Android Studio Ladybug+ (not the repo root — the repo root is no longer a Gradle project). The release build runs R8 shrinking ([build.gradle.kts:24-29](android/app/build.gradle.kts)) — ProGuard keep rules for serialization models live in [proguard-rules.pro](android/app/proguard-rules.pro).
 
 ## Architecture
 
@@ -88,7 +88,7 @@ AILauncherApp.kt               ← @HiltAndroidApp + WorkManager Configuration.P
 - **`IconCache`** sizes itself off `ActivityManager.getMemoryClass()` (1/8th, clamped to [4 MB, 32 MB]) instead of a hardcoded constant — see kdoc in `IconCache.kt` if you need to retune the fraction/clamp.
 - **`Theme.kt`** splits into `AILauncherTheme` (decides dynamic-vs-preset) + `buildPresetColorScheme` (the original preset/custom-color math, unchanged). `AppearanceSettings.useDynamicColor` opts into `dynamicLightColorScheme`/`dynamicDarkColorScheme` on API 31+ — ignored when `useCustomColors` is also on (custom colors should win) or below API 31 (the toggle itself is hidden from Settings on older devices).
 
-### Permissions (in [AndroidManifest.xml](app/src/main/AndroidManifest.xml))
+### Permissions (in [AndroidManifest.xml](android/app/src/main/AndroidManifest.xml))
 
 Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_LISTENER_SERVICE`, `READ_CONTACTS`, `ACCESS_COARSE_LOCATION`. `READ_EXTERNAL_STORAGE` only up to API 32 — see Pitfalls about backup storage on API 33+. v8 removed `CALL_PHONE`; v9 removed `CAMERA` (camera button uses an intent) and `ACCESS_FINE_LOCATION` (weather only needs COARSE). Don't re-add a dangerous permission without a real API consumer — Play flags unused ones.
 
@@ -103,7 +103,7 @@ Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_
 
 1. **Crash handler lives in `AILauncherApp.installCrashHandler`** (v9) — registered once per process, records via a background `Thread` + `join(2s)` so it can't deadlock the Main thread. Don't move it back into the Activity (it leaked a wrapped handler chain on every recreation).
 2. **Hebrew weekend in category boost**: `AppCategoryProvider.computeCategoryBoost()` treats Friday+Saturday as weekend. Hardcoded; don't surprise yourself when porting.
-3. **UsageStats permission prompt fires once per process** ([LauncherActivity.onResume](app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt)) — if the user denies, they need to grant from Settings → Apps → NoveLauncher → Usage manually until the next app restart.
+3. **UsageStats permission prompt fires once per process** ([LauncherActivity.onResume](android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt)) — if the user denies, they need to grant from Settings → Apps → NoveLauncher → Usage manually until the next app restart.
 4. **OneDrive and Box backups are explicitly disabled** until Microsoft/Box OAuth flows are wired up; `BackupDestination` still lists them (so existing stored settings/exports don't break deserialization) but `backup()` returns a clear error and `BackupSection`'s destination picker filters them out of the UI — don't offer an option that can never succeed.
 5. **Legacy credential migration runs on first verify**: PIN/password values stored as unsalted SHA-256 (or plaintext, for `personalZonePin`) are accepted on verify and silently upgraded to PBKDF2 with per-install salt. Same pattern for `SecuritySettings` encryption — plain JSON in DataStore is migrated to AES-256-GCM-via-AndroidKeyStore on first save.
 6. **`AppWidgetHost`** is provided to Composables via `LocalAppWidgetHost`. Non-Compose code injects `AppWidgetHost` directly from Hilt.
@@ -175,12 +175,12 @@ Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_
 
 | Task | File |
 | --- | --- |
-| Change app-ranking math | [data/AppCategoryProvider.kt](app/src/main/java/com/ailauncher/app/data/AppCategoryProvider.kt) (rule-based) + [data/ml/AppPredictionEngine.kt](app/src/main/java/com/ailauncher/app/data/ml/AppPredictionEngine.kt) (ML upgrade slot) |
-| Add a new settings group | model in [domain/models/Models.kt](app/src/main/java/com/ailauncher/app/domain/models/Models.kt), add Preference key + flow + save in [SettingsRepository.kt](app/src/main/java/com/ailauncher/app/data/SettingsRepository.kt), expose in [LauncherViewModel.kt](app/src/main/java/com/ailauncher/app/ui/LauncherViewModel.kt), wire UI in [SettingsActivity.kt](app/src/main/java/com/ailauncher/app/ui/screens/SettingsActivity.kt) |
-| Add a launcher page | append a `LauncherPage` constant in [domain/models/Models.kt](app/src/main/java/com/ailauncher/app/domain/models/Models.kt), handle in the `when` inside `LauncherRoot` ([LauncherActivity.kt:340-348](app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt)) |
-| Add a theme preset | append to `ThemePreset.PRESETS` ([Models.kt:16](app/src/main/java/com/ailauncher/app/domain/models/Models.kt)) |
-| Add a Play-Store-distributable graphic | regenerate via `assets/generate_graphics.py` (PIL-based) — output lands in `assets/graphics/`; see [distribution/](distribution/) for store listing markdown |
-| Change icon | drawable XMLs in [app/src/main/res/drawable/](app/src/main/res/drawable/) + PNGs in [app/src/main/res/mipmap-*](app/src/main/res/) (themed monochrome in [ic_launcher_monochrome.xml](app/src/main/res/drawable/ic_launcher_monochrome.xml)) |
+| Change app-ranking math | [data/AppCategoryProvider.kt](android/app/src/main/java/com/ailauncher/app/data/AppCategoryProvider.kt) (rule-based) + [data/ml/AppPredictionEngine.kt](android/app/src/main/java/com/ailauncher/app/data/ml/AppPredictionEngine.kt) (ML upgrade slot) |
+| Add a new settings group | model in [domain/models/Models.kt](android/app/src/main/java/com/ailauncher/app/domain/models/Models.kt), add Preference key + flow + save in [SettingsRepository.kt](android/app/src/main/java/com/ailauncher/app/data/SettingsRepository.kt), expose in [LauncherViewModel.kt](android/app/src/main/java/com/ailauncher/app/ui/LauncherViewModel.kt), wire UI in [SettingsActivity.kt](android/app/src/main/java/com/ailauncher/app/ui/screens/SettingsActivity.kt) |
+| Add a launcher page | append a `LauncherPage` constant in [domain/models/Models.kt](android/app/src/main/java/com/ailauncher/app/domain/models/Models.kt), handle in the `when` inside `LauncherRoot` ([LauncherActivity.kt:340-348](android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt)) |
+| Add a theme preset | append to `ThemePreset.PRESETS` ([Models.kt:16](android/app/src/main/java/com/ailauncher/app/domain/models/Models.kt)) |
+| Add a Play-Store-distributable graphic | regenerate via `assets/generate_graphics.py` (PIL-based) — output lands in `assets/graphics/`; see [assets/distribution/](assets/distribution/) for store listing markdown |
+| Change icon | drawable XMLs in [android/app/src/main/res/drawable/](android/app/src/main/res/drawable/) + PNGs in [android/app/src/main/res/mipmap-*](android/app/src/main/res/) (themed monochrome in [ic_launcher_monochrome.xml](android/app/src/main/res/drawable/ic_launcher_monochrome.xml)) |
 | Add a backup destination | new branch in `BackupManager.backup()` + new entry in `BackupDestination` enum |
 
 ## Testing
@@ -188,14 +188,15 @@ Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_
 `junit` + `mockk` + `kotlinx-coroutines-test` + `robolectric` + `androidx.compose.ui:ui-test-junit4` are on the classpath. Run via:
 
 ```powershell
+# From android/
 .\gradlew.bat testDebugUnitTest      # all JVM unit tests
 .\gradlew.bat jacocoTestReport       # coverage report → app/build/reports/jacoco/jacocoTestReport/
 ```
 
-- [AppCategoryProviderTest.kt](app/src/test/java/com/ailauncher/app/data/AppCategoryProviderTest.kt) — rule-based ranking scoring math + `autoGroup` filtering.
-- [AppPredictionEngineTest.kt](app/src/test/java/com/ailauncher/app/data/ml/AppPredictionEngineTest.kt) — `extractFeatures`/`computeFeatureScore` (both `internal`, not `private`, specifically so this test can call them directly) covering recency decay, the hour-of-day affinity window, and the Hebrew-weekend day match.
-- [PortableBackupCryptoTest.kt](app/src/test/java/com/ailauncher/app/security/PortableBackupCryptoTest.kt) — encrypted-backup round-trip, wrong-password rejection, envelope detection.
-- [SettingsRepositoryTest.kt](app/src/test/java/com/ailauncher/app/data/SettingsRepositoryTest.kt) — Robolectric, real DataStore against a temp file (`@Config(sdk=[33], application=Application::class)` — plain `Application`, not `AILauncherApp`, to avoid booting Hilt).
-- [OnboardingScreenTest.kt](app/src/test/java/com/ailauncher/app/ui/screens/OnboardingScreenTest.kt) — first Compose UI test in the project: `createComposeRule()` + Robolectric (`@GraphicsMode(NATIVE)`). Needs `debugImplementation(libs.compose.ui.test.manifest)` in `app/build.gradle.kts` — without it, Robolectric can't resolve the synthetic host Activity `createComposeRule()` launches under the hood (`Unable to resolve activity for Intent ... ComponentActivity`). Use `ApplicationProvider.getApplicationContext<Context>().getString(...)` instead of hardcoding locale text when asserting on strings.
+- [AppCategoryProviderTest.kt](android/app/src/test/java/com/ailauncher/app/data/AppCategoryProviderTest.kt) — rule-based ranking scoring math + `autoGroup` filtering.
+- [AppPredictionEngineTest.kt](android/app/src/test/java/com/ailauncher/app/data/ml/AppPredictionEngineTest.kt) — `extractFeatures`/`computeFeatureScore` (both `internal`, not `private`, specifically so this test can call them directly) covering recency decay, the hour-of-day affinity window, and the Hebrew-weekend day match.
+- [PortableBackupCryptoTest.kt](android/app/src/test/java/com/ailauncher/app/security/PortableBackupCryptoTest.kt) — encrypted-backup round-trip, wrong-password rejection, envelope detection.
+- [SettingsRepositoryTest.kt](android/app/src/test/java/com/ailauncher/app/data/SettingsRepositoryTest.kt) — Robolectric, real DataStore against a temp file (`@Config(sdk=[33], application=Application::class)` — plain `Application`, not `AILauncherApp`, to avoid booting Hilt).
+- [OnboardingScreenTest.kt](android/app/src/test/java/com/ailauncher/app/ui/screens/OnboardingScreenTest.kt) — first Compose UI test in the project: `createComposeRule()` + Robolectric (`@GraphicsMode(NATIVE)`). Needs `debugImplementation(libs.compose.ui.test.manifest)` in `android/app/build.gradle.kts` — without it, Robolectric can't resolve the synthetic host Activity `createComposeRule()` launches under the hood (`Unable to resolve activity for Intent ... ComponentActivity`). Use `ApplicationProvider.getApplicationContext<Context>().getString(...)` instead of hardcoding locale text when asserting on strings.
 - **Not covered, deliberately**: real instrumented (`androidTest`/Espresso) tests and Macrobenchmark/Baseline Profiles both need a device or emulator, which wasn't available while this test suite was built — CI also has no emulator step. Don't add `androidTest` sources without also wiring an emulator into `android.yml`, or they'll never run.
 - `android.util.Base64` throws `RuntimeException(... not mocked)` in a plain (non-Robolectric) JVM test — `PortableBackupCrypto` deliberately uses `java.util.Base64` instead (available since minSdk 26) so its tests don't need Robolectric at all.

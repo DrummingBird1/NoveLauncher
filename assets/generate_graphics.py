@@ -11,7 +11,7 @@ import os, math
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
 OUT_DIR = os.path.join(SCRIPT_DIR, "graphics")
-RES_DIR = os.path.join(ROOT_DIR, "app", "src", "main", "res")
+RES_DIR = os.path.join(ROOT_DIR, "android", "app", "src", "main", "res")
 os.makedirs(OUT_DIR, exist_ok=True)
 
 PRIMARY = (124, 124, 255)
