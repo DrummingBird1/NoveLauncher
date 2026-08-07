@@ -9,9 +9,11 @@
 #   6. Uploads the debug APK and lint report as build artefacts.
 #
 # Notes:
-#   * No keystore step — release build runs the same R8 pipeline but is signed
-#     with the debug key in CI. Real Play Store builds should run a separate
-#     signed-release workflow gated on `tags: ['v*']` with secrets injection.
+#   * Release signing is opt-in via repo secrets (RELEASE_KEYSTORE_BASE64,
+#     RELEASE_KEYSTORE_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_KEY_PASSWORD). Until
+#     those are added, the release build is unsigned — same as before — because
+#     app/build.gradle.kts only wires up signingConfigs["release"] when a real
+#     keystore file is present. No keystore is generated or stored by this repo.
 #   * Self-hosted runners are not necessary for this project; ubuntu-latest
 #     provides Android SDK 35 out of the box.
 
@@ -61,21 +63,52 @@ jobs:
         run: ./gradlew lint --stacktrace
         continue-on-error: true  # lint findings shouldn't fail CI yet
 
+      - name: ktlint
+        run: ./gradlew ktlintCheck --stacktrace
+        continue-on-error: true  # codebase predates ktlint; advisory only, same policy as lint
+
       - name: Unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
+      - name: Coverage report
+        run: ./gradlew jacocoTestReport --stacktrace
+
+      # Only runs (and only produces a file) when RELEASE_KEYSTORE_BASE64 is set
+      # in repo secrets. Absent that secret, this step is skipped and the release
+      # build below stays unsigned, exactly like before.
+      - name: Decode release keystore
+        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "${{ runner.temp }}/release.keystore"
+
       # Runs R8/resource-shrinking on the release build so keep-rule problems
       # (e.g. kotlinx.serialization models stripped by the optimizer) surface in
-      # CI instead of as a release-only crash. Output is unsigned — a signed
-      # Play build is a separate tag-triggered workflow (not yet added).
+      # CI instead of as a release-only crash. Signed only when the keystore
+      # secrets above are present — see app/build.gradle.kts signingConfigs.
       - name: Assemble release (R8)
         run: ./gradlew assembleRelease --stacktrace
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: novelauncher-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+          if-no-files-found: warn
+
+      # Only produces a file when the release build was actually signed
+      # (RELEASE_KEYSTORE_BASE64 set) — otherwise there's nothing installable
+      # to upload here, so a missing file is expected, not an error.
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        with:
+          name: novelauncher-release-apk
+          path: app/build/outputs/apk/release/*.apk
           retention-days: 14
           if-no-files-found: warn
 
@@ -88,11 +121,29 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
+      - name: Upload ktlint report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ktlint-report
+          path: app/build/reports/ktlint/
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-report
           path: app/build/reports/tests/testDebugUnitTest/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-coverage-report
+          path: app/build/reports/jacoco/jacocoTestReport/
           retention-days: 14
           if-no-files-found: ignore

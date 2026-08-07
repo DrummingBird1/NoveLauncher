@@ -2,6 +2,15 @@
 <resources>
     <string name="app_name">NoveLauncher</string>
 
+    <string name="whats_new_title">Что нового</string>
+    <string-array name="whats_new_items">
+        <item>Динамические цвета по обоям (Material You) на Android 12+</item>
+        <item>Резервные копии можно защитить паролем</item>
+        <item>Ярлыки приложения при долгом нажатии на значок лаунчера</item>
+        <item>Переключатель «Уменьшить анимацию» в настройках оформления</item>
+        <item>Улучшения специальных возможностей, производительности и стабильности</item>
+    </string-array>
+
     <string name="page_home">Главная</string>
     <string name="page_apps">Приложения</string>
     <string name="page_news">Новости</string>
@@ -90,6 +99,8 @@
     <string name="icon_packs_empty_hint">Установите иконпак, совместимый с Nova/ADW/Lawnchair, из Play Store и вернитесь сюда.</string>
 
     <string name="section_size">Размер</string>
+    <string name="section_accessibility">Специальные возможности</string>
+    <string name="appearance_reduce_motion">Уменьшить анимацию</string>
     <string name="section_more_menus">Дополнительные меню</string>
     <string name="appearance_icon_size">Размер иконки</string>
     <string name="appearance_app_font_size">Размер шрифта приложений</string>
@@ -101,6 +112,7 @@
     <string name="preview_label">Предпросмотр</string>
 
     <string name="section_theme_mode">Режим отображения</string>
+    <string name="appearance_dynamic_color">Динамические цвета (Material You)</string>
     <string name="section_theme_presets">Готовые темы</string>
     <string name="section_custom_colors">Свои цвета</string>
     <string name="custom_colors_toggle">Использовать свои цвета</string>
@@ -176,6 +188,7 @@
     <string name="security_method_label">Метод: %1$s</string>
     <string name="security_choose_apps">Выберите приложения для блокировки</string>
     <string name="security_locked_count">Заблокировано: %1$d</string>
+    <string name="security_isolation_notice">Блокировка приложений и приватная папка — это сдерживающая мера, а не безопасная песочница: «заблокированное» приложение всё ещё доступно через недавние приложения, уведомления, другой лаунчер или ADB. Для настоящей изоляции чувствительных приложений рассмотрите встроенный в Android рабочий профиль (Work Profile).</string>
     <string name="section_screen_lock">Блокировка экрана</string>
     <string name="security_layout_lock">Блокировка раскладки</string>
     <string name="section_safety_launcher_lock">Безопасность — блокировка лаунчера</string>
@@ -362,4 +375,11 @@
     <string name="backup_error_nas_io">NAS: %1$s</string>
     <string name="backup_nas_username_label">Имя пользователя (необязательно)</string>
     <string name="backup_nas_password_label">Пароль (необязательно)</string>
+    <string name="backup_encryption_section">Шифрование</string>
+    <string name="backup_password_label">Пароль резервной копии (необязательно)</string>
+    <string name="backup_password_hint">Если указан, файл резервной копии будет зашифрован. Для восстановления потребуется тот же пароль.</string>
+    <string name="shortcut_settings_short">Настройки</string>
+    <string name="shortcut_settings_long">Открыть настройки</string>
+    <string name="shortcut_backup_short">Резервная копия</string>
+    <string name="shortcut_backup_long">Открыть экран резервного копирования</string>
 </resources>

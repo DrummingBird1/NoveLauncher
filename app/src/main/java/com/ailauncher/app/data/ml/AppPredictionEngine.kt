@@ -75,7 +75,9 @@ class AppPredictionEngine @Inject constructor(
         usageDao.deleteOldPredictions(now - 24 * 60 * 60 * 1000L)
     }
 
-    private fun extractFeatures(
+    // internal (not private) so AppPredictionEngineTest can exercise the pure math
+    // directly without booting Room/Hilt.
+    internal fun extractFeatures(
         usage: UsageCacheEntity, hourlyData: List<HourlyUsageEntity>,
         currentHour: Int, currentDay: Int, now: Long
     ): UsageFeature {
@@ -93,7 +95,7 @@ class AppPredictionEngine @Inject constructor(
         return UsageFeature(usage.packageName, recencyHours, freqLog, hourMatch, dayMatch, avgSessionMin, rate)
     }
 
-    private fun computeFeatureScore(f: UsageFeature): Float {
+    internal fun computeFeatureScore(f: UsageFeature): Float {
         val recencyScore = exp(-f.recencyHours / RECENCY_DECAY_HOURS).toFloat()
         return (W_RECENCY * recencyScore + W_FREQUENCY * f.frequencyLog +
                 W_HOUR_MATCH * f.hourOfDayMatch + W_DAY_MATCH * f.dayOfWeekMatch +

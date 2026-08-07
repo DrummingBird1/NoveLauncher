@@ -179,6 +179,7 @@ data class WallpaperSettings(
     val themeMode: ThemeMode = ThemeMode.DARK, val themePresetId: String = "indigo",
     val customPrimaryColor: String = "#7C7CFF", val customBackgroundColor: String = "#0A0A0F",
     val customFontColor: String = "#FFFFFF", val useCustomColors: Boolean = false,
+    val useDynamicColor: Boolean = false, // Material You (Android 12+); ignored if useCustomColors is on
     val clock: ClockSettings = ClockSettings(), val wallpaper: WallpaperSettings = WallpaperSettings(),
     val lockScreen: LockScreenSettings = LockScreenSettings(), val searchBar: SearchBarSettings = SearchBarSettings(),
     val sortAppsByCategory: Boolean = true, val showNotificationBadges: Boolean = true,

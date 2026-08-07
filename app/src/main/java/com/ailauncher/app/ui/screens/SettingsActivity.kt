@@ -67,12 +67,22 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Static shortcuts (res/xml/shortcuts.xml) can deep-link straight to a page,
+        // e.g. long-press launcher icon → Backup.
+        val initialPage = when (intent?.getStringExtra(EXTRA_SHORTCUT_PAGE)) {
+            "BACKUP" -> SettingsPage.BACKUP
+            else -> SettingsPage.MAIN
+        }
         setContent {
             val appearance by settingsRepo.appearanceFlow.collectAsState(initial = AppearanceSettings())
             AILauncherTheme(appearance = appearance) {
-                SettingsRoot(settingsRepo, appLockManager, backupManager, usageDao, iconPackManager, onBack = { finish() })
+                SettingsRoot(settingsRepo, appLockManager, backupManager, usageDao, iconPackManager, initialPage = initialPage, onBack = { finish() })
             }
         }
+    }
+
+    companion object {
+        const val EXTRA_SHORTCUT_PAGE = "shortcut_page"
     }
 }
 
@@ -90,15 +100,17 @@ fun SettingsRoot(
     backupManager: BackupManager,
     usageDao: UsageDao,
     iconPackManager: IconPackManager,
+    initialPage: SettingsPage = SettingsPage.MAIN,
     onBack: () -> Unit
 ) {
-    var currentPage by remember { mutableStateOf(SettingsPage.MAIN) }
+    var currentPage by remember { mutableStateOf(initialPage) }
     val scope = rememberCoroutineScope()
 
     val appearance by settingsRepo.appearanceFlow.collectAsState(initial = AppearanceSettings())
     val pages by settingsRepo.pagesFlow.collectAsState(initial = PagesSettings())
     val security by settingsRepo.securityFlow.collectAsState(initial = SecuritySettings())
     val backup by settingsRepo.backupFlow.collectAsState(initial = BackupSettings())
+    val smartControl by settingsRepo.smartControlFlow.collectAsState(initial = com.ailauncher.app.domain.models.SmartControlSettings())
     val news by settingsRepo.newsFlow.collectAsState(initial = NewsSettings())
     val hidden by settingsRepo.hiddenAppsFlow.collectAsState(initial = HiddenAppsSettings())
 
@@ -144,7 +156,10 @@ fun SettingsRoot(
         Box(modifier = Modifier.padding(padding)) {
             when (currentPage) {
                 SettingsPage.MAIN -> MainSettings(onNavigate = { currentPage = it })
-                SettingsPage.APPEARANCE -> AppearanceSection(appearance, { scope.launch { settingsRepo.saveAppearance(it) } }, { currentPage = it })
+                SettingsPage.APPEARANCE -> AppearanceSection(
+                    appearance, { scope.launch { settingsRepo.saveAppearance(it) } }, { currentPage = it },
+                    smartControl, { scope.launch { settingsRepo.saveSmartControl(it) } }
+                )
                 SettingsPage.THEMES -> ThemesSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
                 SettingsPage.FONTS -> FontsSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
                 SettingsPage.ICON_SHAPES -> IconShapesSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }

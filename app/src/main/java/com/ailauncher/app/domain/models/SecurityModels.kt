@@ -51,5 +51,6 @@ import kotlinx.serialization.Serializable
     val shakeToSearch: Boolean = false, val smartScreenOff: Boolean = false,
     val hapticFeedback: Boolean = true,
     val longPressAction: String = "menu", // menu, hide, lock, info
-    val homeButtonDoubleTap: String = "none" // none, search, recent, camera
+    val homeButtonDoubleTap: String = "none", // none, search, recent, camera
+    val reduceMotion: Boolean = false
 )

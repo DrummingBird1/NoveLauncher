@@ -2,6 +2,15 @@
 <resources>
     <string name="app_name">NoveLauncher</string>
 
+    <string name="whats_new_title">ما الجديد</string>
+    <string-array name="whats_new_items">
+        <item>ألوان ديناميكية من الخلفية (Material You) في أندرويد 12 وما فوق</item>
+        <item>إمكانية حماية ملفات النسخ الاحتياطي بكلمة مرور</item>
+        <item>اختصارات تطبيق عند الضغط المطول على أيقونة المشغّل</item>
+        <item>خيار تقليل الحركة في إعدادات المظهر</item>
+        <item>تحسينات في إمكانية الوصول والأداء والاستقرار</item>
+    </string-array>
+
     <string name="page_home">الرئيسية</string>
     <string name="page_apps">التطبيقات</string>
     <string name="page_news">الأخبار</string>
@@ -90,6 +99,8 @@
     <string name="icon_packs_empty_hint">ثبّت حزمة أيقونات متوافقة مع Nova/ADW/Lawnchair من Play Store ثم عُد إلى هنا.</string>
 
     <string name="section_size">الحجم</string>
+    <string name="section_accessibility">إمكانية الوصول</string>
+    <string name="appearance_reduce_motion">تقليل الحركة</string>
     <string name="section_more_menus">قوائم إضافية</string>
     <string name="appearance_icon_size">حجم الأيقونة</string>
     <string name="appearance_app_font_size">حجم خط التطبيقات</string>
@@ -101,6 +112,7 @@
     <string name="preview_label">معاينة</string>
 
     <string name="section_theme_mode">وضع العرض</string>
+    <string name="appearance_dynamic_color">ألوان ديناميكية (Material You)</string>
     <string name="section_theme_presets">السمات الجاهزة</string>
     <string name="section_custom_colors">الألوان المخصصة</string>
     <string name="custom_colors_toggle">استخدم ألوانًا مخصصة</string>
@@ -176,6 +188,7 @@
     <string name="security_method_label">الطريقة: %1$s</string>
     <string name="security_choose_apps">اختر التطبيقات للقفل</string>
     <string name="security_locked_count">%1$d مقفلة</string>
+    <string name="security_isolation_notice">قفل التطبيقات والمجلد الخاص هما رادع وليسا بيئة معزولة آمنة — يمكن الوصول إلى التطبيق "المقفل" عبر التطبيقات الأخيرة أو الإشعارات أو مشغل آخر أو ADB. لعزل حقيقي للتطبيقات الحساسة، فكر في استخدام ملف تعريف العمل (Work Profile) المدمج في أندرويد.</string>
     <string name="section_screen_lock">قفل الشاشة</string>
     <string name="security_layout_lock">قفل التخطيط</string>
     <string name="section_safety_launcher_lock">الأمان — قفل المشغل</string>
@@ -362,4 +375,11 @@
     <string name="backup_error_nas_io">NAS: %1$s</string>
     <string name="backup_nas_username_label">اسم المستخدم (اختياري)</string>
     <string name="backup_nas_password_label">كلمة المرور (اختياري)</string>
+    <string name="backup_encryption_section">التشفير</string>
+    <string name="backup_password_label">كلمة مرور النسخ الاحتياطي (اختياري)</string>
+    <string name="backup_password_hint">إذا تم إدخالها، سيتم تشفير ملف النسخ الاحتياطي. ستحتاج إلى نفس كلمة المرور لاستعادته.</string>
+    <string name="shortcut_settings_short">الإعدادات</string>
+    <string name="shortcut_settings_long">فتح الإعدادات</string>
+    <string name="shortcut_backup_short">نسخ احتياطي</string>
+    <string name="shortcut_backup_long">فتح شاشة النسخ الاحتياطي</string>
 </resources>

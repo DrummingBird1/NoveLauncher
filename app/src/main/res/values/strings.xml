@@ -2,6 +2,15 @@
 <resources>
     <string name="app_name">NoveLauncher</string>
 
+    <string name="whats_new_title">מה חדש</string>
+    <string-array name="whats_new_items">
+        <item>עיצוב דינמי לפי הטפט (Material You) באנדרואיד 12 ומעלה</item>
+        <item>אפשרות להצפין קובצי גיבוי בסיסמה</item>
+        <item>קיצורי דרך בלחיצה ארוכה על סמל האפליקציה</item>
+        <item>הפחתת אנימציות בהגדרות מראה, לנגישות טובה יותר</item>
+        <item>שיפורי נגישות, ביצועים ותיקוני יציבות</item>
+    </string-array>
+
     <!-- Pages -->
     <string name="page_home">בית</string>
     <string name="page_apps">יישומים</string>
@@ -104,6 +113,8 @@
 
     <!-- Appearance section labels -->
     <string name="section_size">גודל</string>
+    <string name="section_accessibility">נגישות</string>
+    <string name="appearance_reduce_motion">הפחתת אנימציות</string>
     <string name="section_more_menus">תפריטים נוספים</string>
     <string name="appearance_icon_size">גודל אייקון</string>
     <string name="appearance_app_font_size">גודל פונט אפליקציות</string>
@@ -117,6 +128,7 @@
 
     <!-- Themes section -->
     <string name="section_theme_mode">מצב תצוגה</string>
+    <string name="appearance_dynamic_color">צבעים דינמיים (Material You)</string>
     <string name="section_theme_presets">ערכות עיצוב</string>
     <string name="section_custom_colors">צבעים מותאמים אישית</string>
     <string name="custom_colors_toggle">השתמש בצבעים מותאמים</string>
@@ -201,6 +213,7 @@
     <string name="security_method_label">שיטה: %1$s</string>
     <string name="security_choose_apps">בחירת אפליקציות לנעילה</string>
     <string name="security_locked_count">%1$d נעולות</string>
+    <string name="security_isolation_notice">נעילת אפליקציות והתיקייה הפרטית הן הרתעה, לא ארגז חול מאובטח — אפליקציה "נעולה" עדיין נגישה דרך היסטוריית האפליקציות, התראות, לאנצ\'ר אחר או ADB. לבידוד אמיתי של אפליקציות רגישות, שקלו להשתמש בפרופיל עבודה (Work Profile) המובנה באנדרואיד.</string>
     <string name="section_screen_lock">נעילת מסך</string>
     <string name="security_layout_lock">נעילת הזזה</string>
     <string name="section_safety_launcher_lock">בטיחות — נעילת לאנצ\'ר</string>
@@ -410,4 +423,11 @@
     <string name="backup_error_nas_io">NAS: %1$s</string>
     <string name="backup_nas_username_label">שם משתמש (אופציונלי)</string>
     <string name="backup_nas_password_label">סיסמה (אופציונלי)</string>
+    <string name="backup_encryption_section">הצפנה</string>
+    <string name="backup_password_label">סיסמת גיבוי (אופציונלי)</string>
+    <string name="backup_password_hint">אם תוזן סיסמה, קובץ הגיבוי יוצפן. יש להזין את אותה סיסמה בעת שחזור.</string>
+    <string name="shortcut_settings_short">הגדרות</string>
+    <string name="shortcut_settings_long">פתח הגדרות</string>
+    <string name="shortcut_backup_short">גיבוי</string>
+    <string name="shortcut_backup_long">פתח מסך גיבוי</string>
 </resources>

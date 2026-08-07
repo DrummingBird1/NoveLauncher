@@ -5,7 +5,25 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    jacoco
+    alias(libs.plugins.ktlint)
 }
+
+// Release signing: opt-in via environment variables, never via committed secrets.
+// Locally: set these in your shell profile (never in gradle.properties, which is
+// tracked) before running `assembleRelease`/`bundleRelease`. In CI: the same names
+// are populated from GitHub Secrets — see .github/workflows/android.yml. Missing
+// or partial values fall back to today's behavior (an unsigned release build) so
+// this is purely additive; nothing changes until someone actually sets a keystore.
+val releaseKeystorePath = System.getenv("RELEASE_KEYSTORE_PATH")
+val releaseKeystorePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+val releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
+val releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+val hasReleaseSigning = !releaseKeystorePath.isNullOrBlank() &&
+    !releaseKeystorePassword.isNullOrBlank() &&
+    !releaseKeyAlias.isNullOrBlank() &&
+    !releaseKeyPassword.isNullOrBlank() &&
+    file(releaseKeystorePath).exists()
 
 android {
     namespace = "com.ailauncher.app"
@@ -15,10 +33,21 @@ android {
         applicationId = "com.ailauncher.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "9.0.0"
+        versionCode = 10
+        versionName = "9.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseKeystorePath!!)
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
@@ -26,6 +55,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug { isDebuggable = true }
     }
@@ -143,6 +175,54 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core.ktx)
+    // Robolectric + Compose UI testing (JVM only, no device/emulator needed).
+    // ui-test-manifest must be debugImplementation, not testImplementation: it merges
+    // a synthetic ComponentActivity into the debug variant's manifest, which is what
+    // Robolectric resolves createComposeRule()'s host activity against.
+    testImplementation(composeBom)
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(composeBom)
+    debugImplementation(libs.compose.ui.test.manifest)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+// v9: advisory only (like AGP lint above) — the codebase predates ktlint and
+// hasn't been auto-formatted, so a hard gate would fail on pre-existing code
+// rather than catching new violations. CI runs `ktlintCheck` with
+// continue-on-error, same policy as `lint`.
+ktlint {
+    version.set("1.3.1")
+}
+
+// v9: coverage report for testDebugUnitTest, uploaded as a CI artifact. Not a
+// gate (no minimum % enforced) — just visibility into what the JVM test suite
+// actually exercises.
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+    group = "verification"
+    description = "Generates a Jacoco HTML/XML coverage report from testDebugUnitTest."
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    val fileFilter = listOf(
+        "**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*",
+        "**/*Test*.*", "android/**/*.*",
+        "**/*_Hilt*.*", "**/Hilt_*.*", "**/*_Factory.*", "**/*_MembersInjector.*",
+        "**/*Module_*Factory.*", "**/dagger/**/*.*", "**/*_ComponentTreeDeps.*",
+        "**/hilt_aggregated_deps/**", "**/*\$serializer.*", "**/ComposableSingletons\$*.*"
+    )
+    val kotlinClasses = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+    val javaClasses = fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") { exclude(fileFilter) }
+
+    sourceDirectories.setFrom(files("$projectDir/src/main/java", "$projectDir/src/main/kotlin"))
+    classDirectories.setFrom(files(kotlinClasses, javaClasses))
+    executionData.setFrom(fileTree(layout.buildDirectory.get()) { include("jacoco/testDebugUnitTest.exec") })
 }

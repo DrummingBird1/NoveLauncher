@@ -43,13 +43,24 @@ fun BackupSection(
     val backingUpText = stringResource(R.string.backup_status_in_progress)
     val restoredText = stringResource(R.string.restore_success)
 
+    // Not persisted (not part of BackupSettings) — entered fresh per action, same
+    // as any password prompt. Blank = today's plain-JSON behavior, unchanged.
+    var backupPassword by remember { mutableStateOf("") }
+
+    // OneDrive/Box are declared in BackupDestination but backupManager.backup() always
+    // returns an error for them until Microsoft/Box OAuth is wired up — don't offer an
+    // option that can never succeed.
+    val availableDestinations = BackupDestination.entries.filter {
+        it == BackupDestination.LOCAL || it == BackupDestination.GOOGLE_DRIVE || it == BackupDestination.NAS
+    }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item { SectionLabel(stringResource(R.string.settings_backup)) }
-        items(BackupDestination.entries.toList()) { dest ->
+        items(availableDestinations) { dest ->
             Card(Modifier.fillMaxWidth().clickable {
                 scope.launch {
                     status = backingUpText
-                    status = when (val r = backupManager.backup(dest)) {
+                    status = when (val r = backupManager.backup(dest, backupPassword)) {
                         is BackupManager.BackupResult.Success -> context.getString(R.string.backup_status_success, r.path)
                         is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
                     }
@@ -69,6 +80,19 @@ fun BackupSection(
             }
         }
         if (status != null) item { Text(status!!, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) }
+
+        item { SectionLabel(stringResource(R.string.backup_encryption_section)) }
+        item {
+            OutlinedTextField(
+                value = backupPassword,
+                onValueChange = { backupPassword = it },
+                label = { Text(stringResource(R.string.backup_password_label)) },
+                visualTransformation = PasswordVisualTransformation(),
+                supportingText = { Text(stringResource(R.string.backup_password_hint), fontSize = 12.sp) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
 
         item { SectionLabel("NAS") }
         item { OutlinedTextField(value = backup.nasAddress, onValueChange = { onUpdate(backup.copy(nasAddress = it)) }, label = { Text(stringResource(R.string.nas_address_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true) }
@@ -94,7 +118,7 @@ fun BackupSection(
                 files.take(5).forEach { backup ->
                     Card(Modifier.fillMaxWidth().clickable {
                         scope.launch {
-                            status = when (val r = backupManager.restoreFromLocal(backup)) {
+                            status = when (val r = backupManager.restoreFromLocal(backup, backupPassword)) {
                                 is BackupManager.BackupResult.Success -> restoredText
                                 is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
                             }

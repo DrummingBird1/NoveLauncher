@@ -273,7 +273,7 @@ fun AboutSection() {
             val emailSubject = stringResource(R.string.about_contact_email_subject)
             AboutButton(Icons.Rounded.Email, contactLabel) {
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = Uri.parse("mailto:support@novelauncher.app")
+                    data = Uri.parse("mailto:solvaris2@gmail.com")
                     putExtra(Intent.EXTRA_SUBJECT, emailSubject)
                 }
                 try { context.startActivity(intent) } catch (_: Exception) {}

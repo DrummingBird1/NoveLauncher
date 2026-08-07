@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v9.1: static app shortcuts, shown on long-press of the launcher icon (from
+     another launcher, or from NoveLauncher itself via Android's own shortcut
+     affordance). targetPackage/targetClass are hardcoded because resource XML
+     files (unlike AndroidManifest.xml) don't get ${applicationId} substitution. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="settings"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_settings_short"
+        android:shortcutLongLabel="@string/shortcut_settings_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.ailauncher.app"
+            android:targetClass="com.ailauncher.app.ui.screens.SettingsActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="backup"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_backup_short"
+        android:shortcutLongLabel="@string/shortcut_backup_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.ailauncher.app"
+            android:targetClass="com.ailauncher.app.ui.screens.SettingsActivity">
+            <extra android:name="shortcut_page" android:value="BACKUP" />
+        </intent>
+    </shortcut>
+</shortcuts>

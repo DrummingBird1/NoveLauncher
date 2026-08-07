@@ -39,6 +39,10 @@ class SettingsRepository(
     // Legacy plain JSON values are still readable and get migrated on next save.
     private val secureCrypto by lazy { SecureCrypto() }
 
+    // v9: password-derived (not AndroidKeyStore-bound) so an exported backup can be
+    // decrypted on a different device. See PortableBackupCrypto kdoc.
+    private val portableBackupCrypto by lazy { com.ailauncher.app.security.PortableBackupCrypto() }
+
     companion object {
         private val K_APPEARANCE = stringPreferencesKey("appearance")
         private val K_PAGES = stringPreferencesKey("pages")
@@ -139,7 +143,15 @@ class SettingsRepository(
      * security). With one read, everything in the exported JSON describes
      * exactly the same on-disk moment.
      */
-    override suspend fun exportAllSettings(): String {
+    override suspend fun exportAllSettings(): String =
+        json.encodeToString(LauncherSettings.serializer(), buildExportSnapshot())
+
+    override suspend fun exportAllSettingsEncrypted(password: String): String {
+        val plain = json.encodeToString(LauncherSettings.serializer(), buildExportSnapshot())
+        return portableBackupCrypto.encrypt(plain, password)
+    }
+
+    private suspend fun buildExportSnapshot(): LauncherSettings {
         val prefs = dataStore.data.first()
         fun <T> decode(key: Preferences.Key<String>, default: T, serializer: kotlinx.serialization.KSerializer<T>): T {
             val raw = prefs[key] ?: return default
@@ -179,7 +191,7 @@ class SettingsRepository(
             repair = decode(K_REPAIR, RepairSettings(), RepairSettings.serializer()),
             onboarding = decode(K_ONBOARDING, OnboardingState(), OnboardingState.serializer())
         )
-        return json.encodeToString(LauncherSettings.serializer(), full)
+        return full
     }
 
     /**
@@ -213,6 +225,15 @@ class SettingsRepository(
             }
             true
         } catch (_: Exception) { false }
+    }
+
+    override suspend fun importAllSettingsEncrypted(content: String, password: String): Boolean {
+        val plain = if (com.ailauncher.app.security.PortableBackupCrypto.isEncrypted(content)) {
+            portableBackupCrypto.decryptOrNull(content, password) ?: return false
+        } else {
+            content
+        }
+        return importAllSettings(plain)
     }
 
     /** Reset everything to defaults */

@@ -60,21 +60,17 @@ Example: `https://yourname.github.io/novelauncher-legal/privacy.html`
 
 ---
 
-## ⚠️ Domain warning
+## ✅ Support email
 
-The email `support@novelauncher.app` in our policy is a **placeholder**.
-Without an actual MX record on `novelauncher.app`, emails sent there will bounce.
-
-**Before submitting to Play Store**, do one of:
-- **Option A:** Buy `novelauncher.app` domain (~$30/year on Namecheap, Cloudflare Registrar)
-- **Option B:** Replace the email with a real address you control (e.g., your Gmail)
-
-To replace the email throughout the policy:
+The policy now uses `solvaris2@gmail.com` — a real, monitored inbox — so no further
+action is needed before submission. If you later want a `@novelauncher.app` address
+instead, buy the domain (~$30/year on Namecheap, Cloudflare Registrar) and replace
+the email throughout the policy:
 ```bash
-sed -i 's/support@novelauncher.app/your.real.email@gmail.com/g' PRIVACY_POLICY.md TERMS_OF_SERVICE.md
+sed -i 's/solvaris2@gmail.com/your.new.email@novelauncher.app/g' PRIVACY_POLICY.md PRIVACY_POLICY.html TERMS_OF_SERVICE.md
 ```
 
-Google **will** test this email during review. Bounced emails = rejected app.
+Google **will** test the support email during review — keep it monitored.
 
 ---
 

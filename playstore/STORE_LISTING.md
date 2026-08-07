@@ -113,7 +113,7 @@ no ads, on-device AI, customizable
 **Free** (no in-app purchases planned, no ads)
 
 ## Support Email
-support@novelauncher.app
+solvaris2@gmail.com
 
 ## Privacy Policy URL
 https://novelauncher.app/privacy

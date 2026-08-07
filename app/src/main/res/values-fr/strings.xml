@@ -2,6 +2,15 @@
 <resources>
     <string name="app_name">NoveLauncher</string>
 
+    <string name="whats_new_title">Nouveautés</string>
+    <string-array name="whats_new_items">
+        <item>Couleurs dynamiques basées sur le fond d\'écran (Material You) sur Android 12+</item>
+        <item>Fichiers de sauvegarde protégés par mot de passe (facultatif)</item>
+        <item>Raccourcis d\'application par appui long sur l\'icône du launcher</item>
+        <item>Option Réduire les animations dans les réglages d\'apparence</item>
+        <item>Améliorations d\'accessibilité, de performance et de stabilité</item>
+    </string-array>
+
     <string name="page_home">Accueil</string>
     <string name="page_apps">Applications</string>
     <string name="page_news">Actualités</string>
@@ -90,6 +99,8 @@
     <string name="icon_packs_empty_hint">Installez un pack d\'icônes compatible Nova/ADW/Lawnchair depuis le Play Store et revenez ici.</string>
 
     <string name="section_size">Taille</string>
+    <string name="section_accessibility">Accessibilité</string>
+    <string name="appearance_reduce_motion">Réduire les animations</string>
     <string name="section_more_menus">Plus de menus</string>
     <string name="appearance_icon_size">Taille des icônes</string>
     <string name="appearance_app_font_size">Police d\'applis</string>
@@ -101,6 +112,7 @@
     <string name="preview_label">Aperçu</string>
 
     <string name="section_theme_mode">Mode d\'affichage</string>
+    <string name="appearance_dynamic_color">Couleurs dynamiques (Material You)</string>
     <string name="section_theme_presets">Thèmes prédéfinis</string>
     <string name="section_custom_colors">Couleurs personnalisées</string>
     <string name="custom_colors_toggle">Utiliser des couleurs personnalisées</string>
@@ -176,6 +188,7 @@
     <string name="security_method_label">Méthode : %1$s</string>
     <string name="security_choose_apps">Choisir les applis à verrouiller</string>
     <string name="security_locked_count">%1$d verrouillée(s)</string>
+    <string name="security_isolation_notice">Le verrouillage d\'applications et le dossier privé sont dissuasifs, pas un bac à sable sécurisé — une application « verrouillée » reste accessible via les applications récentes, les notifications, un autre launcher ou ADB. Pour une isolation réelle des applications sensibles, envisagez le profil professionnel (Work Profile) intégré à Android.</string>
     <string name="section_screen_lock">Verrouillage d\'écran</string>
     <string name="security_layout_lock">Verrouillage de mise en page</string>
     <string name="section_safety_launcher_lock">Sécurité — verrouillage du lanceur</string>
@@ -362,4 +375,11 @@
     <string name="backup_error_nas_io">NAS : %1$s</string>
     <string name="backup_nas_username_label">Nom d\'utilisateur (facultatif)</string>
     <string name="backup_nas_password_label">Mot de passe (facultatif)</string>
+    <string name="backup_encryption_section">Chiffrement</string>
+    <string name="backup_password_label">Mot de passe de sauvegarde (facultatif)</string>
+    <string name="backup_password_hint">Si renseigné, le fichier de sauvegarde sera chiffré. Le même mot de passe sera nécessaire pour le restaurer.</string>
+    <string name="shortcut_settings_short">Réglages</string>
+    <string name="shortcut_settings_long">Ouvrir les réglages</string>
+    <string name="shortcut_backup_short">Sauvegarde</string>
+    <string name="shortcut_backup_long">Ouvrir l\'écran de sauvegarde</string>
 </resources>

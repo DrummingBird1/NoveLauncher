@@ -1,10 +1,12 @@
 package com.ailauncher.app.ui.theme
 
 import android.graphics.Typeface
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import com.ailauncher.app.domain.models.*
 
@@ -39,6 +41,23 @@ fun AILauncherTheme(
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
+    // Material You: pulled from the system wallpaper on API 31+. Only makes sense
+    // when the user isn't already asking for a specific custom palette, and only
+    // where the platform actually provides it.
+    val canUseDynamicColor = appearance.useDynamicColor && !appearance.useCustomColors &&
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    val colorScheme = if (canUseDynamicColor) {
+        val context = LocalContext.current
+        if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    } else {
+        buildPresetColorScheme(appearance, isDark)
+    }
+
+    MaterialTheme(colorScheme = colorScheme, content = content)
+}
+
+private fun buildPresetColorScheme(appearance: AppearanceSettings, isDark: Boolean): ColorScheme {
     val preset = ThemePreset.findById(appearance.themePresetId)
 
     val primary: Color
@@ -74,7 +93,7 @@ fun AILauncherTheme(
         }
     }
 
-    val colorScheme = if (isDark) {
+    return if (isDark) {
         darkColorScheme(
             primary = primary,
             secondary = secondary,
@@ -97,6 +116,4 @@ fun AILauncherTheme(
             onSurfaceVariant = onSurface.copy(alpha = 0.6f)
         )
     }
-
-    MaterialTheme(colorScheme = colorScheme, content = content)
 }

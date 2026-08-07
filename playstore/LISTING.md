@@ -72,7 +72,7 @@ All data processing occurs entirely on-device:
 - No analytics, tracking, or advertising SDKs are included
 
 ### Contact
-support@novelauncher.app
+solvaris2@gmail.com
 
 ---
 
@@ -97,4 +97,4 @@ Last updated: April 2026
 
 8. GOVERNING LAW: These terms are governed by the laws of Israel.
 
-9. CONTACT: support@novelauncher.app
+9. CONTACT: solvaris2@gmail.com

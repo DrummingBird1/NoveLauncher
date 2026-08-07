@@ -32,6 +32,7 @@ import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.ClockSettings
 import com.ailauncher.app.domain.models.IconShape
 import com.ailauncher.app.domain.models.LauncherFont
+import com.ailauncher.app.domain.models.SmartControlSettings
 import com.ailauncher.app.domain.models.ThemeMode
 import com.ailauncher.app.domain.models.ThemePreset
 import com.ailauncher.app.ui.theme.launcherFontFamily
@@ -51,13 +52,26 @@ import com.ailauncher.app.ui.theme.parseHexColor
 fun AppearanceSection(
     appearance: AppearanceSettings,
     onUpdate: (AppearanceSettings) -> Unit,
-    onNavigate: (SettingsPage) -> Unit
+    onNavigate: (SettingsPage) -> Unit,
+    smartControl: SmartControlSettings = SmartControlSettings(),
+    onUpdateSmartControl: (SmartControlSettings) -> Unit = {}
 ) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { LivePreview(appearance) }
 
+        item { SectionLabel(stringResource(R.string.section_accessibility)) }
+        item {
+            SwitchSetting(stringResource(R.string.appearance_reduce_motion), smartControl.reduceMotion) {
+                onUpdateSmartControl(smartControl.copy(reduceMotion = it))
+            }
+        }
+
         item { SectionLabel(stringResource(R.string.section_size)) }
-        item { SliderSetting(stringResource(R.string.appearance_icon_size), appearance.iconSizeDp.toFloat(), 32f..80f, "${appearance.iconSizeDp}dp") { onUpdate(appearance.copy(iconSizeDp = it.toInt())) } }
+        // Lower bound is 48dp, not a smaller "looks fine" value — the app icon's tap
+        // target width tracks iconSizeDp directly (HomeScreen/AppsScreen), so anything
+        // below the Material accessibility minimum touch target would make icons hard
+        // to tap accurately.
+        item { SliderSetting(stringResource(R.string.appearance_icon_size), appearance.iconSizeDp.toFloat(), 48f..80f, "${appearance.iconSizeDp}dp") { onUpdate(appearance.copy(iconSizeDp = it.toInt())) } }
         item { SliderSetting(stringResource(R.string.appearance_app_font_size), appearance.fontSizeSp.toFloat(), 8f..22f, "${appearance.fontSizeSp}sp") { onUpdate(appearance.copy(fontSizeSp = it.toInt())) } }
         item { SliderSetting(stringResource(R.string.appearance_columns), appearance.gridColumns.toFloat(), 3f..6f, "${appearance.gridColumns}", steps = 2) { onUpdate(appearance.copy(gridColumns = it.toInt())) } }
         item { SliderSetting(stringResource(R.string.appearance_folder_icon_size), appearance.folderIconSizeDp.toFloat(), 20f..48f, "${appearance.folderIconSizeDp}dp") { onUpdate(appearance.copy(folderIconSizeDp = it.toInt())) } }
@@ -168,6 +182,14 @@ fun ThemesSection(appearance: AppearanceSettings, onUpdate: (AppearanceSettings)
             }
         }
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            item {
+                SwitchSetting(stringResource(R.string.appearance_dynamic_color), appearance.useDynamicColor) {
+                    onUpdate(appearance.copy(useDynamicColor = it))
+                }
+            }
+        }
+
         item { SectionLabel(stringResource(R.string.section_theme_presets)) }
         items(ThemePreset.PRESETS.chunked(3)) { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -261,14 +283,20 @@ fun FullColorPicker(label: String, currentHex: String, onColorSelected: (String)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             items(allColors) { hex ->
                 val isSelected = hex.equals(currentHex, ignoreCase = true)
+                // Tap target is 48dp (accessibility minimum) even though the visible
+                // swatch stays 36dp, so the color grid doesn't get too sparse.
                 Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(parseHexColor(hex))
-                        .then(if (isSelected) Modifier.border(3.dp, Color.White, CircleShape) else Modifier)
-                        .clickable { onColorSelected(hex); hexInput = hex }
-                )
+                    modifier = Modifier.size(48.dp).clickable { onColorSelected(hex); hexInput = hex },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(parseHexColor(hex))
+                            .then(if (isSelected) Modifier.border(3.dp, Color.White, CircleShape) else Modifier)
+                    )
+                }
             }
         }
     }

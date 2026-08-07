@@ -67,7 +67,7 @@ These terms are governed by the laws of the State of Israel, without regard to i
 
 ## 11. Contact
 
-Email: **support@novelauncher.app**
+Email: **solvaris2@gmail.com**
 
 ---
 

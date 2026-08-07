@@ -75,6 +75,10 @@ val LocalIconCache = staticCompositionLocalOf<IconCache> {
     error("LocalIconCache not provided")
 }
 
+/** SmartControlSettings.reduceMotion, hoisted so any Composable can skip/shorten
+ *  animations without threading the setting through every parameter list. */
+val LocalReduceMotion = staticCompositionLocalOf { false }
+
 @AndroidEntryPoint
 class LauncherActivity : FragmentActivity() {
 
@@ -161,10 +165,12 @@ class LauncherActivity : FragmentActivity() {
             viewModel = vm
             val appearance by vm.appearance.collectAsState()
             val onboarding by vm.onboarding.collectAsState()
+            val smartControl by vm.smartControl.collectAsState()
 
             CompositionLocalProvider(
                 LocalAppWidgetHost provides widgetHost,
-                LocalIconCache provides iconCache
+                LocalIconCache provides iconCache,
+                LocalReduceMotion provides smartControl.reduceMotion
             ) {
                 AILauncherTheme(appearance = appearance) {
                     if (!onboarding.completed) {
@@ -173,6 +179,9 @@ class LauncherActivity : FragmentActivity() {
                         LauncherRoot(viewModel = vm, activity = this@LauncherActivity)
                         // v7 FIX #8: Show credential dialog when needed
                         CredentialDialog(viewModel = vm)
+                        if (onboarding.lastSeenVersionCode < com.ailauncher.app.BuildConfig.VERSION_CODE) {
+                            WhatsNewDialog(onDismiss = { vm.markWhatsNewSeen(com.ailauncher.app.BuildConfig.VERSION_CODE) })
+                        }
                     }
                 }
             }
@@ -491,7 +500,12 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
             }
         }
 
-        AnimatedVisibility(visible = showNavBar && enabledPages.size > 1, enter = slideInVertically { it }, exit = slideOutVertically { it }) {
+        val reduceMotion = LocalReduceMotion.current
+        AnimatedVisibility(
+            visible = showNavBar && enabledPages.size > 1,
+            enter = if (reduceMotion) EnterTransition.None else slideInVertically { it },
+            exit = if (reduceMotion) ExitTransition.None else slideOutVertically { it }
+        ) {
             val ctx = androidx.compose.ui.platform.LocalContext.current
             NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp, modifier = Modifier.navigationBarsPadding()) {
                 enabledPages.forEachIndexed { index, page ->

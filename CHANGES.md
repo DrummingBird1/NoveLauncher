@@ -42,11 +42,8 @@ Adaptive icons now declare a `<monochrome>` element. On Android 13+ when the use
 
 The HTML version uses inline CSS (no external dependencies), looks great on mobile, and matches the NoveLauncher brand colors.
 
-⚠️ **Important warning in the guide:** The placeholder email `support@novelauncher.app` will bounce because we don't own the domain. Before submitting to Play Store, replace it with a real address you control:
-```bash
-sed -i 's/support@novelauncher.app/your.email@gmail.com/g' \
-  PRIVACY_POLICY.md PRIVACY_POLICY.html TERMS_OF_SERVICE.md
-```
+✅ The support email throughout the policy/listing docs and the in-app Contact button
+is `solvaris2@gmail.com` (a real, monitored inbox) — no placeholder remains.
 
 ## 📦 New files in v8
 

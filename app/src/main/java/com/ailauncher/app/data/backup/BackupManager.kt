@@ -43,9 +43,11 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
 
-    suspend fun backup(destination: BackupDestination): BackupResult = withContext(Dispatchers.IO) {
+    /** [password] blank = plain-JSON export (default); non-blank = AES-256-GCM
+     *  envelope only that password can open (see PortableBackupCrypto). */
+    suspend fun backup(destination: BackupDestination, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
         try {
-            val jsonData = settingsRepo.exportAllSettings()
+            val jsonData = if (password.isNotBlank()) settingsRepo.exportAllSettingsEncrypted(password) else settingsRepo.exportAllSettings()
             val fileName = "novelauncher_backup_${dateFormat.format(Date())}.json"
             when (destination) {
                 BackupDestination.LOCAL -> backupToLocal(fileName, jsonData)
@@ -66,7 +68,9 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
         } catch (e: Exception) { BackupResult.Error(e.message ?: "Unknown error") }
     }
 
-    suspend fun restoreFromLocal(backup: BackupFile): BackupResult = withContext(Dispatchers.IO) {
+    /** [password] is only used if the file turns out to be a [PortableBackupCrypto]
+     *  envelope — a plain-JSON backup restores fine with an empty password. */
+    suspend fun restoreFromLocal(backup: BackupFile, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
         try {
             val text = when {
                 backup.uri != null -> context.contentResolver.openInputStream(backup.uri)
@@ -78,13 +82,13 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
                 }
                 else -> return@withContext BackupResult.Error("Invalid backup reference")
             }
-            val success = settingsRepo.importAllSettings(text)
+            val success = settingsRepo.importAllSettingsEncrypted(text, password)
             if (success) BackupResult.Success(backup.displayName) else BackupResult.Error("Invalid format")
         } catch (e: Exception) { BackupResult.Error(e.message ?: "Restore failed") }
     }
 
-    suspend fun restoreFromJson(json: String): BackupResult = withContext(Dispatchers.IO) {
-        if (settingsRepo.importAllSettings(json)) BackupResult.Success("OK") else BackupResult.Error("Invalid format")
+    suspend fun restoreFromJson(json: String, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
+        if (settingsRepo.importAllSettingsEncrypted(json, password)) BackupResult.Success("OK") else BackupResult.Error("Invalid format")
     }
 
     private fun backupToLocal(fileName: String, data: String): BackupResult {

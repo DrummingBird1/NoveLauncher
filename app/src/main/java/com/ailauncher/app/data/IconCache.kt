@@ -1,11 +1,14 @@
 package com.ailauncher.app.data
 
+import android.app.ActivityManager
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.collection.LruCache
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,9 +23,13 @@ import javax.inject.Singleton
  *      On a 200-app drawer at 128×128 ARGB_8888 that's ~12 MB of redundant work
  *      *per page swipe*.
  *
- * Sizing: 8 MB cap is comfortable on every supported device (minSdk 26 → ~3 GB RAM
- *         floor). Eviction is LRU, so the visible drawer + dock + recommended row
- *         stay resident; rarely-seen apps drop out.
+ * Sizing: v9 hardcoded an 8 MB cap. v9.1 scales it to 1/8th of
+ *         ActivityManager.getMemoryClass() instead — a low-RAM device (memoryClass
+ *         ~ 96-128 MB) gets a smaller cache that won't pressure the rest of the app,
+ *         while a high-RAM device (memoryClass 256-512+ MB) gets more headroom for
+ *         a large app drawer. Clamped to [4 MB, 32 MB] so neither extreme is silly.
+ *         Eviction is LRU, so the visible drawer + dock + recommended row stay
+ *         resident; rarely-seen apps drop out.
  *
  * Keying: the package name alone isn't enough — a user-installed icon pack swap
  *         changes the rendered icon while the package name is unchanged. Callers
@@ -30,10 +37,16 @@ import javax.inject.Singleton
  *         and invoke [invalidateAll] after icon-pack changes.
  */
 @Singleton
-class IconCache @Inject constructor() {
+class IconCache @Inject constructor(@ApplicationContext context: Context) {
+
+    private val maxBytes: Int = run {
+        val memoryClassMb = (context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+            ?.memoryClass ?: DEFAULT_MEMORY_CLASS_MB
+        ((memoryClassMb * 1024 * 1024) / MEMORY_CLASS_FRACTION).coerceIn(MIN_BYTES, MAX_BYTES_CAP)
+    }
 
     // Size in *bytes*; bitmap.allocationByteCount feeds sizeOf below.
-    private val cache = object : LruCache<String, ImageBitmap>(MAX_BYTES) {
+    private val cache = object : LruCache<String, ImageBitmap>(maxBytes) {
         override fun sizeOf(key: String, value: ImageBitmap): Int {
             // ImageBitmap.asAndroidBitmap is the cheap path; allocationByteCount
             // is the actual RAM footprint (height × rowBytes).
@@ -62,7 +75,10 @@ class IconCache @Inject constructor() {
     fun invalidate(key: String) { cache.remove(key) }
 
     companion object {
-        private const val MAX_BYTES = 8 * 1024 * 1024  // 8 MB
+        private const val MEMORY_CLASS_FRACTION = 8
+        private const val DEFAULT_MEMORY_CLASS_MB = 64  // conservative fallback if ActivityManager is unavailable
+        private const val MIN_BYTES = 4 * 1024 * 1024
+        private const val MAX_BYTES_CAP = 32 * 1024 * 1024
         private const val ICON_PX = 128
     }
 }

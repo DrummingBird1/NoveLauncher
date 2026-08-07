@@ -228,7 +228,19 @@ class LauncherViewModel @Inject constructor(
     }
 
     fun completeOnboarding() {
-        viewModelScope.launch { settingsRepo.saveOnboarding(OnboardingState(completed = true)) }
+        // lastSeenVersionCode = current version: someone who just finished onboarding
+        // has seen everything there is to see — the "What's New" dialog is for
+        // existing users after an update, not a redundant popup right after setup.
+        viewModelScope.launch {
+            settingsRepo.saveOnboarding(
+                OnboardingState(completed = true, lastSeenVersionCode = com.ailauncher.app.BuildConfig.VERSION_CODE)
+            )
+        }
+    }
+
+    /** Marks the "What's New" dialog as seen for the currently-installed version. */
+    fun markWhatsNewSeen(versionCode: Int) {
+        viewModelScope.launch { settingsRepo.saveOnboarding(onboarding.value.copy(lastSeenVersionCode = versionCode)) }
     }
 
     /**

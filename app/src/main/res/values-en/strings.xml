@@ -2,6 +2,15 @@
 <resources>
     <string name="app_name">NoveLauncher</string>
 
+    <string name="whats_new_title">What\'s new</string>
+    <string-array name="whats_new_items">
+        <item>Dynamic colors from your wallpaper (Material You) on Android 12+</item>
+        <item>Optional password-protected backup files</item>
+        <item>App shortcuts on long-press of the launcher icon</item>
+        <item>Reduce Motion toggle in Appearance settings</item>
+        <item>Accessibility, performance, and stability improvements</item>
+    </string-array>
+
     <string name="page_home">Home</string>
     <string name="page_apps">Apps</string>
     <string name="page_news">News</string>
@@ -90,6 +99,8 @@
     <string name="icon_packs_empty_hint">Install a Nova/ADW/Lawnchair-compatible icon pack from the Play Store and come back here.</string>
 
     <string name="section_size">Size</string>
+    <string name="section_accessibility">Accessibility</string>
+    <string name="appearance_reduce_motion">Reduce motion</string>
     <string name="section_more_menus">More menus</string>
     <string name="appearance_icon_size">Icon size</string>
     <string name="appearance_app_font_size">App font size</string>
@@ -101,6 +112,7 @@
     <string name="preview_label">Preview</string>
 
     <string name="section_theme_mode">Display mode</string>
+    <string name="appearance_dynamic_color">Dynamic colors (Material You)</string>
     <string name="section_theme_presets">Theme presets</string>
     <string name="section_custom_colors">Custom colors</string>
     <string name="custom_colors_toggle">Use custom colors</string>
@@ -176,6 +188,7 @@
     <string name="security_method_label">Method: %1$s</string>
     <string name="security_choose_apps">Choose apps to lock</string>
     <string name="security_locked_count">%1$d locked</string>
+    <string name="security_isolation_notice">App lock and the private folder are a deterrent, not a secure sandbox — a "locked" app is still reachable from recents, notifications, another launcher, or ADB. For real isolation of sensitive apps, consider Android\'s built-in Work Profile.</string>
     <string name="section_screen_lock">Screen lock</string>
     <string name="security_layout_lock">Layout lock</string>
     <string name="section_safety_launcher_lock">Safety — launcher lock</string>
@@ -362,4 +375,11 @@
     <string name="backup_error_nas_io">NAS: %1$s</string>
     <string name="backup_nas_username_label">Username (optional)</string>
     <string name="backup_nas_password_label">Password (optional)</string>
+    <string name="backup_encryption_section">Encryption</string>
+    <string name="backup_password_label">Backup password (optional)</string>
+    <string name="backup_password_hint">If set, the backup file is encrypted. You\'ll need the same password to restore it.</string>
+    <string name="shortcut_settings_short">Settings</string>
+    <string name="shortcut_settings_long">Open Settings</string>
+    <string name="shortcut_backup_short">Backup</string>
+    <string name="shortcut_backup_long">Open Backup screen</string>
 </resources>

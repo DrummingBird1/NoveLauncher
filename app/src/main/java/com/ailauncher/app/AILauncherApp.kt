@@ -1,6 +1,7 @@
 package com.ailauncher.app
 
 import android.app.Application
+import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
@@ -32,9 +33,37 @@ class AILauncherApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+            installStrictMode()
+        }
         installCrashHandler()
         applyConfiguredLanguage()
+    }
+
+    /**
+     * v9: debug-only, detect+log — never penaltyDeath, so a flagged violation shows
+     * up in Logcat instead of crashing a dev build. Catches the kind of accidental
+     * main-thread disk/network calls that slipped in during earlier refactors
+     * (e.g. a stray SharedPreferences.commit() on Main).
+     */
+    private fun installStrictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectNetwork()
+                .penaltyLog()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .detectActivityLeaks()
+                .penaltyLog()
+                .build()
+        )
     }
 
     /**

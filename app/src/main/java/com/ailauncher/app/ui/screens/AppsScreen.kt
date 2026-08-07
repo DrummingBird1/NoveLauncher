@@ -1,7 +1,13 @@
 package com.ailauncher.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -270,13 +276,18 @@ fun FolderCard(
                     if (bitmap != null) {
                         Image(
                             bitmap = bitmap,
-                            contentDescription = null,
+                            contentDescription = app.app.label,
                             modifier = Modifier.size(iconSizeDp.dp).clip(RoundedCornerShape(8.dp))
                         )
                     }
                 }
             }
-            AnimatedVisibility(visible = isExpanded) {
+            val reduceMotion = com.ailauncher.app.ui.LocalReduceMotion.current
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(),
+                exit = if (reduceMotion) ExitTransition.None else fadeOut() + shrinkVertically()
+            ) {
                 Column(modifier = Modifier.padding(top = 12.dp)) {
                     folder.apps.forEach { rankedApp ->
                         Row(

@@ -95,7 +95,7 @@ If this policy changes, we will update the "Last updated" date at the top. Mater
 ## 8. Contact
 
 Questions or concerns? Email us at:
-**support@novelauncher.app**
+**solvaris2@gmail.com**
 
 ---
 

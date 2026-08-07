@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Gradle version catalog (gradle/libs.versions.toml) + build files.
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+
+  # Actions used by .github/workflows/android.yml.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "ci"

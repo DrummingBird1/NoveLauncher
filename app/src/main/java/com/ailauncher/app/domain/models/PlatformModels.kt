@@ -54,7 +54,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class RepairSettings(val lastRepairTimestamp: Long = 0L, val crashCount: Int = 0)
 
-@Serializable data class OnboardingState(val completed: Boolean = false, val currentStep: Int = 0)
+@Serializable data class OnboardingState(
+    val completed: Boolean = false,
+    val currentStep: Int = 0,
+    val lastSeenVersionCode: Int = 0 // drives the "What's New" dialog — see WhatsNewDialog
+)
 
 @Serializable data class WidgetSlot(
     val widgetId: Int,

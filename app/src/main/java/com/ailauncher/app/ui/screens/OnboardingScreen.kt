@@ -53,6 +53,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
 
     val pagerState = rememberPagerState(pageCount = { steps.size })
     val scope = rememberCoroutineScope()
+    val reduceMotion = com.ailauncher.app.ui.LocalReduceMotion.current
 
     Column(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -127,12 +128,20 @@ fun OnboardingScreen(onComplete: () -> Unit) {
         // Next / Finish
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             if (pagerState.currentPage > 0) {
-                OutlinedButton(onClick = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } }) { Text(stringResource(R.string.action_previous)) }
+                OutlinedButton(onClick = {
+                    scope.launch {
+                        if (reduceMotion) pagerState.scrollToPage(pagerState.currentPage - 1)
+                        else pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                    }
+                }) { Text(stringResource(R.string.action_previous)) }
             } else { Spacer(Modifier.width(1.dp)) }
 
             Button(onClick = {
                 if (pagerState.currentPage == steps.lastIndex) onComplete()
-                else scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                else scope.launch {
+                    if (reduceMotion) pagerState.scrollToPage(pagerState.currentPage + 1)
+                    else pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                }
             }, shape = RoundedCornerShape(16.dp)) {
                 Text(stringResource(if (pagerState.currentPage == steps.lastIndex) R.string.onboarding_start else R.string.action_next))
             }
