@@ -51,7 +51,7 @@ Thumbs.db
 # Logs
 *.log
 
-# Python (for playstore/generate_graphics.py)
+# Python (for assets/generate_graphics.py)
 __pycache__/
 *.pyc
 .venv/

@@ -6,8 +6,12 @@ Confident N glyph + 2 precision sparkles.
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os, math
 
-OUT_DIR = "/home/claude/v8/playstore/graphics"
-RES_DIR = "/home/claude/v8/app/src/main/res"
+# Paths are relative to this script's location so it runs regardless of where
+# the repo is checked out — no hardcoded sandbox path.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(SCRIPT_DIR)
+OUT_DIR = os.path.join(SCRIPT_DIR, "graphics")
+RES_DIR = os.path.join(ROOT_DIR, "app", "src", "main", "res")
 os.makedirs(OUT_DIR, exist_ok=True)
 
 PRIMARY = (124, 124, 255)
