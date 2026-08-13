@@ -48,6 +48,26 @@ android {
                 keyPassword = releaseKeyPassword
             }
         }
+        // Without this, AGP falls back to its implicit default debug config, which
+        // auto-generates ~/.android/debug.keystore with RANDOM key material the
+        // first time it's missing on a machine. Every GitHub Actions runner is a
+        // fresh VM, so every CI build was getting its own throwaway key — each
+        // debug APK artifact ended up signed differently from the last, and
+        // Android refuses to install an update whose signature doesn't match the
+        // already-installed app ("App not installed as package conflicts with an
+        // existing package" / INSTALL_FAILED_UPDATE_INCOMPATIBLE). That's a
+        // signature check, not a Play Protect / unknown-sources gate, so disabling
+        // those didn't help. Pointing debug builds at a committed, stable keystore
+        // (same alias/password AGP itself defaults to) makes local and CI debug
+        // builds always share one signature so updates install cleanly. Anyone
+        // with an app already installed under the old random key needs to
+        // uninstall it once before the first install with this key.
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
@@ -59,7 +79,10 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
-        debug { isDebuggable = true }
+        debug {
+            isDebuggable = true
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 
     compileOptions {

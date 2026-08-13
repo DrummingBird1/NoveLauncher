@@ -40,6 +40,13 @@ captures/
 *.keystore
 key.properties
 
+# Exception: the debug keystore IS committed on purpose (see build.gradle.kts).
+# It's a throwaway debug-only key (well-known password "android", same as AGP's
+# own auto-generated default) — checking it in gives every machine and every CI
+# run the same debug signature, so debug APK updates install cleanly instead of
+# colliding with whatever random key the last build happened to generate.
+!android/app/debug.keystore
+
 # Google Services / OAuth secrets
 google-services.json
 GoogleService-Info.plist
