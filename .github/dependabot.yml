@@ -8,6 +8,18 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
+    # v9.3: androidx.biometric and androidx.security are the two libraries the
+    # app-lock/at-rest-encryption model (see "Security model" in CLAUDE.md)
+    # directly depends on for correctness, not just features — a major bump
+    # changing BiometricPrompt callback semantics or the AndroidKeyStore-backed
+    # EncryptedSharedPreferences/security-crypto API shape deserves a human
+    # reading the changelog before merging, not an auto-mergeable weekly PR.
+    # Minor/patch bumps for these still come through normally.
+    ignore:
+      - dependency-name: "androidx.biometric:biometric"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "androidx.security:security-crypto"
+        update-types: ["version-update:semver-major"]
 
   # Actions used by .github/workflows/android.yml.
   - package-ecosystem: "github-actions"

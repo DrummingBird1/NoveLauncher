@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">Novedades</string>
     <string-array name="whats_new_items">
-        <item>Elige el idioma de la app — ahora con 7 idiomas, incluidos español y alemán</item>
-        <item>Añade tus propias fuentes de noticias RSS personalizadas</item>
-        <item>Mosaico en ajustes rápidos para bloquear el launcher al instante</item>
-        <item>Silencia las insignias de notificación durante una hora o hasta mañana</item>
-        <item>Copias de seguridad más inteligentes: limpieza automática de copias antiguas, mejor soporte NAS/WebDAV y aviso cuando falla una copia programada</item>
+        <item>Carga más rápida de los iconos justo al abrir la app</item>
+        <item>Consulta cuándo se hizo la última copia de seguridad y si tuvo éxito</item>
+        <item>Un aviso en Ajustes de seguridad si el dispositivo parece tener root</item>
+        <item>Actualizaciones más fiables — se corrigió un problema que impedía instalar versiones nuevas sobre las antiguas</item>
     </string-array>
 
     <string name="page_home">Inicio</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">Elegir apps a bloquear</string>
     <string name="security_locked_count">%1$d bloqueadas</string>
     <string name="security_isolation_notice">El bloqueo de apps y la carpeta privada son disuasorios, no un espacio aislado seguro — una app "bloqueada" sigue siendo accesible desde recientes, notificaciones, otro launcher o ADB. Para un aislamiento real de apps sensibles, considera el Perfil de trabajo integrado de Android.</string>
+    <string name="security_root_warning">Este dispositivo parece tener acceso root. El bloqueo de apps y la carpeta privada son más fáciles de eludir en un dispositivo con root — esto es solo informativo, no un bloqueo.</string>
     <string name="section_screen_lock">Bloqueo de pantalla</string>
     <string name="security_layout_lock">Bloqueo de diseño</string>
     <string name="section_safety_launcher_lock">Seguridad — bloqueo del launcher</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">Copiando…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">Última copia de seguridad: %1$s — correcta</string>
+    <string name="backup_last_run_failed">Última copia de seguridad: %1$s — fallida</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">Dirección</string>
     <string name="nas_path_label">Ruta</string>

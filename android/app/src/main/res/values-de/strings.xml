@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">Neuigkeiten</string>
     <string-array name="whats_new_items">
-        <item>Sprache der App wählbar — jetzt 7 Sprachen, neu mit Spanisch und Deutsch</item>
-        <item>Eigene RSS-Nachrichtenquellen hinzufügen</item>
-        <item>Schnelleinstellungen-Kachel zum sofortigen Sperren des Launchers</item>
-        <item>Benachrichtigungsabzeichen für eine Stunde oder bis morgen stummschalten</item>
-        <item>Intelligentere Sicherungen: automatisches Aufräumen alter Sicherungen, bessere NAS/WebDAV-Unterstützung und Warnung bei fehlgeschlagener geplanter Sicherung</item>
+        <item>Schnelleres Laden der Symbole direkt nach dem Öffnen der App</item>
+        <item>Sieh, wann die letzte Sicherung lief und ob sie erfolgreich war</item>
+        <item>Ein Hinweis in den Sicherheitseinstellungen, falls das Gerät gerootet zu sein scheint</item>
+        <item>Zuverlässigere App-Updates — ein Problem behoben, durch das neue Versionen nicht über alte installiert werden konnten</item>
     </string-array>
 
     <string name="page_home">Start</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">Zu sperrende Apps wählen</string>
     <string name="security_locked_count">%1$d gesperrt</string>
     <string name="security_isolation_notice">App-Sperre und der private Ordner wirken abschreckend, sind aber keine sichere Sandbox — eine „gesperrte" App ist weiterhin über die letzten Apps, Benachrichtigungen, einen anderen Launcher oder ADB erreichbar. Für eine echte Isolation sensibler Apps empfiehlt sich das in Android integrierte Arbeitsprofil.</string>
+    <string name="security_root_warning">Dieses Gerät scheint gerootet zu sein. App-Sperre und der private Ordner lassen sich auf einem gerooteten Gerät leichter umgehen — dies ist nur eine Information, keine Sperre.</string>
     <string name="section_screen_lock">Bildschirmsperre</string>
     <string name="security_layout_lock">Layout-Sperre</string>
     <string name="section_safety_launcher_lock">Sicherheit — Launcher-Sperre</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">Sicherung läuft…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">Letzte Sicherung: %1$s — erfolgreich</string>
+    <string name="backup_last_run_failed">Letzte Sicherung: %1$s — fehlgeschlagen</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">Adresse</string>
     <string name="nas_path_label">Pfad</string>

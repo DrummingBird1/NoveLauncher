@@ -6,9 +6,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import android.widget.Toast
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.compose.setContent
@@ -125,6 +128,16 @@ class LauncherActivity : FragmentActivity() {
         }
     }
 
+    // v9.3: without this, POST_NOTIFICATIONS (API 33+) is never granted, so
+    // ScheduledBackupWorker's failure alert (AILauncherApp.BACKUP_CHANNEL_ID)
+    // silently no-ops forever — see Pitfall #20 in CLAUDE.md. The system dialog
+    // itself is a no-op (and this callback never fires) on API < 33 or once the
+    // user has already answered it, so this is safe to call unconditionally.
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* Granted or denied — either way there's nothing more to do here;
+          a denial just means backup-failure alerts stay silent, same as before. */ }
+
     private var viewModel: LauncherViewModel? = null
 
     // Tracks whether we've already prompted the user for UsageStats this process.
@@ -154,6 +167,12 @@ class LauncherActivity : FragmentActivity() {
         // anyway; calling it explicitly keeps behaviour consistent on older OS too.
         // Screens already apply statusBarsPadding()/navigationBarsPadding() insets.
         enableEdgeToEdge()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
 
         // v9: Crash handler moved to AILauncherApp.installCrashHandler — it now
         // registers exactly once per process instead of leaking a wrapped handler

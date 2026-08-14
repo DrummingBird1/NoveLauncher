@@ -2,6 +2,7 @@ package com.ailauncher.app.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ailauncher.app.data.IconCache
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.api.WeatherData
 import com.ailauncher.app.data.api.WeatherService
@@ -31,7 +32,8 @@ class LauncherViewModel @Inject constructor(
     val backupManager: BackupManager,
     val notificationDao: NotificationDao,
     private val predictionEngine: AppPredictionEngine,
-    private val weatherService: WeatherService
+    private val weatherService: WeatherService,
+    private val iconCache: IconCache
 ) : ViewModel() {
 
     data class AppListState(
@@ -142,6 +144,12 @@ class LauncherViewModel @Inject constructor(
                         it.app.packageName !in hidden.privateFolderPackages
                     })
                 }.filter { it.apps.isNotEmpty() }
+
+                // Warm the in-memory icon cache from disk before the new list
+                // reaches composition, so a cold-started process doesn't re-decode
+                // every icon from PackageManager on the very first render. No-op
+                // for anything already resident (same-session refreshes).
+                iconCache.preloadFromDisk(visible.map { it.app.packageName })
 
                 _appState.value = _appState.value.copy(
                     isLoading = false, rankedApps = visible,

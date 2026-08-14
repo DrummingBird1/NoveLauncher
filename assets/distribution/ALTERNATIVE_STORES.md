@@ -110,8 +110,28 @@ channel that needs actual engineering work first, not just a submission form.
   the `play-services-auth` dependency) entirely for the F-Droid build,
   leaving Local/NAS backup as that flavor's only destinations. This is a
   contained, well-understood Android technique — `flavorDimensions` +
-  `productFlavors { fdroid { ... }; full { ... } }` — but it's real work, not
-  a checkbox.
+  `productFlavors { fdroid { ... }; standard { ... } }` — but it's real work, not
+  a checkbox. Both flavors should keep the **same `applicationId`** (no
+  `.fdroid` suffix) — a different applicationId would also require a
+  per-flavor fix to `res/xml/shortcuts.xml`'s hardcoded
+  `android:targetPackage` (see Pitfall #15 in [CLAUDE.md](../../CLAUDE.md)),
+  which same-applicationId flavors sidestep entirely. Concretely, the
+  Google-Drive-specific code that would need to move behind a flavor-specific
+  interface (same package + class name, one implementation per
+  `src/fdroid/java/...` and `src/standard/java/...` source set — the standard
+  Android pattern for flavor-swappable implementations) lives in exactly two
+  places:
+  - [android/app/src/main/java/com/ailauncher/app/data/backup/BackupManager.kt](../../android/app/src/main/java/com/ailauncher/app/data/backup/BackupManager.kt) —
+    `backupToGoogleDrive()`, `fetchDriveAccessToken()`, `isGoogleConnected()`,
+    `getConnectedEmail()` (all the `GoogleAuthUtil`/Drive REST calls).
+  - [android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt](../../android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt) —
+    `initiateGoogleSignIn()`, the `googleSignInLauncher` `ActivityResultLauncher`,
+    and the `GoogleSignIn`/`GoogleSignInOptions` imports.
+  The `fdroid` flavor's versions of both would make `BackupDestination.GOOGLE_DRIVE`
+  behave like `ONEDRIVE`/`BOX` already do today — return a clear
+  "not available in this build" `BackupResult.Error` — and the Settings UI's
+  Google Drive card would need the same kind of availability filter
+  `BackupSection` already applies to OneDrive/Box.
 - `QUERY_ALL_PACKAGES` and `PACKAGE_USAGE_STATS` will also draw reviewer
   questions — both are legitimately justified for a launcher and should be
   fine with a clear explanation, just expect back-and-forth.
@@ -123,10 +143,13 @@ channel that needs actual engineering work first, not just a submission form.
 
 ## Direct APK distribution (GitHub Releases)
 
-- Zero gatekeeper, full control, your own signing key. Since the repo already
-  has a working CI pipeline (`.github/workflows/android.yml`) that produces a
-  signed release build once the keystore secrets are added, publishing a
-  GitHub Release from the same tag is a small addition, not a new system.
+- Zero gatekeeper, full control, your own signing key. `.github/workflows/release.yml`
+  (added v9.3) already does this: push a `vX.Y.Z` tag and it builds the release
+  APK + AAB and opens a **draft** GitHub Release with both attached — signed
+  automatically once the keystore secrets described above are added to the
+  repo, unsigned (with an explicit CI warning) otherwise. It's deliberately
+  left as a draft rather than auto-published, so a human reviews the release
+  notes and artifacts before anyone can download them.
 - **Real friction to expect**: users must enable "install unknown apps" for
   whatever app they downloaded the APK with, and Android shows a genuinely
   scary-looking warning first. This meaningfully hurts conversion for

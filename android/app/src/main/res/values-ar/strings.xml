@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">ما الجديد</string>
     <string-array name="whats_new_items">
-        <item>اختيار لغة التطبيق — أصبح الآن 7 لغات، بما في ذلك الإسبانية والألمانية الجديدتان</item>
-        <item>إضافة مصادر أخبار RSS مخصصة خاصة بك</item>
-        <item>بلاطة في الإعدادات السريعة لقفل المشغّل فورًا</item>
-        <item>كتم شارات الإشعارات لمدة ساعة أو حتى الغد</item>
-        <item>نسخ احتياطي أذكى: حذف تلقائي للنسخ القديمة، دعم أفضل لخوادم NAS/WebDAV، وتنبيه عند فشل نسخة احتياطية مجدولة</item>
+        <item>تحميل أسرع للأيقونات مباشرة بعد فتح التطبيق</item>
+        <item>تعرّف على موعد آخر نسخة احتياطية وما إذا نجحت</item>
+        <item>تنبيه في إعدادات الأمان إذا بدا أن جهازك يتمتع بصلاحيات root</item>
+        <item>تحديثات تطبيق أكثر موثوقية — تم إصلاح مشكلة كانت تمنع تثبيت الإصدارات الجديدة فوق القديمة</item>
     </string-array>
 
     <string name="page_home">الرئيسية</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">اختر التطبيقات للقفل</string>
     <string name="security_locked_count">%1$d مقفلة</string>
     <string name="security_isolation_notice">قفل التطبيقات والمجلد الخاص هما رادع وليسا بيئة معزولة آمنة — يمكن الوصول إلى التطبيق "المقفل" عبر التطبيقات الأخيرة أو الإشعارات أو مشغل آخر أو ADB. لعزل حقيقي للتطبيقات الحساسة، فكر في استخدام ملف تعريف العمل (Work Profile) المدمج في أندرويد.</string>
+    <string name="security_root_warning">يبدو أن هذا الجهاز يتمتع بصلاحيات root. قفل التطبيقات والمجلد الخاص أسهل في التجاوز على جهاز يتمتع بصلاحيات root — هذه معلومة فقط وليست حظرًا.</string>
     <string name="section_screen_lock">قفل الشاشة</string>
     <string name="security_layout_lock">قفل التخطيط</string>
     <string name="section_safety_launcher_lock">الأمان — قفل المشغل</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">جارٍ النسخ…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">آخر نسخة احتياطية: %1$s — نجحت</string>
+    <string name="backup_last_run_failed">آخر نسخة احتياطية: %1$s — فشلت</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">العنوان</string>
     <string name="nas_path_label">المسار</string>

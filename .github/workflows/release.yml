@@ -1,0 +1,93 @@
+# v9.3: release-on-tag workflow. Push a tag matching v*.*.* (e.g. v9.3.0) and
+# this builds the release APK + AAB and attaches them to a new GitHub Release.
+#
+# Signing follows the exact same opt-in pattern as android.yml's release build:
+# absent the RELEASE_KEYSTORE_BASE64 (+ password/alias) secrets, the outputs
+# are unsigned — same as a local `assembleRelease` with no env vars set. This
+# workflow does not change that contract; it only automates what was previously
+# a manual "build locally, sign locally, upload to GitHub by hand" step.
+#
+# Tagging is manual (`git tag vX.Y.Z && git push origin vX.Y.Z`) — nothing here
+# creates a tag automatically, so a release only happens when someone chooses to.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Build + publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write  # needed to create the GitHub Release
+    env:
+      HAS_RELEASE_SIGNING: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Decode release keystore
+        if: env.HAS_RELEASE_SIGNING == 'true'
+        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "${{ runner.temp }}/release.keystore"
+
+      - name: Assemble release APK (R8)
+        run: ./gradlew assembleRelease --stacktrace
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      # Play Store / most alternative stores want an AAB, not an APK — see
+      # assets/distribution/ALTERNATIVE_STORES.md. Built separately from
+      # assembleRelease above because `bundleRelease` is its own Gradle task
+      # (different output format, same signing config).
+      - name: Assemble release AAB (R8)
+        run: ./gradlew bundleRelease --stacktrace
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Report artifact sizes
+        run: |
+          {
+            echo "### Release artifact sizes"
+            for f in app/build/outputs/apk/release/*.apk app/build/outputs/bundle/release/*.aab; do
+              [ -f "$f" ] && echo "- \`$(basename "$f")\`: $(du -h "$f" | cut -f1)"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Warn if release is unsigned
+        if: env.HAS_RELEASE_SIGNING != 'true'
+        run: echo "::warning::RELEASE_KEYSTORE_BASE64 is not set — this release's APK/AAB are UNSIGNED and cannot be installed as an update over a signed install. See CLAUDE.md's 'Release signing' section."
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+          generate_release_notes: true
+          draft: true  # review before publishing — never auto-publish to users

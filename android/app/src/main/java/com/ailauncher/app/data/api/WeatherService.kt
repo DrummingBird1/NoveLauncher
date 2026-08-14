@@ -73,6 +73,12 @@ data class WeatherData(
 class WeatherService @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    // v9.3: test-only override point (production/Hilt never sets this, so it
+    // always stays the real API) — lets WeatherServiceTest redirect requests to
+    // a MockWebServer instead of the network. Written at most once, before any
+    // fetchWeather() call, so there's no concurrent-mutation concern despite
+    // being a var on a @Singleton.
+    internal var baseUrl: String = "https://api.open-meteo.com"
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -81,7 +87,7 @@ class WeatherService @Inject constructor(
         val coords = if (lat != null && lon != null) lat to lon else getCurrentLocation() ?: (32.0853 to 34.7818)
 
         try {
-            val urlStr = "https://api.open-meteo.com/v1/forecast?" +
+            val urlStr = "$baseUrl/v1/forecast?" +
                     "latitude=${coords.first}&longitude=${coords.second}" +
                     "&current=temperature_2m,weather_code,wind_speed_10m,is_day" +
                     "&timezone=auto"

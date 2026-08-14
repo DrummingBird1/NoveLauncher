@@ -14,7 +14,8 @@ data class UsageCacheEntity(
     val lastUpdated: Long = System.currentTimeMillis()
 )
 
-@Entity(tableName = "hourly_usage")
+// v9.3: indexed on packageName, the only column getHourly() filters by.
+@Entity(tableName = "hourly_usage", indices = [Index("packageName")])
 data class HourlyUsageEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val packageName: String,
@@ -30,7 +31,11 @@ data class NotificationEntity(
     val lastOpenedTime: Long = 0
 )
 
-@Entity(tableName = "daily_stats")
+// v9.3: indexed on the two columns StatisticsScreen's queries filter/group by
+// (getStatsFrom filters on date; getTopAppsByScreenTime filters on date and
+// groups by packageName) — see Migrations.kt MIGRATION_1_2 for how existing
+// installs pick these up without losing data.
+@Entity(tableName = "daily_stats", indices = [Index("date"), Index("packageName")])
 data class DailyStatsEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val date: String,             // yyyy-MM-dd
@@ -95,8 +100,11 @@ interface NotificationDao {
         DailyStatsEntity::class,
         PredictionCacheEntity::class
     ],
-    version = 1,
-    exportSchema = false
+    version = 2, // v9.3: added indices — see MIGRATION_1_2 in Migrations.kt
+    // v9.3: was false. Needed for LauncherDatabaseMigrationTest's
+    // MigrationTestHelper, which verifies MIGRATION_1_2 against the real
+    // generated schema rather than a hand-maintained copy of it.
+    exportSchema = true
 )
 abstract class LauncherDatabase : RoomDatabase() {
     abstract fun usageDao(): UsageDao

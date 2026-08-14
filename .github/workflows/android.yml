@@ -1,12 +1,21 @@
 # GitHub Actions CI for NoveLauncher.
 #
-# Runs on every push to main + every pull request targeting main:
-#   1. Sets up JDK 17 (matches build.gradle.kts compileOptions).
-#   2. Restores the gradle wrapper jar (gitignored locally — checked in here for CI).
-#   3. Caches ~/.gradle/caches and ~/.gradle/wrapper for fast incremental runs.
-#   4. Builds debug APK + release APK (R8 / shrinkResources path).
-#   5. Runs Android Lint and unit tests.
-#   6. Uploads the debug APK and lint report as build artefacts.
+# Runs on every push to main + every pull request targeting main, as three
+# independent jobs that run in parallel (not chained with `needs:` — none of
+# them depends on another's output):
+#   1. build — assembleDebug + assembleRelease (R8), lint, ktlint, APK size.
+#   2. test — unit tests + Jacoco coverage.
+#   3. instrumented-tests — advisory only (continue-on-error), runs the single
+#      androidTest smoke test on an emulator. Kept separate from `build`/`test`
+#      because emulator boot is the slowest and flakiest part of the pipeline;
+#      isolating it means a flaky boot never blocks the fast, reliable jobs.
+#
+# v9.3: split from one sequential job into these three — the previous version
+# ran everything (build, lint, ktlint, tests, coverage) in a single job, so a
+# slow step delayed feedback on everything after it. Splitting `build` and
+# `test` apart doesn't change total runner-minutes much (each pays its own
+# checkout/JDK/Gradle-setup cost) but roughly halves wall-clock time to green
+# since they now run concurrently.
 #
 # Notes:
 #   * Release signing is opt-in via repo secrets (RELEASE_KEYSTORE_BASE64,
@@ -15,7 +24,9 @@
 #     android/app/build.gradle.kts only wires up signingConfigs["release"] when a
 #     real keystore file is present. No keystore is generated or stored by this repo.
 #   * Self-hosted runners are not necessary for this project; ubuntu-latest
-#     provides Android SDK 35 out of the box.
+#     provides Android SDK 35 out of the box, and (per reactivecircus/android-
+#     emulator-runner's docs) GitHub-hosted Linux runners support the KVM
+#     acceleration the emulator job needs.
 
 name: Android CI
 
@@ -34,7 +45,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build, lint, test
+    name: Build, lint, ktlint
     runs-on: ubuntu-latest
     timeout-minutes: 30
     # `secrets` isn't a valid context inside step-level `if:` conditions (GitHub
@@ -79,12 +90,6 @@ jobs:
         run: ./gradlew ktlintCheck --stacktrace
         continue-on-error: true  # codebase predates ktlint; advisory only, same policy as lint
 
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
-
-      - name: Coverage report
-        run: ./gradlew jacocoTestReport --stacktrace
-
       # Only runs (and only produces a file) when RELEASE_KEYSTORE_BASE64 is set
       # in repo secrets. Absent that secret, this step is skipped and the release
       # build below stays unsigned, exactly like before.
@@ -103,6 +108,20 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      # v9.3: cheap size-regression visibility — no history/diffing (that needs
+      # somewhere to persist prior runs' numbers, which is a bigger addition),
+      # just today's number in the run summary so a surprise jump is visible
+      # without downloading the artifact.
+      - name: Report APK size
+        if: always()
+        run: |
+          {
+            echo "### APK size"
+            for apk in app/build/outputs/apk/debug/*.apk app/build/outputs/apk/release/*.apk; do
+              [ -f "$apk" ] && echo "- \`$(basename "$apk")\`: $(du -h "$apk" | cut -f1)"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -142,6 +161,52 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
+  test:
+    name: Unit tests, coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Coverage report
+        run: ./gradlew jacocoTestReport --stacktrace
+
+      # Paparazzi screenshot tests (see HomeAppItemSnapshotTest) — compares
+      # against the goldens committed under app/src/test/snapshots/. A real
+      # visual change needs `./gradlew recordPaparazziDebug` run locally and
+      # the updated PNGs committed alongside the code change.
+      - name: Screenshot tests (Paparazzi)
+        run: ./gradlew verifyPaparazziDebug --stacktrace
+
+      - name: Upload Paparazzi report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: paparazzi-report
+          path: android/app/build/reports/paparazzi/
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
@@ -157,5 +222,59 @@ jobs:
         with:
           name: jacoco-coverage-report
           path: android/app/build/reports/jacoco/jacocoTestReport/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  instrumented-tests:
+    name: Instrumented tests (emulator, advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # v9.3: first-ever androidTest job — no history of how reliable emulator
+    # boot is on this project's CI yet. continue-on-error so a flaky/slow boot
+    # never blocks a PR; promote this to blocking once it's proven stable.
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          working-directory: android
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          disable-animations: true
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+
+      - name: Upload instrumented test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: instrumented-test-report
+          path: android/app/build/reports/androidTests/connected/
           retention-days: 14
           if-no-files-found: ignore

@@ -22,6 +22,14 @@ build/
 **/build/
 local.properties
 
+# Kotlin compiler daemon incremental-compilation cache
+.kotlin/
+
+# v9.3: Robolectric's default Context.cacheDir resolves relative to the test
+# worker's CWD (android/app/), not a real Android cache dir — IconCacheTest's
+# disk-persistence tests leave real PNG files here after a local test run.
+android/app/icon_cache/
+
 # Android Studio / IntelliJ
 *.iml
 .idea/

@@ -10,6 +10,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
+import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -40,9 +41,34 @@ class AILauncherApp : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
             installStrictMode()
         }
+        initSentry()
         installCrashHandler()
         applyConfiguredLanguage()
         createNotificationChannels()
+    }
+
+    /**
+     * v9.3: fully opt-in via the SENTRY_DSN build-time env var — same pattern
+     * as release signing (see the sentryDsn comment in app/build.gradle.kts).
+     * Nothing is sent anywhere unless a real DSN is supplied at build time; no
+     * DSN is committed to this repo. Installed *before* installCrashHandler()
+     * so this app's own handler (which does its own bookkeeping first) chains
+     * through Sentry's handler rather than the other way around — Sentry still
+     * sees every crash either way, since both handlers chain to whatever was
+     * previously registered.
+     */
+    private fun initSentry() {
+        val dsn = BuildConfig.SENTRY_DSN
+        if (dsn.isBlank()) return
+        try {
+            SentryAndroid.init(this) { options ->
+                options.dsn = dsn
+                options.environment = if (BuildConfig.DEBUG) "debug" else "release"
+                options.tracesSampleRate = 0.0 // crash/error reporting only, not perf tracing
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Sentry init failed")
+        }
     }
 
     /** No NotificationChannel existed anywhere in the app before v9.1 — this is

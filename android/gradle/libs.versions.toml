@@ -10,6 +10,7 @@ agp = "8.7.3"
 kotlin = "2.0.21"
 ksp = "2.0.21-1.0.28"
 ktlint-gradle = "12.1.1"
+paparazzi = "1.3.5"
 
 # AndroidX core
 activity-compose = "1.9.3"
@@ -48,6 +49,8 @@ work = "2.10.0"
 material = "1.12.0"
 accompanist-permissions = "0.36.0"
 coil = "2.7.0"
+profileinstaller = "1.4.1"
+sentry = "7.14.0"
 
 # Logging
 timber = "5.0.1"
@@ -59,6 +62,7 @@ ext-junit = "1.2.1"
 espresso = "3.6.1"
 robolectric = "4.14.1"
 androidx-test-core = "1.6.1"
+mockwebserver = "4.12.0"
 
 [libraries]
 # Compose BOM + members (versions pulled from the BOM)
@@ -98,6 +102,7 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -128,6 +133,15 @@ accompanist-permissions = { group = "com.google.accompanist", name = "accompanis
 # Image loading
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
+# v9.3: lets the app consume a Baseline Profile if one ships in
+# src/main/baselineProfiles/ (none does yet — see build.gradle.kts comment).
+# Inert without a profile file present; safe to add ahead of actually generating one.
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
+
+# v9.3: only ever initialized if SENTRY_DSN is set at build time (see
+# AILauncherApp.initSentry) — fully inert, sends nothing, absent that.
+sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
+
 # Logging
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
@@ -139,6 +153,23 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "mockwebserver" }
+
+[bundles]
+# v9.3: the 7 Compose libraries almost always get added together to a module;
+# `implementation(libs.bundles.compose)` replaces that whole block in one line.
+# Not retrofitted onto app/build.gradle.kts's existing individual lines (each
+# carries its own debugImplementation/testImplementation split that a bundle
+# can't express) — this is for the *next* module that needs Compose.
+compose = [
+    "compose-ui",
+    "compose-ui-graphics",
+    "compose-material3",
+    "compose-material-icons-extended",
+    "compose-animation",
+    "compose-foundation",
+    "compose-ui-tooling-preview",
+]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -148,3 +179,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }

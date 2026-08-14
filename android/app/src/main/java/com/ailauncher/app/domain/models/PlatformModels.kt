@@ -34,6 +34,10 @@ import kotlinx.serialization.Serializable
     val nasUsername: String = "",
     val nasPassword: String = "",
     val lastBackupTimestamp: Long = 0L,
+    // v9.3: true is the default so an install that's never attempted a backup
+    // doesn't show a false "failed" state — lastBackupTimestamp == 0L is what
+    // the UI checks to distinguish "never backed up" from "succeeded."
+    val lastBackupSuccess: Boolean = true,
     val maxLocalBackupsToKeep: Int = 10 // 0 = unlimited, no pruning
 )
 

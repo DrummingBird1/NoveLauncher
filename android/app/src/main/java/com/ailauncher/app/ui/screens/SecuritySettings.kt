@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.LockMethod
 import com.ailauncher.app.domain.models.SecuritySettings
 import com.ailauncher.app.security.AppLockManager
+import com.ailauncher.app.security.RootDetection
 import kotlinx.coroutines.launch
 
 /**
@@ -49,6 +51,10 @@ fun SecuritySection(
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showPatternDialog by remember { mutableStateOf(false) }
     var pinTarget by remember { mutableStateOf("app") }
+    // v9.3: informational only — see RootDetection kdoc. remember{} so the
+    // (cheap but not free) file-existence checks run once per composition,
+    // not on every recomposition of this section.
+    val likelyRooted = remember { RootDetection.isLikelyRooted() }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item { SectionLabel(stringResource(R.string.settings_app_lock_list)) }
@@ -121,6 +127,27 @@ fun SecuritySection(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 16.sp
                     )
+                }
+            }
+        }
+
+        if (likelyRooted) {
+            item {
+                Card(
+                    Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
+                        Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            stringResource(R.string.security_root_warning),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            lineHeight = 16.sp
+                        )
+                    }
                 }
             }
         }

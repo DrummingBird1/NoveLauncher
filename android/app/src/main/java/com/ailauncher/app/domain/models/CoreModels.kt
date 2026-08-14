@@ -1,6 +1,7 @@
 package com.ailauncher.app.domain.models
 
 import android.graphics.drawable.Drawable
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 /**
@@ -8,6 +9,19 @@ import kotlinx.serialization.Serializable
  * so it can't even be @Serializable.
  */
 
+/**
+ * v9.3: @Immutable is an assertion, not a check — normally risky on a class
+ * holding a platform [Drawable], since Compose can't verify Drawable's
+ * mutability and would otherwise infer the whole class (and anything that
+ * embeds it) as unstable, forcing every composable that takes a [RankedApp]
+ * to recompose on every pass regardless of whether it actually changed. It's
+ * safe here specifically because nothing renders [icon] directly — HomeAppItem
+ * always goes through IconCache.getOrLoad, which converts to an immutable
+ * ImageBitmap once and caches it by packageName, so in-place Drawable
+ * mutation (setTint/setBounds) never reaches composition. Don't add a second
+ * direct `Image(bitmap = ... icon ...)` call path without re-checking this.
+ */
+@Immutable
 data class AppInfo(
     val packageName: String,
     val label: String,
@@ -18,6 +32,7 @@ data class AppInfo(
     val lastUpdateTime: Long
 )
 
+@Immutable
 data class RankedApp(
     val app: AppInfo,
     val weightScore: Float,
@@ -28,6 +43,7 @@ data class RankedApp(
     val notificationCount: Int = 0
 )
 
+@Immutable
 data class SmartFolder(
     val category: AppCategory,
     val apps: List<RankedApp>,

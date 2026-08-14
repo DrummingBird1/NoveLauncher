@@ -34,15 +34,26 @@ class ScheduledBackupWorker @AssistedInject constructor(
 
             when (val result = backupManager.backup(settings.autoBackupDestination)) {
                 is BackupManager.BackupResult.Success -> {
-                    settingsRepo.saveBackup(settings.copy(lastBackupTimestamp = System.currentTimeMillis()))
+                    settingsRepo.saveBackup(
+                        settings.copy(lastBackupTimestamp = System.currentTimeMillis(), lastBackupSuccess = true)
+                    )
                     Result.success()
                 }
                 is BackupManager.BackupResult.Error -> {
+                    settingsRepo.saveBackup(
+                        settings.copy(lastBackupTimestamp = System.currentTimeMillis(), lastBackupSuccess = false)
+                    )
                     notifyFailure(result.message)
                     Result.retry()
                 }
             }
         } catch (e: Exception) {
+            try {
+                val settings = settingsRepo.backupFlow.first()
+                settingsRepo.saveBackup(
+                    settings.copy(lastBackupTimestamp = System.currentTimeMillis(), lastBackupSuccess = false)
+                )
+            } catch (_: Exception) {}
             notifyFailure(e.message ?: applicationContext.getString(R.string.notification_backup_failed_unknown))
             Result.retry()
         }

@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.hilt)
     jacoco
     alias(libs.plugins.ktlint)
+    // v9.3: JVM-only Compose screenshot testing (renders via layoutlib, no
+    // device/emulator needed) — see ui/screens/HomeScreenSnapshotTest.kt.
+    alias(libs.plugins.paparazzi)
 }
 
 // Release signing: opt-in via environment variables, never via committed secrets.
@@ -25,6 +28,12 @@ val hasReleaseSigning = !releaseKeystorePath.isNullOrBlank() &&
     !releaseKeyPassword.isNullOrBlank() &&
     file(releaseKeystorePath).exists()
 
+// v9.3: same opt-in-via-env-var pattern as release signing above. Empty by
+// default — AILauncherApp.initSentry() no-ops when BuildConfig.SENTRY_DSN is
+// blank, so nothing is sent anywhere unless someone sets this locally or adds
+// a SENTRY_DSN repo secret wired into CI (not done here — no DSN exists yet).
+val sentryDsn = System.getenv("SENTRY_DSN") ?: ""
+
 android {
     namespace = "com.ailauncher.app"
     compileSdk = 35
@@ -33,10 +42,11 @@ android {
         applicationId = "com.ailauncher.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "9.2.0"
+        versionCode = 12
+        versionName = "9.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+        buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
     }
 
     signingConfigs {
@@ -116,6 +126,28 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+
+    // v9.3: MigrationTestHelper (LauncherDatabaseMigrationTest) reads exported
+    // schema JSON as an asset via Robolectric, which (per AGP's generated
+    // test_config.properties → android_merged_assets) reads from the *debug*
+    // variant's merged assets, not a separate unit-test-only assets set — so
+    // this has to go on "debug", not "test". Effect: schema JSON ships inside
+    // debug-build assets (never release) — a few KB, same "debug carries extra
+    // dev-only stuff" tradeoff this codebase already makes for StrictMode.
+    sourceSets {
+        getByName("debug") {
+            assets.srcDirs("$projectDir/schemas")
+        }
+    }
+}
+
+// v9.3: schema JSON history for LauncherDatabase, needed by
+// LauncherDatabaseMigrationTest's MigrationTestHelper — see room.schemaLocation
+// below. Regenerate by running `./gradlew kspDebugKotlin` after any entity
+// change; a version bump without a matching new schema file here means the
+// migration test can't verify against what actually shipped.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
@@ -182,6 +214,14 @@ dependencies {
     // Image loading
     implementation(libs.coil.compose)
 
+    // v9.3: reads a Baseline Profile from src/main/baselineProfiles/ if one is
+    // present — none is shipped yet. Generating a real one needs a Macrobenchmark
+    // module driven on a physical device/emulator (measures actual cold-start /
+    // scroll methods to include), which isn't available in this environment.
+    // Adding the dependency now is inert and forward-compatible: it's a no-op
+    // until a profile file actually exists, so it's safe to land ahead of that.
+    implementation(libs.androidx.profileinstaller)
+
     // v9: com.google.android.material removed — themes.xml uses android:Theme.Material
     // (framework) not Theme.MaterialComponents, and Compose UI uses Material 3
     // (compose-material3) directly. Re-add only if a BiometricPrompt theme or other
@@ -193,11 +233,17 @@ dependencies {
     // Logging — Timber. DebugTree only planted in debug builds.
     implementation(libs.timber)
 
+    // v9.3: crash/error reporting, opt-in via SENTRY_DSN — see comment above
+    // sentryDsn near the top of this file and AILauncherApp.initSentry().
+    implementation(libs.sentry.android)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.mockwebserver)
+    testImplementation(libs.androidx.room.testing)
     // Robolectric + Compose UI testing (JVM only, no device/emulator needed).
     // ui-test-manifest must be debugImplementation, not testImplementation: it merges
     // a synthetic ComponentActivity into the debug variant's manifest, which is what

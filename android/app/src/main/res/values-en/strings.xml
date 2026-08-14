@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">What\'s new</string>
     <string-array name="whats_new_items">
-        <item>Choose the app\'s language — now 7 languages, including new Spanish and German</item>
-        <item>Add your own custom RSS news sources</item>
-        <item>Quick Settings tile to lock the launcher instantly</item>
-        <item>Snooze notification badges for an hour or until tomorrow</item>
-        <item>Smarter backups: automatic pruning of old backups, better NAS/WebDAV support, and an alert when a scheduled backup fails</item>
+        <item>Faster icon loading right after opening the app</item>
+        <item>See when your last backup ran, and whether it succeeded</item>
+        <item>A heads-up in Security settings if your device appears to be rooted</item>
+        <item>More reliable app updates — fixed an issue where new versions could fail to install over old ones</item>
     </string-array>
 
     <string name="page_home">Home</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">Choose apps to lock</string>
     <string name="security_locked_count">%1$d locked</string>
     <string name="security_isolation_notice">App lock and the private folder are a deterrent, not a secure sandbox — a "locked" app is still reachable from recents, notifications, another launcher, or ADB. For real isolation of sensitive apps, consider Android\'s built-in Work Profile.</string>
+    <string name="security_root_warning">This device appears to be rooted. App lock and the private folder are easier to bypass on a rooted device — this is informational only, not a block.</string>
     <string name="section_screen_lock">Screen lock</string>
     <string name="security_layout_lock">Layout lock</string>
     <string name="section_safety_launcher_lock">Safety — launcher lock</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">Backing up…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">Last backup: %1$s — succeeded</string>
+    <string name="backup_last_run_failed">Last backup: %1$s — failed</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">Address</string>
     <string name="nas_path_label">Path</string>

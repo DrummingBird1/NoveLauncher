@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">Что нового</string>
     <string-array name="whats_new_items">
-        <item>Выбор языка приложения — теперь 7 языков, включая новые испанский и немецкий</item>
-        <item>Добавление собственных RSS-источников новостей</item>
-        <item>Плитка в быстрых настройках для мгновенной блокировки лаунчера</item>
-        <item>Отключение значков уведомлений на час или до завтра</item>
-        <item>Более умное резервное копирование: автоочистка старых копий, улучшенная поддержка NAS/WebDAV и оповещение при сбое запланированного копирования</item>
+        <item>Более быстрая загрузка значков сразу после открытия приложения</item>
+        <item>Видно, когда прошло последнее резервное копирование и успешно ли оно</item>
+        <item>Предупреждение в настройках безопасности, если устройство похоже на рутированное</item>
+        <item>Более надёжные обновления — исправлена проблема, из-за которой новые версии не устанавливались поверх старых</item>
     </string-array>
 
     <string name="page_home">Главная</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">Выберите приложения для блокировки</string>
     <string name="security_locked_count">Заблокировано: %1$d</string>
     <string name="security_isolation_notice">Блокировка приложений и приватная папка — это сдерживающая мера, а не безопасная песочница: «заблокированное» приложение всё ещё доступно через недавние приложения, уведомления, другой лаунчер или ADB. Для настоящей изоляции чувствительных приложений рассмотрите встроенный в Android рабочий профиль (Work Profile).</string>
+    <string name="security_root_warning">Похоже, это устройство рутировано. Блокировку приложений и приватную папку легче обойти на рутированном устройстве — это только информация, а не блокировка.</string>
     <string name="section_screen_lock">Блокировка экрана</string>
     <string name="security_layout_lock">Блокировка раскладки</string>
     <string name="section_safety_launcher_lock">Безопасность — блокировка лаунчера</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">Создаётся резервная копия…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">Последнее резервное копирование: %1$s — успешно</string>
+    <string name="backup_last_run_failed">Последнее резервное копирование: %1$s — не удалось</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">Адрес</string>
     <string name="nas_path_label">Путь</string>

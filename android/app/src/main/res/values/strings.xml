@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">מה חדש</string>
     <string-array name="whats_new_items">
-        <item>בחירת שפת האפליקציה — כולל ספרדית וגרמנית חדשות (7 שפות בסך הכול)</item>
-        <item>הוספת מקורות חדשות RSS מותאמים אישית</item>
-        <item>אריח בהגדרות מהירות לנעילת הלאנצ\'ר באופן מיידי</item>
-        <item>השתקת תגי התראות לשעה או עד מחר</item>
-        <item>גיבוי חכם יותר: ניקוי גיבויים ישנים אוטומטית, תמיכה טובה יותר בשרתי NAS, והתראה כשגיבוי מתוזמן נכשל</item>
+        <item>טעינת אייקונים מהירה יותר מיד עם פתיחת האפליקציה</item>
+        <item>רואים מתי הגיבוי האחרון רץ ואם הוא הצליח</item>
+        <item>התראה בהגדרות אבטחה אם נראה שהמכשיר בעל הרשאות root</item>
+        <item>עדכוני אפליקציה אמינים יותר — תוקנה בעיה שגרמה לכישלון בהתקנת גרסאות חדשות מעל ישנות</item>
     </string-array>
 
     <!-- Pages -->
@@ -220,6 +219,7 @@
     <string name="security_choose_apps">בחירת אפליקציות לנעילה</string>
     <string name="security_locked_count">%1$d נעולות</string>
     <string name="security_isolation_notice">נעילת אפליקציות והתיקייה הפרטית הן הרתעה, לא ארגז חול מאובטח — אפליקציה "נעולה" עדיין נגישה דרך היסטוריית האפליקציות, התראות, לאנצ\'ר אחר או ADB. לבידוד אמיתי של אפליקציות רגישות, שקלו להשתמש בפרופיל עבודה (Work Profile) המובנה באנדרואיד.</string>
+    <string name="security_root_warning">נראה שלמכשיר הזה יש הרשאות root. נעילת אפליקציות והתיקייה הפרטית קלות יותר לעקיפה במכשיר עם root — זהו מידע בלבד, לא חסימה.</string>
     <string name="section_screen_lock">נעילת מסך</string>
     <string name="security_layout_lock">נעילת הזזה</string>
     <string name="section_safety_launcher_lock">בטיחות — נעילת לאנצ\'ר</string>
@@ -245,6 +245,8 @@
     <!-- Backup / Restore -->
     <string name="backup_status_in_progress">מגבה…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">גיבוי אחרון: %1$s — הצליח</string>
+    <string name="backup_last_run_failed">גיבוי אחרון: %1$s — נכשל</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">כתובת</string>
     <string name="nas_path_label">נתיב</string>

@@ -10,6 +10,7 @@ import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.UsageStatsRepository
 import com.ailauncher.app.data.backup.BackupManager
 import com.ailauncher.app.data.db.LauncherDatabase
+import com.ailauncher.app.data.db.MIGRATION_1_2
 import com.ailauncher.app.data.db.NotificationDao
 import com.ailauncher.app.data.db.UsageDao
 import com.ailauncher.app.data.ml.AppPredictionEngine
@@ -34,6 +35,7 @@ object AppModule {
     @Provides @Singleton
     fun provideLauncherDatabase(@ApplicationContext context: Context): LauncherDatabase =
         Room.databaseBuilder(context, LauncherDatabase::class.java, "launcher.db")
+            .addMigrations(MIGRATION_1_2)
             // Allow data loss only on downgrade; future upgrades MUST add a Migration.
             // The DB only holds derived caches (usage, notifications, predictions), so a
             // user-initiated reinstall is the recovery path if schema changes break it.

@@ -4,11 +4,10 @@
 
     <string name="whats_new_title">Nouveautés</string>
     <string-array name="whats_new_items">
-        <item>Choix de la langue de l\'application — désormais 7 langues, avec l\'espagnol et l\'allemand en plus</item>
-        <item>Ajoutez vos propres sources RSS personnalisées</item>
-        <item>Tuile dans les réglages rapides pour verrouiller le launcher instantanément</item>
-        <item>Suspendre les badges de notification pendant une heure ou jusqu\'à demain</item>
-        <item>Sauvegardes plus intelligentes : suppression automatique des anciennes sauvegardes, meilleur support NAS/WebDAV, et alerte en cas d\'échec d\'une sauvegarde planifiée</item>
+        <item>Chargement plus rapide des icônes juste après l\'ouverture de l\'application</item>
+        <item>Voyez quand votre dernière sauvegarde a été effectuée et si elle a réussi</item>
+        <item>Une alerte dans les paramètres de sécurité si votre appareil semble rooté</item>
+        <item>Mises à jour plus fiables — correction d\'un problème empêchant l\'installation de nouvelles versions par-dessus les anciennes</item>
     </string-array>
 
     <string name="page_home">Accueil</string>
@@ -195,6 +194,7 @@
     <string name="security_choose_apps">Choisir les applis à verrouiller</string>
     <string name="security_locked_count">%1$d verrouillée(s)</string>
     <string name="security_isolation_notice">Le verrouillage d\'applications et le dossier privé sont dissuasifs, pas un bac à sable sécurisé — une application « verrouillée » reste accessible via les applications récentes, les notifications, un autre launcher ou ADB. Pour une isolation réelle des applications sensibles, envisagez le profil professionnel (Work Profile) intégré à Android.</string>
+    <string name="security_root_warning">Cet appareil semble être rooté. Le verrouillage d\'applications et le dossier privé sont plus faciles à contourner sur un appareil rooté — ceci est purement informatif, pas un blocage.</string>
     <string name="section_screen_lock">Verrouillage d\'écran</string>
     <string name="security_layout_lock">Verrouillage de mise en page</string>
     <string name="section_safety_launcher_lock">Sécurité — verrouillage du lanceur</string>
@@ -218,6 +218,8 @@
 
     <string name="backup_status_in_progress">Sauvegarde en cours…</string>
     <string name="backup_status_success">✓ %1$s</string>
+    <string name="backup_last_run_success">Dernière sauvegarde : %1$s — réussie</string>
+    <string name="backup_last_run_failed">Dernière sauvegarde : %1$s — échouée</string>
     <string name="backup_status_error">✗ %1$s</string>
     <string name="nas_address_label">Adresse</string>
     <string name="nas_path_label">Chemin</string>

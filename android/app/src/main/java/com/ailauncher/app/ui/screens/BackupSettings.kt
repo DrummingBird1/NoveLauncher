@@ -54,16 +54,37 @@ fun BackupSection(
         it == BackupDestination.LOCAL || it == BackupDestination.GOOGLE_DRIVE || it == BackupDestination.NAS
     }
 
+    val dateFormat = remember { java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()) }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item { SectionLabel(stringResource(R.string.settings_backup)) }
+        if (backup.lastBackupTimestamp > 0L) {
+            item {
+                Text(
+                    stringResource(
+                        if (backup.lastBackupSuccess) R.string.backup_last_run_success else R.string.backup_last_run_failed,
+                        dateFormat.format(java.util.Date(backup.lastBackupTimestamp))
+                    ),
+                    fontSize = 12.sp,
+                    color = if (backup.lastBackupSuccess) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
+                )
+            }
+        }
         items(availableDestinations) { dest ->
             Card(Modifier.fillMaxWidth().clickable {
                 scope.launch {
                     status = backingUpText
-                    status = when (val r = backupManager.backup(dest, backupPassword)) {
-                        is BackupManager.BackupResult.Success -> context.getString(R.string.backup_status_success, r.path)
-                        is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
+                    val result = backupManager.backup(dest, backupPassword)
+                    status = when (result) {
+                        is BackupManager.BackupResult.Success -> context.getString(R.string.backup_status_success, result.path)
+                        is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, result.message)
                     }
+                    onUpdate(
+                        backup.copy(
+                            lastBackupTimestamp = System.currentTimeMillis(),
+                            lastBackupSuccess = result is BackupManager.BackupResult.Success
+                        )
+                    )
                 }
             }, shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
