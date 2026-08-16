@@ -41,6 +41,14 @@
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.AILauncher">
 
+        <!-- v9.3 fix: the Sentry SDK auto-registers a ContentProvider that runs
+             BEFORE Application.onCreate() and initializes itself automatically
+             unless this is set — it crashes the app on every launch with
+             "DSN is required" since no DSN is configured anywhere in this repo
+             (see AILauncherApp.initSentry(), which is the only intended init
+             path, gated on BuildConfig.SENTRY_DSN being non-blank). -->
+        <meta-data android:name="io.sentry.auto-init" android:value="false" />
+
         <activity
             android:name=".ui.LauncherActivity"
             android:exported="true"
