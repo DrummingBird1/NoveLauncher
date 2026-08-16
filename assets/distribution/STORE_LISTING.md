@@ -116,8 +116,13 @@ no ads, on-device AI, customizable
 solvaris2@gmail.com
 
 ## Privacy Policy URL
-https://novelauncher.app/privacy
-(or paste contents of PRIVACY_POLICY.md to a public URL)
+https://drummingbird1.github.io/novelauncher-legal/
+(published 2026-08-16 via GitHub Pages on a separate public repo,
+[DrummingBird1/novelauncher-legal](https://github.com/DrummingBird1/novelauncher-legal) —
+this main repo is private, and GitHub Pages isn't available for private repos
+on the free plan, so the policy lives in its own small public repo instead of
+here. Update it by editing `privacy.html`/`index.html` there directly, or by
+re-copying `PRIVACY_POLICY.html` from this repo and pushing.)
 
 ## Website
 https://novelauncher.app

@@ -1,5 +1,12 @@
 # Privacy Policy URL — Hosting Guide
 
+**✅ Done (2026-08-16):** the policy is live at
+**https://drummingbird1.github.io/novelauncher-legal/** — Option 1 below,
+except via a separate public repo ([DrummingBird1/novelauncher-legal](https://github.com/DrummingBird1/novelauncher-legal))
+rather than this one, since this repo is private and GitHub Pages isn't
+available for private repos on the free plan. Paste that URL into Play
+Console / APKPure / any other store's privacy policy field.
+
 Google Play **requires** a public HTTPS URL for your privacy policy.
 A local Markdown file is not enough. Here are 4 free ways to host yours.
 
