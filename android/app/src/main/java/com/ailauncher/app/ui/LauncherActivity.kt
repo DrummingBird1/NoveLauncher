@@ -453,6 +453,10 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
     val pagerState = rememberPagerState(initialPage = defaultIndex, pageCount = { enabledPages.size })
     val scope = rememberCoroutineScope()
     var showNavBar by remember { mutableStateOf(false) }
+    // v9.4: hoisted above the pager (was nested inside HomeScreen) so the overlay
+    // renders correctly regardless of which page is current — see HomeScreen.kt's
+    // pointerInput(onSwipeUp) fix for the bug this was entangled with.
+    var showGlobalSearch by remember { mutableStateOf(false) }
     val config = LocalConfiguration.current
     val adaptiveDisplay by viewModel.adaptiveDisplay.collectAsState()
 
@@ -488,56 +492,65 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
     }
     LaunchedEffect(showNavBar) { if (showNavBar) { kotlinx.coroutines.delay(3000); showNavBar = false } }
 
-    Column(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-            .pointerInput(Unit) {
-                detectVerticalDragGestures { _, dragAmount ->
-                    if (dragAmount < -30) showNavBar = true
-                    if (dragAmount > 30) showNavBar = false
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures { _, dragAmount ->
+                        if (dragAmount < -30) showNavBar = true
+                        if (dragAmount > 30) showNavBar = false
+                    }
+                }
+        ) {
+            HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { pageIndex ->
+                val page = enabledPages.getOrNull(pageIndex)
+                when (page?.id) {
+                    "home" -> HomeScreen(
+                        viewModel = viewModel,
+                        gridColumns = effectiveColumns,
+                        onSwipeUp = {
+                            // v8: Swipe-up from Home jumps to the Apps page if enabled.
+                            val appsIdx = enabledPages.indexOfFirst { it.id == "apps" }
+                            if (appsIdx >= 0) scope.launch { pagerState.animateScrollToPage(appsIdx) }
+                        },
+                        onOpenSearch = { showGlobalSearch = true }
+                    )
+                    "apps" -> AppsScreen(viewModel = viewModel, gridColumns = effectiveColumns)
+                    "news" -> NewsScreen(newsSettings = newsSettings)
+                    "personal" -> PersonalZoneScreen(viewModel = viewModel)
+                    else -> Box(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+                        val ctx = androidx.compose.ui.platform.LocalContext.current
+                        Text(page?.localizedName(ctx) ?: "", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+                    }
                 }
             }
-    ) {
-        HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { pageIndex ->
-            val page = enabledPages.getOrNull(pageIndex)
-            when (page?.id) {
-                "home" -> HomeScreen(
-                    viewModel = viewModel,
-                    gridColumns = effectiveColumns,
-                    onSwipeUp = {
-                        // v8: Swipe-up from Home jumps to the Apps page if enabled.
-                        val appsIdx = enabledPages.indexOfFirst { it.id == "apps" }
-                        if (appsIdx >= 0) scope.launch { pagerState.animateScrollToPage(appsIdx) }
+
+            val reduceMotion = LocalReduceMotion.current
+            AnimatedVisibility(
+                visible = showNavBar && enabledPages.size > 1,
+                enter = if (reduceMotion) EnterTransition.None else slideInVertically { it },
+                exit = if (reduceMotion) ExitTransition.None else slideOutVertically { it }
+            ) {
+                val ctx = androidx.compose.ui.platform.LocalContext.current
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp, modifier = Modifier.navigationBarsPadding()) {
+                    enabledPages.forEachIndexed { index, page ->
+                        val pageName = page.localizedName(ctx)
+                        NavigationBarItem(
+                            selected = pagerState.currentPage == index,
+                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                            icon = { Icon(when (page.iconName) { "home" -> Icons.Rounded.Home; "apps" -> Icons.Rounded.Apps; "newspaper" -> Icons.Rounded.Newspaper; "shield" -> Icons.Rounded.Shield; else -> Icons.Rounded.Tab }, pageName) },
+                            label = { Text(pageName, fontSize = 11.sp, fontFamily = launcherFontFamily(appearance.pageFont)) },
+                            colors = NavigationBarItemDefaults.colors(selectedIconColor = MaterialTheme.colorScheme.primary, unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
                     }
-                )
-                "apps" -> AppsScreen(viewModel = viewModel, gridColumns = effectiveColumns)
-                "news" -> NewsScreen(newsSettings = newsSettings)
-                "personal" -> PersonalZoneScreen(viewModel = viewModel)
-                else -> Box(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
-                    val ctx = androidx.compose.ui.platform.LocalContext.current
-                    Text(page?.localizedName(ctx) ?: "", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }
 
-        val reduceMotion = LocalReduceMotion.current
-        AnimatedVisibility(
-            visible = showNavBar && enabledPages.size > 1,
-            enter = if (reduceMotion) EnterTransition.None else slideInVertically { it },
-            exit = if (reduceMotion) ExitTransition.None else slideOutVertically { it }
-        ) {
-            val ctx = androidx.compose.ui.platform.LocalContext.current
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp, modifier = Modifier.navigationBarsPadding()) {
-                enabledPages.forEachIndexed { index, page ->
-                    val pageName = page.localizedName(ctx)
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                        icon = { Icon(when (page.iconName) { "home" -> Icons.Rounded.Home; "apps" -> Icons.Rounded.Apps; "newspaper" -> Icons.Rounded.Newspaper; "shield" -> Icons.Rounded.Shield; else -> Icons.Rounded.Tab }, pageName) },
-                        label = { Text(pageName, fontSize = 11.sp, fontFamily = launcherFontFamily(appearance.pageFont)) },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = MaterialTheme.colorScheme.primary, unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                }
-            }
+        // v9.4: hoisted from HomeScreen so the overlay always renders above the
+        // pager regardless of the current page (see fix note near showGlobalSearch above).
+        if (showGlobalSearch) {
+            GlobalSearchScreen(onDismiss = { showGlobalSearch = false })
         }
     }
 }

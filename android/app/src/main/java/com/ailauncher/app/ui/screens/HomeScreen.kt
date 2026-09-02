@@ -44,7 +44,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() -> Unit)? = null) {
+fun HomeScreen(
+    viewModel: LauncherViewModel,
+    gridColumns: Int,
+    onSwipeUp: (() -> Unit)? = null,
+    onOpenSearch: () -> Unit = {}
+) {
     val appState by viewModel.appState.collectAsState()
     val appearance by viewModel.appearance.collectAsState()
     val widgetSlots by viewModel.widgets.collectAsState()
@@ -62,8 +67,6 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
 
     // Clock editing mode
     var showClockSettings by remember { mutableStateOf(false) }
-    // v8: Global search overlay
-    var showGlobalSearch by remember { mutableStateOf(false) }
     // v8: Long-press menu target
     var longPressTarget by remember { mutableStateOf<RankedApp?>(null) }
 
@@ -77,6 +80,14 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
         }
     }
 
+    // v9.4 FIX: pointerInput must be keyed by something stable. Keying it by the
+    // onSwipeUp lambda itself (a fresh closure on every recomposition of this page,
+    // e.g. whenever showGlobalSearch/showClockSettings/longPressTarget changes)
+    // cancels and restarts the gesture-detector coroutine mid-touch, which can
+    // misfire detectVerticalDragGestures as a phantom swipe-up — observed as tapping
+    // the search icon spuriously navigating the pager to the Apps page. Key on Unit
+    // (never restarts) and read the latest callback via rememberUpdatedState instead.
+    val latestOnSwipeUp = rememberUpdatedState(onSwipeUp)
     Column(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(gridColumns),
@@ -87,11 +98,9 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
                 .weight(1f)
                 .fillMaxSize()
                 .statusBarsPadding()
-                .pointerInput(onSwipeUp) {
-                    if (onSwipeUp != null) {
-                        detectVerticalDragGestures { _, dragAmount ->
-                            if (dragAmount < -45f) onSwipeUp()
-                        }
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures { _, dragAmount ->
+                        if (dragAmount < -45f) latestOnSwipeUp.value?.invoke()
                     }
                 }
         ) {
@@ -105,7 +114,7 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
         item(span = { GridItemSpan(maxLineSpan) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 // v8: Global search button — fast access to apps + contacts + web.
-                IconButton(onClick = { showGlobalSearch = true }) {
+                IconButton(onClick = onOpenSearch) {
                     Icon(Icons.Rounded.Search, stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 IconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }) {
@@ -205,11 +214,6 @@ fun HomeScreen(viewModel: LauncherViewModel, gridColumns: Int, onSwipeUp: (() ->
                 longPressTarget = null
             }
         )
-    }
-
-    // v8: Global search overlay
-    if (showGlobalSearch) {
-        GlobalSearchScreen(onDismiss = { showGlobalSearch = false })
     }
 
     // Quick clock settings dialog
