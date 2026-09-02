@@ -171,7 +171,7 @@ fun SettingsRoot(
                 SettingsPage.HIDDEN_APPS -> HiddenAppsSection(hidden) { scope.launch { settingsRepo.saveHiddenApps(it) } }
                 SettingsPage.WALLPAPER -> WallpaperSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
                 SettingsPage.ABOUT -> AboutSection()
-                SettingsPage.STATISTICS -> StatisticsScreen(usageDao, onBack = { currentPage = SettingsPage.MAIN })
+                SettingsPage.STATISTICS -> StatisticsScreen(usageDao)
                 SettingsPage.ICON_PACKS -> IconPacksSection(iconPackManager)
             }
         }

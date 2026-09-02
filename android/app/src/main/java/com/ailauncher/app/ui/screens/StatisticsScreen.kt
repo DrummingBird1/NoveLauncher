@@ -35,7 +35,7 @@ import java.util.Locale
  * v6 feature #6: Usage statistics screen with top apps, screen time, launch count.
  */
 @Composable
-fun StatisticsScreen(usageDao: UsageDao, onBack: () -> Unit) {
+fun StatisticsScreen(usageDao: UsageDao) {
     var topApps by remember { mutableStateOf<List<DailyStatsEntity>>(emptyList()) }
     var selectedRange by remember { mutableStateOf(StatsRange.WEEK) }
     val scope = rememberCoroutineScope()
@@ -52,13 +52,8 @@ fun StatisticsScreen(usageDao: UsageDao, onBack: () -> Unit) {
         topApps = usageDao.getTopAppsByScreenTime(fromDate, 20)
     }
 
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()) {
-        // Top bar
-        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) { Icon(Icons.Rounded.ArrowBack, stringResource(R.string.action_back)) }
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.settings_statistics), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
-        }
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        Spacer(Modifier.height(16.dp))
 
         // Range selector
         Row(
