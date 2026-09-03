@@ -1,12 +1,9 @@
-# Built application files
+# Built application files. Release binaries live on GitHub Releases, never in
+# the repo — see assets/archive/README.md.
 *.apk
 *.aab
 *.ap_
 *.aar
-
-# Exception: old debug builds kept deliberately for reference — see
-# assets/archive/README.md for what's here and why (not the current release).
-!assets/archive/old-releases/*.apk
 
 # Files for the ART/Dalvik VM
 *.dex

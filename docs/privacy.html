@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — NoveLauncher</title>
+    <style>
+        :root {
+            --primary: #7C7CFF;
+            --accent: #4ECDC4;
+            --bg: #0A0A1A;
+            --surface: #14141F;
+            --text: #E0E0E8;
+            --muted: #8888AA;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h2 {
+            color: var(--primary);
+            margin-top: 32px;
+            margin-bottom: 12px;
+            font-size: 1.4em;
+        }
+        h3 {
+            color: var(--accent);
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        p, ul, ol { margin-bottom: 12px; }
+        ul, ol { padding-left: 28px; }
+        li { margin-bottom: 4px; }
+        .meta {
+            color: var(--muted);
+            font-size: 0.9em;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 16px;
+        }
+        .tldr {
+            background: linear-gradient(135deg, rgba(124,124,255,0.1), rgba(78,205,196,0.1));
+            border: 1px solid rgba(124,124,255,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0 32px;
+        }
+        .tldr strong { color: var(--accent); }
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th { color: var(--primary); }
+        a { color: var(--accent); }
+        @media (max-width: 600px) {
+            .container { padding: 28px 20px; }
+            h1 { font-size: 1.6em; }
+        }
+    </style>
+<link rel="icon" type="image/png" href="assets/icon-512.png">
+<meta name="description" content="Privacy policy for the NoveLauncher Android launcher — nothing is collected, everything runs on-device.">
+</head>
+<body>
+<nav style="display:flex;align-items:center;gap:24px;max-width:760px;margin:0 auto;height:64px">
+  <a href="index.html" style="font-weight:700;color:#E0E0E8;text-decoration:none;margin-right:auto">
+    <img src="assets/icon-512.png" alt="" style="width:30px;height:30px;border-radius:8px;vertical-align:middle;margin-right:8px">NoveLauncher</a>
+  <a href="index.html" style="color:#8888AA;font-size:.92rem;text-decoration:none">Home</a>
+  <a href="terms.html" style="color:#8888AA;font-size:.92rem;text-decoration:none">Terms</a>
+  <a href="https://github.com/DrummingBird1/NoveLauncher" style="color:#8888AA;font-size:.92rem;text-decoration:none">GitHub</a>
+</nav>
+
+    <div class="container">
+        <h1>Privacy Policy — NoveLauncher</h1>
+        <div class="meta">
+            <strong>Effective date:</strong> April 25, 2026 &nbsp;·&nbsp;
+            <strong>Last updated:</strong> April 25, 2026
+        </div>
+
+        <p>NoveLauncher (&quot;we&quot;, &quot;our&quot;, or &quot;the app&quot;) is operated as a personal-use Android launcher application. This privacy policy explains what data the app accesses, how it is used, and your rights as a user.</p>
+
+        <div class="tldr">
+            <strong>TL;DR</strong> — NoveLauncher does not collect, transmit, or store any personal data on external servers. Everything happens on your device.
+        </div>
+
+        <h2>1. Information We Access (Locally Only)</h2>
+        <p>To provide its functionality, NoveLauncher reads the following on your device:</p>
+
+        <h3>1.1 App Usage Statistics</h3>
+        <ul>
+            <li><strong>What:</strong> Which apps you open, when, and for how long</li>
+            <li><strong>Permission:</strong> <code>PACKAGE_USAGE_STATS</code></li>
+            <li><strong>Why:</strong> To rank your most-used apps and predict what you'll need next</li>
+            <li><strong>Where it goes:</strong> Stored only in a local SQLite database on your device</li>
+            <li><strong>Sharing:</strong> Never transmitted anywhere</li>
+        </ul>
+
+        <h3>1.2 Installed Apps List</h3>
+        <ul>
+            <li><strong>What:</strong> Names, package IDs, and icons of installed apps</li>
+            <li><strong>Permission:</strong> <code>QUERY_ALL_PACKAGES</code></li>
+            <li><strong>Why:</strong> To display them in the launcher</li>
+        </ul>
+
+        <h3>1.3 Notifications (Optional)</h3>
+        <ul>
+            <li><strong>What:</strong> Source app of incoming notifications (NOT the content)</li>
+            <li><strong>Why:</strong> To show unread badges on app icons</li>
+        </ul>
+
+        <h3>1.4 Location (Optional)</h3>
+        <ul>
+            <li><strong>What:</strong> Approximate location for weather widget</li>
+            <li><strong>Sharing:</strong> Sent only to Open-Meteo (https://open-meteo.com), which does not log requests</li>
+            <li><strong>Opt out:</strong> Don't grant the permission. Weather will fall back to a default city.</li>
+        </ul>
+
+        <h3>1.5 Contacts (Optional)</h3>
+        <ul>
+            <li><strong>What:</strong> Contact names and phone numbers</li>
+            <li><strong>Why:</strong> To include contacts in unified search results</li>
+            <li><strong>Sharing:</strong> Never transmitted</li>
+        </ul>
+
+        <h3>1.6 Biometric Authentication (Optional)</h3>
+        <ul>
+            <li><strong>What:</strong> Fingerprint or face authentication results (only &quot;success/failure&quot;, not biometric data itself)</li>
+            <li><strong>Why:</strong> To unlock locked apps and the launcher</li>
+            <li><strong>Sharing:</strong> Handled entirely by Android system, never accessed by us</li>
+        </ul>
+
+        <h2>2. Optional Cloud Backup</h2>
+        <p>If you choose to back up your settings to a cloud service:</p>
+        <ul>
+            <li><strong>Google Drive / OneDrive / Box:</strong> You sign in with your own account. We only have access to upload files to a single folder you choose.</li>
+            <li><strong>NAS:</strong> You provide your own server address. The file is sent to that address only.</li>
+            <li><strong>Local file:</strong> Saved to your device's Downloads folder. Never transmitted.</li>
+        </ul>
+
+        <h2>3. Third-Party Services</h2>
+        <p>The only network requests NoveLauncher makes are:</p>
+        <table>
+            <tr><th>Service</th><th>Purpose</th><th>Data Sent</th></tr>
+            <tr><td>Open-Meteo</td><td>Weather</td><td>Latitude/longitude only</td></tr>
+            <tr><td>RSS news feeds</td><td>News page</td><td>None</td></tr>
+            <tr><td>Google Drive (opt-in)</td><td>Backup</td><td>Your settings JSON</td></tr>
+            <tr><td>Google Sign-In (opt-in)</td><td>Drive auth</td><td>Your Google account</td></tr>
+        </table>
+        <p>We do not include any analytics SDKs, advertising SDKs, crash reporters, or tracking libraries.</p>
+
+        <h2>4. Data Retention</h2>
+        <ul>
+            <li>All data is stored locally on your device</li>
+            <li>Clear all data via Android Settings → Apps → NoveLauncher → Storage → Clear Storage</li>
+            <li>Uninstalling removes everything</li>
+        </ul>
+
+        <h2>5. Children's Privacy</h2>
+        <p>NoveLauncher does not target children under 13. We do not knowingly collect any data from children.</p>
+
+        <h2>6. Your Rights (GDPR / CCPA)</h2>
+        <p>Since we do not collect or store any data on external servers, there is nothing for us to provide, delete, or correct on your behalf. All data lives on your device and is under your control.</p>
+
+        <h2>7. Changes to This Policy</h2>
+        <p>If this policy changes, we will update the &quot;Last updated&quot; date at the top. Material changes will be highlighted in the app's release notes.</p>
+
+        <h2>8. Contact</h2>
+        <p>Questions or concerns? Email us at:<br>
+        <a href="mailto:solvaris2@gmail.com">solvaris2@gmail.com</a></p>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 32px 0;">
+        <p style="color: var(--muted); font-size: 0.9em;">By using NoveLauncher, you confirm that you have read and understood this privacy policy.</p>
+    </div>
+<footer style="max-width:760px;margin:32px auto 0;color:#8888AA;font-size:.87em;text-align:center">
+  <a href="index.html" style="color:#8888AA;margin:0 8px">Home</a>·<a href="terms.html" style="color:#8888AA;margin:0 8px">Terms</a>·<a href="https://github.com/DrummingBird1/NoveLauncher" style="color:#8888AA;margin:0 8px">GitHub</a>
+  <p style="margin-top:10px">&copy; 2026 NoveLauncher</p>
+</footer>
+
+</body>
+</html>

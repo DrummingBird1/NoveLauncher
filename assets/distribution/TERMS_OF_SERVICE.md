@@ -45,7 +45,7 @@ NoveLauncher integrates with optional third-party services (Google Drive, OneDri
 If you enable cloud backup:
 - We are not responsible for the availability, security, or integrity of third-party cloud services
 - We do not have access to your cloud account credentials
-- Backup files are stored as plain JSON; you are responsible for encrypting them if needed
+- Backup files are plain JSON *unless* you set a backup password, in which case the export is encrypted with AES-256-GCM derived from that password. If you lose that password the backup cannot be recovered by anyone, including us
 
 ## 7. Updates
 

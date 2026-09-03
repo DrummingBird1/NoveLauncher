@@ -5,7 +5,7 @@
 ### Graphics
 - [x] **Hi-res icon** — `../graphics/playstore-icon-512.png` (512×512, 32-bit PNG with alpha)
 - [x] **Feature graphic** — `../graphics/feature-graphic-1024x500.png` (1024×500 JPG/PNG)
-- [x] **Phone screenshots** — `../screenshots/01-home.png` to `05-categories.png` (1080×1920 each — Play accepts 320–3840px wide)
+- [x] **Phone screenshots** — `../screenshots/google-play/01-welcome.png` to `10-apps.png` (1080×2160 each; APKPure-sized copies in `../screenshots/apkpure/`, raw captures in `../screenshots/raw/`)
 - [ ] **Tablet screenshots** (optional, recommended) — render at 1600×2560 if you want to target tablets
 - [ ] **Promo video** (optional) — 30-second YouTube link
 
@@ -17,7 +17,7 @@
 ### Build
 - [ ] **Signed APK or AAB** — generate from Android Studio → Build → Generate Signed Bundle/APK
 - [ ] **Keystore file** — back this up; you can never replace it once published
-- [ ] **App version** — check `versionCode`/`versionName` in [android/app/build.gradle.kts](../../android/app/build.gradle.kts) (currently 10 / "9.1.0")
+- [ ] **App version** — check `versionCode`/`versionName` in [android/app/build.gradle.kts](../../android/app/build.gradle.kts) (currently 12 / "9.3.0")
 
 ## 📋 Steps to publish
 
@@ -29,7 +29,7 @@
 3. **Upload AAB** — Production → Create new release → Upload bundle
 4. **Fill out store listing** (use `STORE_LISTING.md`)
 5. **Add graphics** — upload from `../graphics/` and `../screenshots/`
-6. **Privacy policy URL** — paste link to your hosted privacy policy
+6. **Privacy policy URL** — https://drummingbird1.github.io/NoveLauncher/privacy.html
 7. **Content rating** — fill out questionnaire (Everyone, no ads, no UGC)
 8. **Target audience** — 13+
 9. **Data safety form** — declare:

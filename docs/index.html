@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoveLauncher — A private, on-device AI launcher for Android</title>
+<meta name="description" content="NoveLauncher is an Android launcher that ranks and groups your apps by how you actually use them. Everything runs on-device — no account, no server, no analytics, no ads.">
+<link rel="icon" type="image/png" href="assets/icon-512.png">
+
+<meta property="og:title" content="NoveLauncher — A private, on-device AI launcher for Android">
+<meta property="og:description" content="Ranks and groups your apps by how you actually use them. Everything runs on-device — no account, no server, no analytics, no ads.">
+<meta property="og:image" content="https://drummingbird1.github.io/NoveLauncher/assets/readme-banner.png">
+<meta property="og:url" content="https://drummingbird1.github.io/NoveLauncher/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+:root{
+  --primary:#7C7CFF; --accent:#4ECDC4;
+  --bg:#0A0A1A; --surface:#14141F; --surface-2:#1B1B29;
+  --text:#E8E8F0; --muted:#9494B0; --border:rgba(255,255,255,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* ── nav ─────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,10,26,.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+nav .wrap{display:flex;align-items:center;gap:28px;height:64px}
+nav img{width:32px;height:32px;border-radius:8px}
+nav .brand{font-weight:700;font-size:1.05rem;color:var(--text);margin-right:auto}
+nav a.link{color:var(--muted);font-size:.93rem;font-weight:500}
+nav a.link:hover{color:var(--text);text-decoration:none}
+@media(max-width:720px){nav a.link{display:none}}
+
+/* ── hero ────────────────────────────────────────── */
+.hero{
+  position:relative;overflow:hidden;text-align:center;
+  padding:88px 0 76px;
+  background:
+    radial-gradient(900px 420px at 18% -8%, rgba(124,124,255,.20), transparent 62%),
+    radial-gradient(760px 420px at 86% 12%, rgba(78,205,196,.13), transparent 60%);
+}
+.hero h1{
+  font-size:clamp(2.4rem,6vw,3.9rem);line-height:1.1;letter-spacing:-.02em;
+  margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 20%,var(--primary) 78%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p.lead{font-size:clamp(1.02rem,2.3vw,1.2rem);color:var(--muted);max-width:640px;margin:0 auto 36px}
+.hero img.mark{width:104px;height:104px;border-radius:26px;margin-bottom:26px;
+  box-shadow:0 18px 50px rgba(124,124,255,.28)}
+
+.btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 26px;border-radius:12px;font-weight:600;font-size:.97rem;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn:hover{text-decoration:none;transform:translateY(-2px)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#6A6AE8);color:#fff;
+  box-shadow:0 10px 26px rgba(124,124,255,.34)}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.hero .note{margin-top:20px;font-size:.85rem;color:var(--muted)}
+
+/* ── sections ────────────────────────────────────── */
+section{padding:76px 0;border-top:1px solid var(--border)}
+h2.sec{font-size:clamp(1.7rem,4vw,2.2rem);margin-bottom:12px;letter-spacing:-.015em}
+p.sub{color:var(--muted);margin-bottom:40px;max-width:640px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;
+  transition:border-color .18s ease,transform .18s ease;
+}
+.card:hover{border-color:rgba(124,124,255,.42);transform:translateY(-3px)}
+.card .ico{font-size:1.7rem;display:block;margin-bottom:12px}
+.card h3{font-size:1.06rem;margin-bottom:7px;color:var(--text)}
+.card p{color:var(--muted);font-size:.93rem}
+
+/* ── screenshots ─────────────────────────────────── */
+.shots{display:flex;gap:18px;overflow-x:auto;padding:6px 0 18px;scroll-snap-type:x mandatory}
+.shots img{
+  width:236px;flex:0 0 auto;border-radius:18px;border:1px solid var(--border);
+  scroll-snap-align:center;background:var(--surface);
+}
+
+/* ── privacy ─────────────────────────────────────── */
+.privacy{background:linear-gradient(135deg,rgba(124,124,255,.09),rgba(78,205,196,.07));
+  border:1px solid rgba(124,124,255,.24);border-radius:20px;padding:38px}
+.privacy ul{list-style:none;margin-top:20px}
+.privacy li{padding-left:30px;position:relative;margin-bottom:14px;color:var(--muted)}
+.privacy li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+.privacy li strong{color:var(--text)}
+
+.callout{
+  margin-top:26px;padding:18px 20px;border-left:3px solid var(--primary);
+  background:var(--surface-2);border-radius:0 12px 12px 0;font-size:.92rem;color:var(--muted);
+}
+
+/* ── download ────────────────────────────────────── */
+.dl{text-align:center;background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:52px 28px}
+.dl h2{margin-bottom:10px}
+.reqs{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin-top:28px;
+  font-size:.88rem;color:var(--muted)}
+
+/* ── footer ──────────────────────────────────────── */
+footer{border-top:1px solid var(--border);padding:44px 0;color:var(--muted);font-size:.9rem}
+footer .cols{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
+footer h4{color:var(--text);font-size:.92rem;margin-bottom:11px}
+footer ul{list-style:none}
+footer li{margin-bottom:7px}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--accent)}
+footer .base{margin-top:34px;padding-top:22px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:.84rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <img src="assets/icon-512.png" alt="">
+    <span class="brand">NoveLauncher</span>
+    <a class="link" href="#features">Features</a>
+    <a class="link" href="#screenshots">Screenshots</a>
+    <a class="link" href="#privacy">Privacy</a>
+    <a class="link" href="#download">Download</a>
+    <a class="link" href="https://github.com/DrummingBird1/NoveLauncher">GitHub</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="mark" src="assets/icon-512.png" alt="NoveLauncher icon">
+    <h1>Your home screen,<br>arranged by how you actually use it</h1>
+    <p class="lead">
+      NoveLauncher ranks and groups your apps from your real usage — what you open,
+      when, and how often. All of it runs on your device. No account, no server,
+      no analytics, no ads.
+    </p>
+    <div class="btns">
+      <a class="btn btn-primary" href="https://github.com/DrummingBird1/NoveLauncher/releases/latest">⬇ Download APK</a>
+      <a class="btn btn-ghost" href="https://github.com/DrummingBird1/NoveLauncher">View source</a>
+    </div>
+    <p class="note">Free · No ads · No in-app purchases · Android 8.0+</p>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2 class="sec">Everything, without the tracking</h2>
+    <p class="sub">A full-featured launcher whose intelligence never leaves your phone.</p>
+    <div class="grid">
+      <div class="card"><span class="ico">🧠</span><h3>Smart ranking</h3>
+        <p>Apps ordered by recency, frequency, time-of-day pattern and category — computed locally, every time.</p></div>
+      <div class="card"><span class="ico">📁</span><h3>Smart folders</h3>
+        <p>Automatic grouping into 11 categories. No manual sorting, no dragging icons around.</p></div>
+      <div class="card"><span class="ico">🎨</span><h3>Deep theming</h3>
+        <p>12 colour presets, Material You, custom colours, fonts, 12 icon shapes and icon-pack support.</p></div>
+      <div class="card"><span class="ico">🔒</span><h3>App lock</h3>
+        <p>PIN, password, pattern or biometric lock per app, plus a private folder and hidden apps.</p></div>
+      <div class="card"><span class="ico">🌍</span><h3>Seven languages</h3>
+        <p>Hebrew, English, Arabic, French, Russian, Spanish and German — fully right-to-left aware.</p></div>
+      <div class="card"><span class="ico">💾</span><h3>Backups you control</h3>
+        <p>Local, your Google Drive or your own NAS — scheduled, and optionally password-encrypted.</p></div>
+      <div class="card"><span class="ico">📰</span><h3>News feed</h3>
+        <p>Built-in sources plus any RSS feed you add yourself, cached for offline reading.</p></div>
+      <div class="card"><span class="ico">📊</span><h3>Usage statistics</h3>
+        <p>Screen time and per-app usage, stored only on your device — never uploaded.</p></div>
+      <div class="card"><span class="ico">🔍</span><h3>Global search</h3>
+        <p>Find apps, contacts and even settings screens from a single search box.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="screenshots">
+  <div class="wrap">
+    <h2 class="sec">A look inside</h2>
+    <p class="sub">Real screenshots from the shipping build — not mockups.</p>
+    <div class="shots">
+      <img src="assets/screenshots/04-home.png" alt="Home screen with clock, weather and recommended apps" loading="lazy">
+      <img src="assets/screenshots/10-apps.png" alt="App drawer" loading="lazy">
+      <img src="assets/screenshots/07-themes.png" alt="Theme and colour presets" loading="lazy">
+      <img src="assets/screenshots/05-settings.png" alt="Settings" loading="lazy">
+      <img src="assets/screenshots/08-security.png" alt="Security and app lock settings" loading="lazy">
+      <img src="assets/screenshots/01-welcome.png" alt="Welcome screen" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <h2 class="sec">Private by construction</h2>
+    <p class="sub">Not a promise in a policy document — an architectural choice.</p>
+    <div class="privacy">
+      <ul>
+        <li><strong>Nothing is collected.</strong> No analytics, no telemetry, no crash reporting in shipped builds, no account, no ads.</li>
+        <li><strong>Usage data stays local.</strong> Statistics live in a database on your device and are used only to rank your apps.</li>
+        <li><strong>One network call, and it's optional.</strong> The weather widget sends approximate coordinates to Open-Meteo — only if you grant location permission. Deny it and a default city is used.</li>
+        <li><strong>Your backups are yours.</strong> Local, your own Google Drive, or your own NAS — encrypted with a password only you hold.</li>
+        <li><strong>Auditable.</strong> The full source is published so you can verify all of the above yourself.</li>
+      </ul>
+      <div class="callout">
+        <strong>On app lock, honestly:</strong> the app lock, private folder and hidden apps are a
+        <em>deterrent, not a sandbox</em>. A locked app is still reachable from recents, notifications,
+        another launcher or ADB — true of every third-party launcher. For real isolation, use Android's
+        built-in Work Profile.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <div class="dl">
+      <h2 class="sec">Get NoveLauncher</h2>
+      <p class="sub" style="margin:0 auto 30px">
+        Download the signed APK from GitHub Releases. Every release is signed with the
+        same key, so updates install cleanly over each other.
+      </p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/DrummingBird1/NoveLauncher/releases/latest">⬇ Latest release</a>
+        <a class="btn btn-ghost" href="https://github.com/DrummingBird1/NoveLauncher/blob/main/CHANGELOG.md">Changelog</a>
+      </div>
+      <div class="reqs">
+        <span>📱 Android 8.0 (API 26)+</span>
+        <span>💾 ~25 MB</span>
+        <span>🆓 Free, no ads, no IAP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h4>NoveLauncher</h4>
+        <ul>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher">Source code</a></li>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/releases">Releases</a></li>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/blob/main/CHANGELOG.md">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy policy</a></li>
+          <li><a href="terms.html">Terms of service</a></li>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/blob/main/LICENSE">Licence</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <ul>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/blob/main/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/issues">Report an issue</a></li>
+          <li><a href="https://github.com/DrummingBird1/NoveLauncher/blob/main/SECURITY.md">Security</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li><a href="https://www.patreon.com/cw/MrIdan">Patreon</a></li>
+          <li><a href="https://buymeacoffee.com/novelauncher">Buy Me a Coffee</a></li>
+          <li><a href="mailto:solvaris2@gmail.com">solvaris2@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="base">
+      <span>© 2026 NoveLauncher. All rights reserved.</span>
+      <span>Built with Kotlin and Jetpack Compose.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
