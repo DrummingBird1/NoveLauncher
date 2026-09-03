@@ -79,9 +79,16 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Warn if release is unsigned
+      # An unsigned APK is named app-release-unsigned.apk and Android refuses to
+      # install it at all. Attaching one to a public release is worse than
+      # attaching nothing: it sits next to the real download looking like a
+      # choice. So when signing isn't configured, fail loudly instead — the
+      # release notes still get created below, just without binaries.
+      - name: Fail if release would be unsigned
         if: env.HAS_RELEASE_SIGNING != 'true'
-        run: echo "::warning::RELEASE_KEYSTORE_BASE64 is not set — this release's APK/AAB are UNSIGNED and cannot be installed as an update over a signed install. See CLAUDE.md's 'Release signing' section."
+        run: |
+          echo "::error::RELEASE_KEYSTORE_BASE64 (and the password/alias secrets) are not set, so this build is UNSIGNED and cannot be installed on any device. Add the signing secrets to this repository, then re-run. See the 'Release signing' section in CLAUDE.md."
+          exit 1
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
