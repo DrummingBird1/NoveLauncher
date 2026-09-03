@@ -29,7 +29,7 @@ NoveLauncher is a next-generation Android launcher that automatically organizes 
 
 🔒 **Advanced Security** — App lock with PIN, password, pattern, fingerprint, or face authentication. Hidden private folder. Layout lock to prevent accidental moves.
 
-💾 **Cloud Backup** — Backup your settings to Google Drive, OneDrive, Box, NAS, or local file. Restore anywhere with one tap.
+💾 **Backups** — Back up your settings locally, to Google Drive, or to your own NAS. Schedule them, and optionally encrypt with a password only you hold.
 
 🧩 **Widgets** — Add any system widget to your home screen. Resize freely.
 
@@ -41,7 +41,7 @@ NoveLauncher is a next-generation Android launcher that automatically organizes 
 
 ⚡ **Battery Friendly** — Smart sampling every 15 minutes, minimal background processing, efficient Jetpack Compose UI.
 
-🌍 **Multi-language** — Hebrew, English, Arabic, Russian, French — with RTL support.
+🌍 **Multi-language** — Hebrew, English, Arabic, French, Russian, Spanish and German — with full RTL support.
 
 🔧 **Repair Mode** — Built-in troubleshooting if something goes wrong.
 
@@ -67,7 +67,7 @@ NoveLauncher הוא לאנצ'ר אנדרואיד מהדור הבא שמארגן 
 
 🔒 **אבטחה מתקדמת** — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת.
 
-💾 **גיבוי בענן** — Google Drive, OneDrive, Box, NAS או קובץ מקומי.
+💾 **גיבויים** — מקומי, Google Drive או NAS משלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
 
 🧩 **גאדג'טים** — הוסף כל וידג'ט מהמערכת. שנה גודל בחופשיות.
 
@@ -79,7 +79,7 @@ NoveLauncher הוא לאנצ'ר אנדרואיד מהדור הבא שמארגן 
 
 ⚡ **חסכוני בסוללה** — דגימה חכמה, עיבוד מינימלי ברקע.
 
-🌍 **רב-לשוני** — עברית, אנגלית, ערבית, רוסית, צרפתית — עם תמיכה ב-RTL.
+🌍 **רב-לשוני** — עברית, אנגלית, ערבית, צרפתית, רוסית, ספרדית וגרמנית — עם תמיכה מלאה ב-RTL.
 
 📊 **סטטיסטיקות שימוש** — תראה בדיוק איך אתה מבלה את הזמן.
 
@@ -96,18 +96,12 @@ launcher, home screen, AI, smart launcher, customization, themes, privacy,
 hebrew launcher, RTL, dark mode, app drawer, smart folders, productivity,
 no ads, on-device AI, customizable
 
-## What's New (release notes for v7.0.0)
-- AI app prediction engine
-- Notification badges on app icons
-- Cloud backup to Google Drive, OneDrive, Box, and NAS
-- 12 theme presets + custom color picker
-- 12 icon shapes including new Diamond, Shield, Leaf
-- Multi-language support (Hebrew, English, Arabic, Russian, French)
-- Hidden private folder with lock
-- Custom pages + drag-and-drop ordering
-- Built-in news reader with 12+ sources
-- Adaptive layout for tablets and foldables
-- Bug fixes for biometric lock and back button
+## What's New (release notes for v9.3.0)
+- Much faster cold start — icons now load from a disk cache
+- See when your last backup ran, and whether it succeeded
+- A heads-up in Security settings if your device appears to be rooted
+- More reliable updates — fixed an issue where new versions could fail to install
+- Fixed a crash on launch, a duplicated Settings header, and a stuck search overlay
 
 ## Pricing
 **Free** (no in-app purchases planned, no ads)
@@ -116,13 +110,10 @@ no ads, on-device AI, customizable
 solvaris2@gmail.com
 
 ## Privacy Policy URL
-https://drummingbird1.github.io/novelauncher-legal/
-(published 2026-08-16 via GitHub Pages on a separate public repo,
-[DrummingBird1/novelauncher-legal](https://github.com/DrummingBird1/novelauncher-legal) —
-this main repo is private, and GitHub Pages isn't available for private repos
-on the free plan, so the policy lives in its own small public repo instead of
-here. Update it by editing `privacy.html`/`index.html` there directly, or by
-re-copying `PRIVACY_POLICY.html` from this repo and pushing.)
+https://drummingbird1.github.io/NoveLauncher/privacy.html
+
+## Terms of Service URL
+https://drummingbird1.github.io/NoveLauncher/terms.html
 
 ## Website
-https://novelauncher.app
+https://drummingbird1.github.io/NoveLauncher/
