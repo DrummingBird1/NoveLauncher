@@ -7,8 +7,9 @@ for routine feature work; CLAUDE.md/AGENTS.md's "Pitfalls" sections already
 cover implementation gotchas, and commit messages cover routine changes.
 
 Lives under `assets/` (not the repo root) because the repo root is
-intentionally limited to exactly two folders — `android/` and `assets/` — see
-[ADR-0001](0001-android-assets-repo-split.md) for why.
+intentionally limited to `android/`, `assets/` and `docs/` — see
+[ADR-0001](0001-android-assets-repo-split.md) and its amendment
+[ADR-0002](0002-public-repo-docs-folder.md) for why.
 
 ## When to write one
 

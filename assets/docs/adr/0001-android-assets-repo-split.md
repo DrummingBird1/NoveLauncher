@@ -2,6 +2,11 @@
 
 **Date:** 2026-08-08 (restructured), documented retroactively 2026-08-14.
 
+> **Amended by [ADR-0002](0002-public-repo-docs-folder.md) (2026-09-03):** a third
+> root folder, `docs/`, was added when the repository went public — GitHub Pages
+> can only serve from the repo root or `/docs`. The principle below still stands;
+> `docs/` is a tooling exception on the same grounds as `.github/`.
+
 ## Context
 
 The repo originally kept Gradle project files at the true repo root

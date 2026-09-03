@@ -74,7 +74,7 @@ In Android Studio:
 
 ## 📂 Where things live
 
-Repo root has exactly two folders: `android/` (the Gradle/Android Studio
+Repo root has three folders: `docs/` (the published site), `android/` (the Gradle/Android Studio
 project — open this in Android Studio, not the repo root) and `assets/`
 (design source + everything needed to submit to Play Store). This
 `distribution/` folder is a subfolder of `assets/`, sitting next to the
