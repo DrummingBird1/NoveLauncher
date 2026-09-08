@@ -124,7 +124,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: novelauncher-debug-apk
           path: android/app/build/outputs/apk/debug/*.apk
@@ -135,7 +135,7 @@ jobs:
       # (RELEASE_KEYSTORE_BASE64 set) — otherwise there's nothing installable
       # to upload here, so a missing file is expected, not an error.
       - name: Upload release APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: env.HAS_RELEASE_SIGNING == 'true'
         with:
           name: novelauncher-release-apk
@@ -144,7 +144,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload lint report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lint-report
@@ -153,7 +153,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload ktlint report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ktlint-report
@@ -199,7 +199,7 @@ jobs:
         run: ./gradlew verifyPaparazziDebug --stacktrace
 
       - name: Upload Paparazzi report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: paparazzi-report
@@ -208,7 +208,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-report
@@ -217,7 +217,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: jacoco-coverage-report
@@ -271,7 +271,7 @@ jobs:
           script: ./gradlew connectedDebugAndroidTest --stacktrace
 
       - name: Upload instrumented test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: instrumented-test-report
