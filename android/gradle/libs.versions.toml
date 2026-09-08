@@ -29,7 +29,7 @@ hilt-androidx = "1.2.0"
 
 # Data
 datastore = "1.1.1"
-room = "2.6.1"
+room = "2.8.4"
 serialization = "1.7.3"
 coroutines = "1.9.0"
 
