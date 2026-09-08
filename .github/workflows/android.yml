@@ -74,7 +74,7 @@ jobs:
       # Speeds up subsequent runs from ~6 min to ~90 s. Gradle's own caching is
       # picky about restore keys, so we lean on the official setup-gradle action.
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Make gradlew executable
         run: chmod +x gradlew
@@ -180,7 +180,7 @@ jobs:
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Make gradlew executable
         run: chmod +x gradlew
@@ -248,7 +248,7 @@ jobs:
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Make gradlew executable
         run: chmod +x gradlew
