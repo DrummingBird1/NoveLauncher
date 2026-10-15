@@ -458,4 +458,10 @@
     <string name="shortcut_settings_long">פתח הגדרות</string>
     <string name="shortcut_backup_short">גיבוי</string>
     <string name="shortcut_backup_long">פתח מסך גיבוי</string>
+    <string name="drive_section_title">חשבון Google Drive</string>
+    <string name="drive_connect">חבר את Google Drive</string>
+    <string name="drive_connected_as">מחובר כ-%1$s</string>
+    <string name="drive_disconnect">נתק</string>
+    <string name="drive_connect_failed">לא ניתן להתחבר ל-Google Drive: %1$s</string>
+    <string name="drive_scope_note">NoveLauncher רואה רק את קובצי הגיבוי שהוא עצמו יוצר — אף פעם לא את שאר הקבצים ב-Drive שלך.</string>
 </resources>

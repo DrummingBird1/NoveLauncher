@@ -1,5 +1,9 @@
 package com.ailauncher.app.ui.screens
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.backup.BackupManager
+import com.ailauncher.app.data.backup.DriveAuth
 import com.ailauncher.app.domain.models.BackupDestination
 import com.ailauncher.app.domain.models.BackupSettings
 import kotlinx.coroutines.launch
@@ -55,6 +60,33 @@ fun BackupSection(
     }
 
     val dateFormat = remember { java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()) }
+
+    // v10: Google Drive connection. Previously there was no way to connect an
+    // account at all — see DriveAuth's kdoc.
+    var driveEmail by remember { mutableStateOf(DriveAuth.connectedEmail(context)) }
+    val driveConsentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { res ->
+        if (res.resultCode == Activity.RESULT_OK) {
+            try {
+                driveEmail = DriveAuth.onAuthorized(context, DriveAuth.resultFromIntent(context, res.data))
+            } catch (e: Exception) {
+                status = context.getString(R.string.drive_connect_failed, e.message ?: "")
+            }
+        }
+    }
+    fun connectDrive() {
+        DriveAuth.client(context).authorize(DriveAuth.request(context))
+            .addOnSuccessListener { r ->
+                val pending = r.pendingIntent
+                if (r.hasResolution() && pending != null) {
+                    driveConsentLauncher.launch(IntentSenderRequest.Builder(pending.intentSender).build())
+                } else {
+                    driveEmail = DriveAuth.onAuthorized(context, r)
+                }
+            }
+            .addOnFailureListener { e -> status = context.getString(R.string.drive_connect_failed, e.message ?: "") }
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item { SectionLabel(stringResource(R.string.settings_backup)) }
@@ -101,6 +133,33 @@ fun BackupSection(
             }
         }
         if (status != null) item { Text(status!!, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) }
+
+        item { SectionLabel(stringResource(R.string.drive_section_title)) }
+        item {
+            Card(
+                Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    val email = driveEmail
+                    if (email != null) {
+                        Text(stringResource(R.string.drive_connected_as, email), color = MaterialTheme.colorScheme.onSurface)
+                        TextButton(onClick = { DriveAuth.disconnect(context); driveEmail = null }) {
+                            Text(stringResource(R.string.drive_disconnect), color = MaterialTheme.colorScheme.error)
+                        }
+                    } else {
+                        Button(onClick = { connectDrive() }, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Rounded.Cloud, null)
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.drive_connect))
+                        }
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Text(stringResource(R.string.drive_scope_note), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
 
         item { SectionLabel(stringResource(R.string.backup_encryption_section)) }
         item {

@@ -410,4 +410,10 @@
     <string name="shortcut_settings_long">Abrir Ajustes</string>
     <string name="shortcut_backup_short">Copia de seguridad</string>
     <string name="shortcut_backup_long">Abrir pantalla de copia de seguridad</string>
+    <string name="drive_section_title">Cuenta de Google Drive</string>
+    <string name="drive_connect">Conectar Google Drive</string>
+    <string name="drive_connected_as">Conectado como %1$s</string>
+    <string name="drive_disconnect">Desconectar</string>
+    <string name="drive_connect_failed">No se pudo conectar con Google Drive: %1$s</string>
+    <string name="drive_scope_note">NoveLauncher solo puede ver las copias de seguridad que crea, nunca el resto de tu Drive.</string>
 </resources>

@@ -410,4 +410,10 @@
     <string name="shortcut_settings_long">Open Settings</string>
     <string name="shortcut_backup_short">Backup</string>
     <string name="shortcut_backup_long">Open Backup screen</string>
+    <string name="drive_section_title">Google Drive account</string>
+    <string name="drive_connect">Connect Google Drive</string>
+    <string name="drive_connected_as">Connected as %1$s</string>
+    <string name="drive_disconnect">Disconnect</string>
+    <string name="drive_connect_failed">Couldn\'t connect to Google Drive: %1$s</string>
+    <string name="drive_scope_note">NoveLauncher can only see the backup files it creates — never the rest of your Drive.</string>
 </resources>

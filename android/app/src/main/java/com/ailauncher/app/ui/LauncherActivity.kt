@@ -52,10 +52,6 @@ import com.ailauncher.app.security.BiometricHelper
 import com.ailauncher.app.ui.screens.*
 import com.ailauncher.app.ui.theme.AILauncherTheme
 import com.ailauncher.app.ui.theme.launcherFontFamily
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -94,30 +90,6 @@ class LauncherActivity : FragmentActivity() {
 
     // For dialog-based unlock flow
     private val _pendingUnlockApp = mutableStateOf<Pair<String, LockMethod>?>(null)
-
-    private val googleSignInLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val data = result.data
-        if (result.resultCode == RESULT_OK && data != null) {
-            try {
-                val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
-                account?.let {
-                    // v8 FIX: Only persist the account email. The real OAuth2 access token
-                    // is fetched on-demand by BackupManager via GoogleAuthUtil.getToken().
-                    // Previously we stored idToken/serverAuthCode as "oauth_token", which
-                    // Drive's REST API rejects.
-                    getSharedPreferences("cloud_auth", MODE_PRIVATE).edit()
-                        .putString("account_email", it.email)
-                        .remove("oauth_token")
-                        .apply()
-                    Toast.makeText(this, getString(R.string.toast_connected_to, it.email), Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this, getString(R.string.toast_sign_in_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     private val widgetPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -324,15 +296,6 @@ class LauncherActivity : FragmentActivity() {
                 else -> onSuccess()
             }
         }
-    }
-
-    fun initiateGoogleSignIn() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestScopes(Scope("https://www.googleapis.com/auth/drive.file"))
-            .build()
-        val client = GoogleSignIn.getClient(this, gso)
-        googleSignInLauncher.launch(client.signInIntent)
     }
 
     fun launchAppDirect(pkg: String) {

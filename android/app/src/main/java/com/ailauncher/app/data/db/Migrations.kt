@@ -1,7 +1,22 @@
 package com.ailauncher.app.data.db
 
 import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.execSQL
+
+/**
+ * v10: a migration expressed as plain SQL statements, runnable through either of
+ * Room's two database APIs. The app opens LauncherDatabase through the classic
+ * SupportSQLiteOpenHelper path (→ migrate(SupportSQLiteDatabase)), while Room
+ * 2.8's driver-based MigrationTestHelper used by LauncherDatabaseMigrationTest
+ * hands over a SQLiteConnection (→ migrate(SQLiteConnection)). Overriding only
+ * one of them makes the other path throw NotImplementedError.
+ */
+private class SqlMigration(from: Int, to: Int, private val statements: List<String>) : Migration(from, to) {
+    override fun migrate(db: SupportSQLiteDatabase) = statements.forEach(db::execSQL)
+    override fun migrate(connection: SQLiteConnection) = statements.forEach { connection.execSQL(it) }
+}
 
 /**
  * v9.3: adds indices on daily_stats(date), daily_stats(packageName), and
@@ -15,10 +30,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * that's what Room's schema validator compares the live SQLite schema against
  * on next open, and a mismatch throws IllegalStateException at runtime.
  */
-val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_daily_stats_date` ON `daily_stats` (`date`)")
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_daily_stats_packageName` ON `daily_stats` (`packageName`)")
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_hourly_usage_packageName` ON `hourly_usage` (`packageName`)")
-    }
-}
+val MIGRATION_1_2: Migration = SqlMigration(
+    1, 2,
+    listOf(
+        "CREATE INDEX IF NOT EXISTS `index_daily_stats_date` ON `daily_stats` (`date`)",
+        "CREATE INDEX IF NOT EXISTS `index_daily_stats_packageName` ON `daily_stats` (`packageName`)",
+        "CREATE INDEX IF NOT EXISTS `index_hourly_usage_packageName` ON `hourly_usage` (`packageName`)"
+    )
+)

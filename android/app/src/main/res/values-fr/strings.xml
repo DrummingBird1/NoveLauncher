@@ -410,4 +410,10 @@
     <string name="shortcut_settings_long">Ouvrir les réglages</string>
     <string name="shortcut_backup_short">Sauvegarde</string>
     <string name="shortcut_backup_long">Ouvrir l\'écran de sauvegarde</string>
+    <string name="drive_section_title">Compte Google Drive</string>
+    <string name="drive_connect">Connecter Google Drive</string>
+    <string name="drive_connected_as">Connecté en tant que %1$s</string>
+    <string name="drive_disconnect">Déconnecter</string>
+    <string name="drive_connect_failed">Impossible de se connecter à Google Drive : %1$s</string>
+    <string name="drive_scope_note">NoveLauncher ne voit que les fichiers de sauvegarde qu\'il crée — jamais le reste de votre Drive.</string>
 </resources>

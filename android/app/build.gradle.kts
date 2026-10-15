@@ -1,6 +1,9 @@
 plugins {
+    // v10: AGP 9 compiles Kotlin itself ("built-in Kotlin"), so the separate
+    // org.jetbrains.kotlin.android plugin is no longer applied here — applying it
+    // alongside AGP 9 is an error. The root build.gradle.kts still declares it
+    // `apply false`, which is what pins the Kotlin compiler version AGP uses.
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -36,12 +39,17 @@ val sentryDsn = System.getenv("SENTRY_DSN") ?: ""
 
 android {
     namespace = "com.ailauncher.app"
-    compileSdk = 35
+    // v10: compileSdk (which APIs we can *call*) is decoupled from targetSdk (which
+    // runtime behaviour we opt into). Current AndroidX releases (Navigation 2.10,
+    // Hilt-AndroidX 1.4, Compose BOM 2026.09, …) refuse to build against < 37.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.ailauncher.app"
         minSdk = 26
-        targetSdk = 35
+        // v10: Google Play requires new apps and updates to target API 36
+        // (Android 16) since 2026-08-31.
+        targetSdk = 36
         versionCode = 12
         versionName = "9.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -99,7 +107,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true; buildConfig = true }
 
     // v9: lint is advisory, not a build gate. The codebase has correctly-guarded
@@ -235,7 +242,7 @@ dependencies {
 
     // v9.3: crash/error reporting, opt-in via SENTRY_DSN — see comment above
     // sentryDsn near the top of this file and AILauncherApp.initSentry().
-    implementation(libs.sentry.android)
+    implementation(libs.sentry.android.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -257,7 +264,7 @@ dependencies {
 }
 
 jacoco {
-    toolVersion = "0.8.12"
+    toolVersion = "0.8.15"
 }
 
 // v9: advisory only (like AGP lint above) — the codebase predates ktlint and
@@ -288,7 +295,9 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         "**/*Module_*Factory.*", "**/dagger/**/*.*", "**/*_ComponentTreeDeps.*",
         "**/hilt_aggregated_deps/**", "**/*\$serializer.*", "**/ComposableSingletons\$*.*"
     )
-    val kotlinClasses = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+    // v10: AGP 9's built-in Kotlin writes classes here, not KGP's old
+    // tmp/kotlin-classes/debug — pointing at the old path silently reports 0%.
+    val kotlinClasses = fileTree("${layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") { exclude(fileFilter) }
     val javaClasses = fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") { exclude(fileFilter) }
 
     sourceDirectories.setFrom(files("$projectDir/src/main/java", "$projectDir/src/main/kotlin"))

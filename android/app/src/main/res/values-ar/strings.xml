@@ -410,4 +410,10 @@
     <string name="shortcut_settings_long">فتح الإعدادات</string>
     <string name="shortcut_backup_short">نسخ احتياطي</string>
     <string name="shortcut_backup_long">فتح شاشة النسخ الاحتياطي</string>
+    <string name="drive_section_title">حساب Google Drive</string>
+    <string name="drive_connect">ربط Google Drive</string>
+    <string name="drive_connected_as">متصل بحساب %1$s</string>
+    <string name="drive_disconnect">قطع الاتصال</string>
+    <string name="drive_connect_failed">تعذّر الاتصال بـ Google Drive: %1$s</string>
+    <string name="drive_scope_note">يمكن لـ NoveLauncher رؤية ملفات النسخ الاحتياطي التي ينشئها فقط — وليس بقية ملفات Drive.</string>
 </resources>

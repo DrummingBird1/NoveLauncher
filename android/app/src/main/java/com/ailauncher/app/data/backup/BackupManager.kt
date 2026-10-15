@@ -1,6 +1,5 @@
 package com.ailauncher.app.data.backup
 
-import android.accounts.Account
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -11,8 +10,6 @@ import androidx.annotation.RequiresApi
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.BackupDestination
-import com.google.android.gms.auth.GoogleAuthUtil
-import com.google.android.gms.auth.UserRecoverableAuthException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -163,16 +160,10 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
     }
 
     /**
-     * v8 FIX: Drive backup now obtains a real OAuth2 *access token* via GoogleAuthUtil,
-     * keyed on the signed-in account email. The previous flow stored an ID token (or
-     * a serverAuthCode) as `oauth_token`, which Drive's REST API rejects with 401.
-     *
-     * Requires:
-     * - The user signed in via GoogleSignIn with the `drive.file` scope (done in
-     *   LauncherActivity.initiateGoogleSignIn()).
-     * - The signed-in account email persisted under cloud_auth/account_email.
-     *
-     * Token is fetched fresh each call (Google tokens are short-lived).
+     * Uploads with a real OAuth2 *access token*. v10: the token now comes from
+     * [DriveAuth] (Google Identity Services AuthorizationClient) — the account is
+     * connected from Settings → Backup. Fetched fresh each call; Google access
+     * tokens are short-lived and AuthorizationClient caches/refreshes them itself.
      */
     private fun backupToGoogleDrive(fileName: String, data: String): BackupResult {
         val token = fetchDriveAccessToken()
@@ -191,8 +182,12 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
             when {
                 conn.responseCode in 200..299 -> BackupResult.Success("Google Drive: $fileName")
                 conn.responseCode == 401 -> {
-                    // Invalidate cached token so the next attempt re-fetches.
-                    try { GoogleAuthUtil.clearToken(context, token) } catch (_: Exception) {}
+                    // Drop the cached token so the next attempt re-fetches.
+                    try {
+                        DriveAuth.client(context).clearToken(
+                            com.google.android.gms.auth.api.identity.ClearTokenRequest.builder().setToken(token).build()
+                        )
+                    } catch (_: Exception) {}
                     BackupResult.Error(context.getString(R.string.backup_error_token_expired))
                 }
                 else -> BackupResult.Error("Google Drive error: ${conn.responseCode} ${conn.responseMessage}")
@@ -202,22 +197,7 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
         } finally { conn.disconnect() }
     }
 
-    private fun fetchDriveAccessToken(): String? {
-        val email = context.getSharedPreferences("cloud_auth", Context.MODE_PRIVATE)
-            .getString("account_email", null) ?: return null
-        return try {
-            GoogleAuthUtil.getToken(
-                context,
-                Account(email, "com.google"),
-                "oauth2:https://www.googleapis.com/auth/drive.file"
-            )
-        } catch (_: UserRecoverableAuthException) {
-            // User must re-authorize. UI flow should call LauncherActivity.initiateGoogleSignIn() again.
-            null
-        } catch (_: Exception) {
-            null
-        }
-    }
+    private fun fetchDriveAccessToken(): String? = DriveAuth.accessTokenBlocking(context)
 
     /**
      * v9: NAS now reads its settings (address/path/credentials) from the same
@@ -350,7 +330,5 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
 
     fun isGoogleConnected(): Boolean = getConnectedEmail() != null
 
-    fun getConnectedEmail(): String? {
-        return context.getSharedPreferences("cloud_auth", Context.MODE_PRIVATE).getString("account_email", null)
-    }
+    fun getConnectedEmail(): String? = DriveAuth.connectedEmail(context)
 }

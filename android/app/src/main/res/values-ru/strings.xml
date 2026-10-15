@@ -410,4 +410,10 @@
     <string name="shortcut_settings_long">Открыть настройки</string>
     <string name="shortcut_backup_short">Резервная копия</string>
     <string name="shortcut_backup_long">Открыть экран резервного копирования</string>
+    <string name="drive_section_title">Аккаунт Google Drive</string>
+    <string name="drive_connect">Подключить Google Drive</string>
+    <string name="drive_connected_as">Подключено: %1$s</string>
+    <string name="drive_disconnect">Отключить</string>
+    <string name="drive_connect_failed">Не удалось подключиться к Google Drive: %1$s</string>
+    <string name="drive_scope_note">NoveLauncher видит только созданные им файлы резервных копий — и никогда остальное содержимое вашего Drive.</string>
 </resources>
