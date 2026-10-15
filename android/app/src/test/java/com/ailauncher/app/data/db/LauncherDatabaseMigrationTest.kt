@@ -65,6 +65,35 @@ class LauncherDatabaseMigrationTest {
         migrated.close()
     }
 
+    @Test
+    fun `migrate 2 to 3 adds suggestion_feedback and keeps existing data`() {
+        helper.createDatabase(2).apply {
+            execSQL("INSERT INTO hourly_usage (id, packageName, hour, count) VALUES (1, 'com.example.app', 9, 2)")
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(3, listOf(MIGRATION_2_3))
+
+        migrated.prepare("SELECT count FROM hourly_usage WHERE packageName = 'com.example.app'").use { st ->
+            assertTrue(st.step())
+            assertEquals(2, st.getInt(0))
+        }
+        migrated.execSQL(
+            "INSERT INTO suggestion_feedback (packageName, impressions, taps, updatedAt) VALUES ('com.example.app', 3.0, 1.0, 0)"
+        )
+        migrated.prepare("SELECT taps FROM suggestion_feedback").use { st ->
+            assertTrue(st.step())
+            assertEquals(1.0, st.getDouble(0), 0.0001)
+        }
+        migrated.close()
+    }
+
+    @Test
+    fun `a v1 database upgrades all the way to the current schema`() {
+        helper.createDatabase(1).close()
+        helper.runMigrationsAndValidate(3, listOf(MIGRATION_1_2, MIGRATION_2_3)).close()
+    }
+
     private fun SQLiteConnection.hasIndex(name: String): Boolean =
         prepare("SELECT name FROM sqlite_master WHERE type = 'index' AND name = ?").use { st ->
             st.bindText(1, name)

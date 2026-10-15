@@ -28,7 +28,10 @@ import androidx.compose.ui.res.stringResource
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.backup.BackupManager
-import com.ailauncher.app.data.db.UsageDao
+import com.ailauncher.app.data.JewishCalendarService
+import com.ailauncher.app.data.UsageStatsRepository
+import com.ailauncher.app.data.ml.SuggestionFeedbackRepository
+import com.ailauncher.app.data.update.UpdateChecker
 import com.ailauncher.app.data.iconpack.IconPackManager
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.BackupSettings
@@ -61,8 +64,11 @@ class SettingsActivity : ComponentActivity() {
     @Inject lateinit var settingsRepo: SettingsRepository
     @Inject lateinit var appLockManager: AppLockManager
     @Inject lateinit var backupManager: BackupManager
-    @Inject lateinit var usageDao: UsageDao
+    @Inject lateinit var usageStatsRepo: UsageStatsRepository
     @Inject lateinit var iconPackManager: IconPackManager
+    @Inject lateinit var jewishCalendar: JewishCalendarService
+    @Inject lateinit var updateChecker: UpdateChecker
+    @Inject lateinit var feedbackRepo: SuggestionFeedbackRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +81,11 @@ class SettingsActivity : ComponentActivity() {
         setContent {
             val appearance by settingsRepo.appearanceFlow.collectAsState(initial = AppearanceSettings())
             AILauncherTheme(appearance = appearance) {
-                SettingsRoot(settingsRepo, appLockManager, backupManager, usageDao, iconPackManager, initialPage = initialPage, onBack = { finish() })
+                SettingsRoot(
+                    SettingsDeps(settingsRepo, appLockManager, backupManager, usageStatsRepo, iconPackManager, jewishCalendar, updateChecker, feedbackRepo),
+                    initialPage = initialPage,
+                    onBack = { finish() }
+                )
             }
         }
     }
@@ -88,22 +98,43 @@ class SettingsActivity : ComponentActivity() {
 enum class SettingsPage {
     MAIN, APPEARANCE, THEMES, FONTS, ICON_SHAPES, CLOCK,
     PAGES, BACKUP, SECURITY, APP_LOCK_LIST, NEWS_SOURCES,
-    HIDDEN_APPS, WALLPAPER, ABOUT, STATISTICS, ICON_PACKS
+    HIDDEN_APPS, WALLPAPER, ABOUT, STATISTICS, ICON_PACKS,
+    GESTURES, JEWISH_CALENDAR // v10
 }
+
+/** v10: everything the settings pages need from Hilt, in one parameter. */
+class SettingsDeps(
+    val settingsRepo: SettingsRepository,
+    val appLockManager: AppLockManager,
+    val backupManager: BackupManager,
+    val usageStatsRepo: UsageStatsRepository,
+    val iconPackManager: IconPackManager,
+    val jewishCalendar: JewishCalendarService,
+    val updateChecker: UpdateChecker,
+    val feedbackRepo: SuggestionFeedbackRepository
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsRoot(
-    settingsRepo: SettingsRepository,
-    appLockManager: AppLockManager,
-    backupManager: BackupManager,
-    usageDao: UsageDao,
-    iconPackManager: IconPackManager,
+    deps: SettingsDeps,
     initialPage: SettingsPage = SettingsPage.MAIN,
     onBack: () -> Unit
 ) {
+    val settingsRepo = deps.settingsRepo
     var currentPage by remember { mutableStateOf(initialPage) }
     val scope = rememberCoroutineScope()
+
+    // v10: system back walks up one level, same as the toolbar arrow.
+    fun goUp() {
+        currentPage = when {
+            currentPage == SettingsPage.MAIN -> { onBack(); return }
+            currentPage in listOf(SettingsPage.THEMES, SettingsPage.FONTS, SettingsPage.ICON_SHAPES, SettingsPage.CLOCK) -> SettingsPage.APPEARANCE
+            currentPage == SettingsPage.APP_LOCK_LIST -> SettingsPage.SECURITY
+            else -> SettingsPage.MAIN
+        }
+    }
+    androidx.activity.compose.BackHandler(enabled = currentPage != SettingsPage.MAIN) { goUp() }
 
     val appearance by settingsRepo.appearanceFlow.collectAsState(initial = AppearanceSettings())
     val pages by settingsRepo.pagesFlow.collectAsState(initial = PagesSettings())
@@ -130,6 +161,8 @@ fun SettingsRoot(
         SettingsPage.ABOUT -> R.string.settings_about
         SettingsPage.STATISTICS -> R.string.settings_statistics
         SettingsPage.ICON_PACKS -> R.string.settings_icon_packs
+        SettingsPage.GESTURES -> R.string.settings_gestures
+        SettingsPage.JEWISH_CALENDAR -> R.string.settings_jewish_calendar
     })
 
     Scaffold(
@@ -137,12 +170,7 @@ fun SettingsRoot(
             TopAppBar(
                 title = { Text(pageTitle) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (currentPage == SettingsPage.MAIN) onBack()
-                        else if (currentPage in listOf(SettingsPage.THEMES, SettingsPage.FONTS, SettingsPage.ICON_SHAPES, SettingsPage.CLOCK))
-                            currentPage = SettingsPage.APPEARANCE
-                        else currentPage = SettingsPage.MAIN
-                    }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.action_back)) }
+                    IconButton(onClick = { goUp() }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.action_back)) }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -164,15 +192,17 @@ fun SettingsRoot(
                 SettingsPage.ICON_SHAPES -> IconShapesSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
                 SettingsPage.CLOCK -> ClockSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
                 SettingsPage.PAGES -> PagesSection(pages) { scope.launch { settingsRepo.savePages(it) } }
-                SettingsPage.BACKUP -> BackupSection(backup, backupManager, settingsRepo) { scope.launch { settingsRepo.saveBackup(it) } }
-                SettingsPage.SECURITY -> SecuritySection(security, appLockManager, settingsRepo) { currentPage = it }
-                SettingsPage.APP_LOCK_LIST -> AppLockListSection(security, appLockManager)
+                SettingsPage.BACKUP -> BackupSection(backup, deps.backupManager, settingsRepo) { scope.launch { settingsRepo.saveBackup(it) } }
+                SettingsPage.SECURITY -> SecuritySection(security, deps.appLockManager, settingsRepo) { currentPage = it }
+                SettingsPage.APP_LOCK_LIST -> AppLockListSection(security, deps.appLockManager)
                 SettingsPage.NEWS_SOURCES -> NewsSourcesSection(news) { scope.launch { settingsRepo.saveNews(it) } }
                 SettingsPage.HIDDEN_APPS -> HiddenAppsSection(hidden) { scope.launch { settingsRepo.saveHiddenApps(it) } }
-                SettingsPage.WALLPAPER -> WallpaperSection(appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
-                SettingsPage.ABOUT -> AboutSection()
-                SettingsPage.STATISTICS -> StatisticsScreen(usageDao)
-                SettingsPage.ICON_PACKS -> IconPacksSection(iconPackManager)
+                SettingsPage.WALLPAPER -> WallpaperSection(appearance, pages) { scope.launch { settingsRepo.saveAppearance(it) } }
+                SettingsPage.ABOUT -> AboutSection(smartControl, { scope.launch { settingsRepo.saveSmartControl(it) } }, deps.updateChecker)
+                SettingsPage.STATISTICS -> StatisticsScreen(deps.usageStatsRepo) { scope.launch { deps.feedbackRepo.clear() } }
+                SettingsPage.ICON_PACKS -> IconPacksSection(deps.iconPackManager, appearance) { scope.launch { settingsRepo.saveAppearance(it) } }
+                SettingsPage.GESTURES -> GesturesSection(smartControl) { scope.launch { settingsRepo.saveSmartControl(it) } }
+                SettingsPage.JEWISH_CALENDAR -> JewishCalendarSection(appearance, deps.jewishCalendar) { scope.launch { settingsRepo.saveAppearance(it) } }
             }
         }
     }

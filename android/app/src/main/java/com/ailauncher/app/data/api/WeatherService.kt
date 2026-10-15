@@ -1,16 +1,13 @@
 package com.ailauncher.app.data.api
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import com.ailauncher.app.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.ailauncher.app.data.location.CoarseLocation
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -84,7 +81,7 @@ class WeatherService @Inject constructor(
 
     @SuppressLint("MissingPermission")
     suspend fun fetchWeather(lat: Double? = null, lon: Double? = null): WeatherData? = withContext(Dispatchers.IO) {
-        val coords = if (lat != null && lon != null) lat to lon else getCurrentLocation() ?: (32.0853 to 34.7818)
+        val coords = if (lat != null && lon != null) lat to lon else CoarseLocation.lastKnownOrDefault(context)
 
         try {
             val urlStr = "$baseUrl/v1/forecast?" +
@@ -119,21 +116,5 @@ class WeatherService @Inject constructor(
                 conn.disconnect()
             }
         } catch (_: Exception) { null }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLocation(): Pair<Double, Double>? {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) return null
-        val lm = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
-        val providers = listOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER, LocationManager.PASSIVE_PROVIDER)
-        for (p in providers) {
-            try {
-                val loc = lm.getLastKnownLocation(p) ?: continue
-                return loc.latitude to loc.longitude
-            } catch (_: SecurityException) { return null }
-            catch (_: Exception) {}
-        }
-        return null
     }
 }

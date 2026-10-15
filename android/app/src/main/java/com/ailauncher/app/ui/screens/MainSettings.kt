@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AppShortcut
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Gesture
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Newspaper
@@ -53,6 +55,8 @@ fun MainSettings(onNavigate: (SettingsPage) -> Unit) {
             Triple(Icons.Rounded.Palette, R.string.settings_appearance, R.string.settings_sub_appearance) to SettingsPage.APPEARANCE,
             Triple(Icons.Rounded.ViewCarousel, R.string.settings_pages, R.string.settings_sub_pages) to SettingsPage.PAGES,
             Triple(Icons.Rounded.Wallpaper, R.string.settings_wallpapers, R.string.settings_sub_wallpapers) to SettingsPage.WALLPAPER,
+            Triple(Icons.Rounded.Gesture, R.string.settings_gestures, R.string.settings_sub_gestures) to SettingsPage.GESTURES,
+            Triple(Icons.Rounded.CalendarMonth, R.string.settings_jewish_calendar, R.string.settings_sub_jewish_calendar) to SettingsPage.JEWISH_CALENDAR,
             Triple(Icons.Rounded.Newspaper, R.string.settings_news_sources, R.string.settings_sub_news) to SettingsPage.NEWS_SOURCES,
             Triple(Icons.Rounded.CloudUpload, R.string.settings_backup, R.string.settings_sub_backup) to SettingsPage.BACKUP,
             Triple(Icons.Rounded.Security, R.string.settings_security, R.string.settings_sub_security) to SettingsPage.SECURITY,

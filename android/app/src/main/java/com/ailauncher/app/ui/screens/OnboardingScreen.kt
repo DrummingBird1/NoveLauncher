@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -142,7 +143,10 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     if (reduceMotion) pagerState.scrollToPage(pagerState.currentPage + 1)
                     else pagerState.animateScrollToPage(pagerState.currentPage + 1)
                 }
-            }, shape = RoundedCornerShape(16.dp)) {
+            }, shape = RoundedCornerShape(16.dp),
+                // v10: stable ids for the Baseline Profile generator (UiAutomator), any language.
+                modifier = Modifier.testTag(if (pagerState.currentPage == steps.lastIndex) "onboarding_finish" else "onboarding_next")
+            ) {
                 Text(stringResource(if (pagerState.currentPage == steps.lastIndex) R.string.onboarding_start else R.string.action_next))
             }
         }

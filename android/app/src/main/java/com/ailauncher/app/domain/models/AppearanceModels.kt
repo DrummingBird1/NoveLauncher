@@ -185,5 +185,29 @@ data class WallpaperSettings(
     val sortAppsByCategory: Boolean = true, val showNotificationBadges: Boolean = true,
     val badgeSnoozedUntil: Long = 0L, // epoch millis; 0 or past = not snoozed
     val categoryTabs: CategoryTabSettings = CategoryTabSettings(),
-    val appLanguage: String = "" // empty = system default
+    val appLanguage: String = "", // empty = system default
+    // v10: package of the selected icon pack (Nova/ADW/Lawnchair format); "" = system icons.
+    val iconPackPackage: String = "",
+    // v10: Hebrew date, holidays, Shabbat times and Shabbat mode on the home screen.
+    val jewishCalendar: JewishCalendarSettings = JewishCalendarSettings()
+)
+
+/**
+ * v10: Jewish-calendar features. All computed on-device: the Hebrew date from
+ * android.icu's HebrewCalendar, sunset from a solar-position formula and the
+ * coarse location the weather line already uses (or a default city).
+ *
+ * Shabbat mode is a deterrent, like app lock: while it's active (candle lighting
+ * → nightfall, Shabbat and Yom Tov), the home screen hides social/entertainment/
+ * game/shopping suggestions and notification badges. It blocks nothing.
+ */
+@Serializable data class JewishCalendarSettings(
+    val showHebrewDate: Boolean = false,
+    val showHolidays: Boolean = false,
+    val showShabbatTimes: Boolean = false,
+    val shabbatMode: Boolean = false,
+    // Minutes before sunset. Common customs: 18 (most places), 20, 30 (Haifa), 40 (Jerusalem).
+    val candleLightingMinutes: Int = 18,
+    // Two-day Yom Tov schedule outside Israel.
+    val diaspora: Boolean = false
 )

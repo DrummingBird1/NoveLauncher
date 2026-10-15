@@ -29,7 +29,37 @@ data class AppInfo(
     val category: AppCategory,
     val isSystemApp: Boolean,
     val installTime: Long,
-    val lastUpdateTime: Long
+    val lastUpdateTime: Long,
+    // v10: which launcher activity, in which profile. A package can expose more
+    // than one launcher activity, and the same package can be installed in the
+    // personal *and* work profile, so packageName alone is not an identity.
+    // activityName == "" means "resolve the package's default launch intent"
+    // (used by tests and by callers that only know a package name).
+    val activityName: String = "",
+    val profile: AppProfile = AppProfile.PERSONAL,
+    val userSerial: Long = 0L
+) {
+    /**
+     * Unique per launcher entry — use for Lazy list keys and the icon cache.
+     * Locks, hiding and usage stats stay keyed by [packageName] on purpose: they
+     * describe the app, not one particular entry point to it.
+     */
+    val key: String get() = "$packageName/$activityName#$userSerial"
+}
+
+/**
+ * v10: the Android user profile an app lives in. PERSONAL is the main user;
+ * WORK is a managed (work) profile; PRIVATE is Android 15's Private Space;
+ * CLONE is an OEM/Android 14+ "dual app" clone profile.
+ */
+enum class AppProfile { PERSONAL, WORK, PRIVATE, CLONE }
+
+/** v10: a non-personal profile and whether it is currently paused/locked (quiet mode). */
+@Immutable
+data class ProfileState(
+    val profile: AppProfile,
+    val userSerial: Long,
+    val isQuietModeEnabled: Boolean
 )
 
 @Immutable

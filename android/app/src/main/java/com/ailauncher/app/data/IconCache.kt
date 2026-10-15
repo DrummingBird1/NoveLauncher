@@ -128,10 +128,12 @@ class IconCache @Inject constructor(@ApplicationContext context: Context) {
         }
     }
 
-    // packageName is already filesystem-safe (Java package identifier syntax),
-    // but a user-supplied icon-pack key theoretically could carry a "/" —
-    // hashCode() sidesteps that instead of trying to sanitize every input.
-    private fun diskFile(key: String): File = File(diskCacheDir, "${key.hashCode()}.png")
+    // v10: keys are AppInfo.key ("pkg/activity#userSerial"). The file name
+    // keeps the package as a prefix (package names are filesystem-safe) so
+    // [invalidatePackage] can find every entry of one app on disk; the hash
+    // makes it unique per activity/profile without sanitizing "/" and "#".
+    private fun diskFile(key: String): File =
+        File(diskCacheDir, "${key.substringBefore('/')}_${key.hashCode()}.png")
 
     /** Drop everything. Call after an icon-pack swap or theme change that affects icons. */
     fun invalidateAll() {
@@ -139,10 +141,23 @@ class IconCache @Inject constructor(@ApplicationContext context: Context) {
         ioScope.launch { runCatching { diskCacheDir.listFiles()?.forEach { it.delete() } } }
     }
 
-    /** Drop a specific package's icon — e.g. after an app update. */
+    /** Drop one cached entry. */
     fun invalidate(key: String) {
         cache.remove(key)
         ioScope.launch { runCatching { diskFile(key).delete() } }
+    }
+
+    /**
+     * v10: drop every entry belonging to [packageName] — all of its launcher
+     * activities, in every profile — e.g. after an app update.
+     */
+    fun invalidatePackage(packageName: String) {
+        cache.snapshot().keys.filter { it.substringBefore('/') == packageName }.forEach { cache.remove(it) }
+        ioScope.launch {
+            runCatching {
+                diskCacheDir.listFiles { f -> f.name.startsWith("${packageName}_") }?.forEach { it.delete() }
+            }
+        }
     }
 
     companion object {

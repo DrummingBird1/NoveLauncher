@@ -1,14 +1,19 @@
 package com.ailauncher.app.domain.usecases
 
 import com.ailauncher.app.data.AppCategoryProvider
+import com.ailauncher.app.data.ContextSignals
+import com.ailauncher.app.data.DeviceContext
 import com.ailauncher.app.data.InstalledAppsRepository
+import com.ailauncher.app.data.JewishCalendarService
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.UsageStatsRepository
 import com.ailauncher.app.data.db.NotificationDao
 import com.ailauncher.app.data.db.NotificationEntity
 import com.ailauncher.app.data.ml.AppPredictionEngine
+import com.ailauncher.app.data.ml.SuggestionFeedbackRepository
 import com.ailauncher.app.domain.models.AppCategory
 import com.ailauncher.app.domain.models.AppInfo
+import com.ailauncher.app.domain.models.AppProfile
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.RankedApp
 import io.mockk.coEvery
@@ -35,6 +40,9 @@ class GetRankedAppsUseCaseTest {
     private val notificationDao = mockk<NotificationDao>()
     private val predictionEngine = mockk<AppPredictionEngine>(relaxed = true)
     private val settingsRepo = mockk<SettingsRepository>()
+    private val feedbackRepo = mockk<SuggestionFeedbackRepository>()
+    private val contextSignals = mockk<ContextSignals>()
+    private val jewishCalendar = mockk<JewishCalendarService>()
 
     private lateinit var useCase: GetRankedAppsUseCase
 
@@ -60,13 +68,18 @@ class GetRankedAppsUseCaseTest {
     @Before
     fun setUp() {
         useCase = GetRankedAppsUseCase(
-            installedAppsRepo, usageStatsRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo
+            installedAppsRepo, usageStatsRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo,
+            feedbackRepo, contextSignals, jewishCalendar
         )
         every { usageStatsRepo.hasPermission() } returns true
-        coEvery { installedAppsRepo.getInstalledApps() } returns listOf(appInfo)
+        coEvery { installedAppsRepo.getInstalledApps(any()) } returns listOf(appInfo)
+        every { installedAppsRepo.getProfiles() } returns emptyList()
         coEvery { usageStatsRepo.getUsageSnapshots() } returns emptyMap()
-        every { categoryProvider.rankApps(any(), any()) } returns listOf(rankedApp)
-        every { categoryProvider.autoGroup(any()) } returns emptyList()
+        every { categoryProvider.rankApps(any(), any(), any(), any()) } returns listOf(rankedApp)
+        every { categoryProvider.autoGroup(any()) } answers { emptyList() }
+        coEvery { feedbackRepo.counts(any()) } returns emptyMap()
+        every { contextSignals.current() } returns DeviceContext()
+        every { jewishCalendar.isShabbatModeActive(any(), any()) } returns false
     }
 
     @Test
@@ -113,5 +126,38 @@ class GetRankedAppsUseCaseTest {
 
         assertEquals(false, result.hasUsagePermission)
         coVerify(exactly = 0) { usageStatsRepo.getUsageSnapshots() }
+    }
+
+    @Test
+    fun `notification counts are zero while Shabbat mode is active`() = runTest {
+        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = true))
+        every { jewishCalendar.isShabbatModeActive(any(), any()) } returns true
+
+        val result = useCase.execute()
+
+        assertEquals(0, result.rankedApps.first().notificationCount)
+        coVerify(exactly = 0) { notificationDao.getAppsWithUnread() }
+    }
+
+    @Test
+    fun `private space apps are kept out of suggestions and folders`() = runTest {
+        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = false))
+        val privateApp = rankedApp.copy(app = appInfo.copy(packageName = "com.secret", profile = AppProfile.PRIVATE, userSerial = 11))
+        every { categoryProvider.rankApps(any(), any(), any(), any()) } returns listOf(rankedApp, privateApp)
+
+        val result = useCase.execute()
+
+        assertEquals(listOf("com.example.app"), result.rankedApps.map { it.app.packageName })
+        assertEquals(listOf("com.secret"), result.privateSpaceApps.map { it.app.packageName })
+        io.mockk.verify { categoryProvider.autoGroup(listOf(rankedApp)) }
+    }
+
+    @Test
+    fun `the selected icon pack is passed to the app query`() = runTest {
+        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(iconPackPackage = "com.pack", showNotificationBadges = false))
+
+        useCase.execute()
+
+        coVerify { installedAppsRepo.getInstalledApps("com.pack") }
     }
 }

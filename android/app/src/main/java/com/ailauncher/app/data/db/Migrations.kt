@@ -38,3 +38,18 @@ val MIGRATION_1_2: Migration = SqlMigration(
         "CREATE INDEX IF NOT EXISTS `index_hourly_usage_packageName` ON `hourly_usage` (`packageName`)"
     )
 )
+
+/**
+ * v10: suggestion_feedback — impressions vs. taps per app in "Recommended now",
+ * used to learn which suggestions the user actually wants (see FeedbackScoring).
+ * Purely additive. The CREATE statement must match Room's generated schema
+ * exactly (schemas/…/3.json); LauncherDatabaseMigrationTest validates it.
+ */
+val MIGRATION_2_3: Migration = SqlMigration(
+    2, 3,
+    listOf(
+        "CREATE TABLE IF NOT EXISTS `suggestion_feedback` (`packageName` TEXT NOT NULL, " +
+            "`impressions` REAL NOT NULL, `taps` REAL NOT NULL, `updatedAt` INTEGER NOT NULL, " +
+            "PRIMARY KEY(`packageName`))"
+    )
+)

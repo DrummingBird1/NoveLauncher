@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "AILauncher"
 include(":app")
+// v10: Baseline Profile generator + startup Macrobenchmark — see baselineprofile/build.gradle.kts.
+include(":baselineprofile")

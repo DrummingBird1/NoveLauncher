@@ -29,6 +29,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.LockMethod
 import com.ailauncher.app.ui.LauncherViewModel
+import com.ailauncher.app.ui.launchApp
 import kotlinx.coroutines.launch
 
 @Composable

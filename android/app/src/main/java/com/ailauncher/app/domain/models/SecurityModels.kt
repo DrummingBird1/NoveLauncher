@@ -52,5 +52,8 @@ import kotlinx.serialization.Serializable
     val hapticFeedback: Boolean = true,
     val longPressAction: String = "menu", // menu, hide, lock, info
     val homeButtonDoubleTap: String = "none", // none, search, recent, camera
-    val reduceMotion: Boolean = false
+    val reduceMotion: Boolean = false,
+    // v10: opt-in. Asks GitHub's public API for the latest release at most once a
+    // day; the only data sent is the request itself (IP + User-Agent).
+    val checkForUpdates: Boolean = false
 )

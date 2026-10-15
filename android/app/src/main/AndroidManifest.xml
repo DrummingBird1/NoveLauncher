@@ -24,11 +24,17 @@
          permission (extra attack surface + Play privacy flag). -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <!-- v9.1: scheduled-backup failure notifications (ScheduledBackupWorker). No
-         runtime request flow exists yet — on API 33+ without an explicit grant,
-         NotificationManagerCompat.notify() is caught and silently skipped, same
-         as before this permission existed. -->
+    <!-- v9.1: scheduled-backup failure notifications (ScheduledBackupWorker).
+         Requested at runtime on API 33+ since v9.3 (LauncherActivity.onCreate);
+         if denied, NotificationManagerCompat.notify() is caught and skipped. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- v10: lets the default home app see Android 15's Private Space through
+         LauncherApps (InstalledAppsRepository). Has no effect on older Android or
+         while NoveLauncher isn't the default home app. -->
+    <uses-permission android:name="android.permission.ACCESS_HIDDEN_PROFILES" />
+    <!-- v10: swipe-down-for-notifications fallback when the accessibility helper is
+         off (GestureActions.expandNotifications). Normal permission, no prompt. -->
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <application
         android:name=".AILauncherApp"
@@ -76,6 +82,22 @@
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
+        </service>
+
+        <!-- v10: optional helper for the double-tap-to-lock and swipe-down gestures.
+             Off until the user enables it in system Accessibility settings, after the
+             in-app disclosure (GesturesSection). Reads no window content. -->
+        <service
+            android:name=".ui.gestures.LockScreenAccessibilityService"
+            android:exported="false"
+            android:label="@string/a11y_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/lock_screen_accessibility" />
         </service>
 
         <!-- v9.1: Quick Settings Tile — "Lock NoveLauncher now" -->

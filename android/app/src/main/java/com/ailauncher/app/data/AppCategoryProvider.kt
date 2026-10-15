@@ -8,6 +8,8 @@ import com.ailauncher.app.domain.models.AppCategory
 import com.ailauncher.app.domain.models.AppInfo
 import com.ailauncher.app.domain.models.RankedApp
 import com.ailauncher.app.domain.models.UsageSnapshot
+import com.ailauncher.app.data.ml.SuggestionFeedbackRepository
+import com.ailauncher.app.domain.ranking.FeedbackScoring
 import java.util.Calendar
 import kotlin.math.exp
 import kotlin.math.max
@@ -29,6 +31,9 @@ class AppCategoryProvider(private val context: Context) {
         private const val WEIGHT_FREQUENCY = 0.30f
         private const val WEIGHT_TIME_OF_DAY = 0.25f
         private const val WEIGHT_CATEGORY_BOOST = 0.10f
+        // v10: situational bonus on top of the four weights above (headphones in
+        // → music/video apps). Can push a score over 1 before the final clamp.
+        private const val WEIGHT_CONTEXT = 0.10f
 
         // Recency decay: after 4 hours the recency score drops to ~0.1
         private const val RECENCY_DECAY_HOURS = 4.0
@@ -115,7 +120,8 @@ class AppCategoryProvider(private val context: Context) {
         snapshot: UsageSnapshot,
         category: AppCategory,
         isSystemApp: Boolean = false,
-        currentTimeMillis: Long = System.currentTimeMillis()
+        currentTimeMillis: Long = System.currentTimeMillis(),
+        contextBoost: Float = 0f
     ): Float {
         val recency = computeRecencyScore(snapshot.lastTimeUsed, currentTimeMillis)
         val frequency = computeFrequencyScore(snapshot.launchCount, snapshot.totalTimeInForeground)
@@ -125,7 +131,8 @@ class AppCategoryProvider(private val context: Context) {
         val raw = (WEIGHT_RECENCY * recency) +
                   (WEIGHT_FREQUENCY * frequency) +
                   (WEIGHT_TIME_OF_DAY * timeOfDay) +
-                  (WEIGHT_CATEGORY_BOOST * categoryBoost)
+                  (WEIGHT_CATEGORY_BOOST * categoryBoost) +
+                  (WEIGHT_CONTEXT * contextBoost)
 
         // System apps that the user has never launched (no recency signal) get pushed down.
         // Anything the user has actually used keeps its score.
@@ -137,9 +144,16 @@ class AppCategoryProvider(private val context: Context) {
      * Rank a full list of apps. Returns sorted descending by score.
      * This is the main entry point called by the UseCase layer.
      */
+    /**
+     * v10: [deviceContext] adds a situational bonus; [feedback] (decayed taps vs.
+     * impressions in "Recommended now", from SuggestionFeedbackRepository) scales
+     * the result via FeedbackScoring — see that object for the exact bounds.
+     */
     fun rankApps(
         apps: List<AppInfo>,
-        snapshots: Map<String, UsageSnapshot>
+        snapshots: Map<String, UsageSnapshot>,
+        deviceContext: DeviceContext = DeviceContext(),
+        feedback: Map<String, SuggestionFeedbackRepository.Counts> = emptyMap()
     ): List<RankedApp> {
         val now = System.currentTimeMillis()
         return apps.map { app ->
@@ -150,7 +164,8 @@ class AppCategoryProvider(private val context: Context) {
                 launchCount = 0,
                 hourlyDistribution = emptyMap()
             )
-            val score = computeWeightScore(snapshot, app.category, app.isSystemApp, now)
+            val base = computeWeightScore(snapshot, app.category, app.isSystemApp, now, deviceContext.boostFor(app.category))
+            val score = feedback[app.packageName]?.let { FeedbackScoring.adjust(base, it.taps, it.impressions) } ?: base
             RankedApp(
                 app = app,
                 weightScore = score,

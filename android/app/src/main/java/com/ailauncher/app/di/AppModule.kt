@@ -11,6 +11,7 @@ import com.ailauncher.app.data.UsageStatsRepository
 import com.ailauncher.app.data.backup.BackupManager
 import com.ailauncher.app.data.db.LauncherDatabase
 import com.ailauncher.app.data.db.MIGRATION_1_2
+import com.ailauncher.app.data.db.MIGRATION_2_3
 import com.ailauncher.app.data.db.NotificationDao
 import com.ailauncher.app.data.db.UsageDao
 import com.ailauncher.app.data.ml.AppPredictionEngine
@@ -35,7 +36,7 @@ object AppModule {
     @Provides @Singleton
     fun provideLauncherDatabase(@ApplicationContext context: Context): LauncherDatabase =
         Room.databaseBuilder(context, LauncherDatabase::class.java, "launcher.db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             // Allow data loss only on downgrade; future upgrades MUST add a Migration.
             // The DB only holds derived caches (usage, notifications, predictions), so a
             // user-initiated reinstall is the recovery path if schema changes break it.
@@ -44,6 +45,7 @@ object AppModule {
 
     @Provides fun provideUsageDao(db: LauncherDatabase): UsageDao = db.usageDao()
     @Provides fun provideNotificationDao(db: LauncherDatabase): NotificationDao = db.notificationDao()
+    @Provides fun provideSuggestionFeedbackDao(db: LauncherDatabase): com.ailauncher.app.data.db.SuggestionFeedbackDao = db.suggestionFeedbackDao()
 
     @Provides @Singleton
     fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepository =
@@ -61,8 +63,9 @@ object AppModule {
     fun provideInstalledAppsRepository(
         @ApplicationContext context: Context,
         categoryProvider: AppCategoryProvider,
-        iconCache: com.ailauncher.app.data.IconCache
-    ): InstalledAppsRepository = InstalledAppsRepository(context, categoryProvider, iconCache)
+        iconCache: com.ailauncher.app.data.IconCache,
+        iconPackManager: com.ailauncher.app.data.iconpack.IconPackManager
+    ): InstalledAppsRepository = InstalledAppsRepository(context, categoryProvider, iconCache, iconPackManager)
 
     @Provides @Singleton
     fun provideAppLockManager(
@@ -88,8 +91,12 @@ object AppModule {
         categoryProvider: AppCategoryProvider,
         notificationDao: NotificationDao,
         predictionEngine: AppPredictionEngine,
-        settingsRepo: SettingsRepository
+        settingsRepo: SettingsRepository,
+        feedbackRepo: com.ailauncher.app.data.ml.SuggestionFeedbackRepository,
+        contextSignals: com.ailauncher.app.data.ContextSignals,
+        jewishCalendar: com.ailauncher.app.data.JewishCalendarService
     ): GetRankedAppsUseCase = GetRankedAppsUseCase(
-        appsRepo, usageRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo
+        appsRepo, usageRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo,
+        feedbackRepo, contextSignals, jewishCalendar
     )
 }

@@ -51,6 +51,20 @@ data class PredictionCacheEntity(
     val lastPredicted: Long = System.currentTimeMillis()
 )
 
+/**
+ * v10: how often each app was *shown* in "Recommended now" versus actually
+ * *tapped* there — the signal that lets the ranking learn from what the user
+ * ignores, not just from what they open. Counts are Floats because they decay
+ * exponentially (see FeedbackScoring), so old habits fade instead of sticking.
+ */
+@Entity(tableName = "suggestion_feedback")
+data class SuggestionFeedbackEntity(
+    @PrimaryKey val packageName: String,
+    val impressions: Float,
+    val taps: Float,
+    val updatedAt: Long
+)
+
 // ── DAOs ─────────────────────────────────────────────────────────────
 
 @Dao
@@ -90,6 +104,15 @@ interface NotificationDao {
     @Query("SELECT packageName FROM notification_tracking WHERE unreadCount > 0") suspend fun getAppsWithUnread(): List<String>
 }
 
+@Dao
+interface SuggestionFeedbackDao {
+    @Query("SELECT * FROM suggestion_feedback") suspend fun getAll(): List<SuggestionFeedbackEntity>
+    @Query("SELECT * FROM suggestion_feedback WHERE packageName IN (:packages)")
+    suspend fun getFor(packages: List<String>): List<SuggestionFeedbackEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsertAll(entities: List<SuggestionFeedbackEntity>)
+    @Query("DELETE FROM suggestion_feedback") suspend fun clear()
+}
+
 // ── Database ─────────────────────────────────────────────────────────
 
 @Database(
@@ -98,9 +121,11 @@ interface NotificationDao {
         HourlyUsageEntity::class,
         NotificationEntity::class,
         DailyStatsEntity::class,
-        PredictionCacheEntity::class
+        PredictionCacheEntity::class,
+        SuggestionFeedbackEntity::class
     ],
-    version = 2, // v9.3: added indices — see MIGRATION_1_2 in Migrations.kt
+    // v9.3: 2 — added indices (MIGRATION_1_2). v10: 3 — suggestion_feedback (MIGRATION_2_3).
+    version = 3,
     // v9.3: was false. Needed for LauncherDatabaseMigrationTest's
     // MigrationTestHelper, which verifies MIGRATION_1_2 against the real
     // generated schema rather than a hand-maintained copy of it.
@@ -109,4 +134,5 @@ interface NotificationDao {
 abstract class LauncherDatabase : RoomDatabase() {
     abstract fun usageDao(): UsageDao
     abstract fun notificationDao(): NotificationDao
+    abstract fun suggestionFeedbackDao(): SuggestionFeedbackDao
 }

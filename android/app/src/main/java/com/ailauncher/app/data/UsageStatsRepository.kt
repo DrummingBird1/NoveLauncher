@@ -104,4 +104,42 @@ class UsageStatsRepository(private val context: Context) {
             )
         }
     }
+
+    /** v10: one app's totals over a date range, for the Statistics page. */
+    data class AppUsageTotal(val packageName: String, val screenTimeMs: Long, val launches: Int)
+
+    /**
+     * v10: per-app screen time and launches between [fromMillis] and now.
+     *
+     * The Statistics page used to read a Room table (daily_stats) that nothing
+     * ever wrote to, so it was always empty. This asks UsageStatsManager
+     * directly: screen time from the aggregated stats (kept for weeks to months
+     * at daily/weekly granularity), launches from the event log (kept for
+     * roughly the last week or so, so month-range launch counts are a floor).
+     */
+    suspend fun getRangeTotals(fromMillis: Long, excludePackage: String? = null): List<AppUsageTotal> = withContext(Dispatchers.Default) {
+        val manager = usageStatsManager ?: return@withContext emptyList()
+        val now = System.currentTimeMillis()
+        val aggregated = try { manager.queryAndAggregateUsageStats(fromMillis, now) } catch (_: Exception) { emptyMap() }
+
+        val launches = mutableMapOf<String, Int>()
+        try {
+            val events = manager.queryEvents(fromMillis, now)
+            val event = UsageEvents.Event()
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
+                    val pkg = event.packageName ?: continue
+                    launches[pkg] = (launches[pkg] ?: 0) + 1
+                }
+            }
+        } catch (_: Exception) {}
+
+        (aggregated.keys + launches.keys).asSequence()
+            .filter { it != excludePackage }
+            .map { pkg -> AppUsageTotal(pkg, aggregated[pkg]?.totalTimeInForeground ?: 0L, launches[pkg] ?: 0) }
+            .filter { it.screenTimeMs >= 60_000 || it.launches > 0 }
+            .sortedByDescending { it.screenTimeMs }
+            .toList()
+    }
 }

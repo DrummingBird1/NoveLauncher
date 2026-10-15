@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -33,9 +32,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ailauncher.app.data.update.UpdateChecker
+import com.ailauncher.app.domain.calendar.JewishDayInfo
+import com.ailauncher.app.ui.findLauncherActivity
+import com.ailauncher.app.ui.launchApp
+import com.ailauncher.app.ui.widgets.WidgetHostController
 import androidx.core.graphics.drawable.toBitmap
 import com.ailauncher.app.domain.models.*
-import com.ailauncher.app.ui.LauncherActivity
 import com.ailauncher.app.ui.LauncherViewModel
 import com.ailauncher.app.ui.LocalAppWidgetHost
 import com.ailauncher.app.ui.theme.launcherFontFamily
@@ -48,6 +59,8 @@ fun HomeScreen(
     viewModel: LauncherViewModel,
     gridColumns: Int,
     onSwipeUp: (() -> Unit)? = null,
+    onSwipeDown: (() -> Unit)? = null,
+    onDoubleTap: (() -> Unit)? = null,
     onOpenSearch: () -> Unit = {}
 ) {
     val appState by viewModel.appState.collectAsState()
@@ -55,14 +68,20 @@ fun HomeScreen(
     val widgetSlots by viewModel.widgets.collectAsState()
     val security by viewModel.security.collectAsState()
     val pages by viewModel.pagesSettings.collectAsState()
+    val shabbatActive by viewModel.shabbatModeActive.collectAsStateWithLifecycle()
+    val jewishDay by viewModel.jewishDay.collectAsStateWithLifecycle()
+    val update by viewModel.update.collectAsState()
     val context = LocalContext.current
-    val topApps = appState.rankedApps.take(8)
+    // v10: Shabbat mode steps social/entertainment/games/shopping aside.
+    val topApps = remember(appState.rankedApps, shabbatActive) { viewModel.homeSuggestions(appState.rankedApps, shabbatActive) }
 
     // v8: Bottom dock from PageLayoutSettings.dockApps for the home page.
     val homeLayout = pages.pageLayouts["home"] ?: com.ailauncher.app.domain.models.PageLayoutSettings()
     val dockPackages = homeLayout.dockApps
     val dockApps = remember(appState.rankedApps, dockPackages) {
-        dockPackages.mapNotNull { pkg -> appState.rankedApps.firstOrNull { it.app.packageName == pkg } }
+        dockPackages.mapNotNull { pkg ->
+            appState.rankedApps.firstOrNull { it.app.packageName == pkg && it.app.profile == AppProfile.PERSONAL }
+        }
     }
 
     // Clock editing mode
@@ -80,17 +99,19 @@ fun HomeScreen(
         }
     }
 
-    // v9.4 FIX: pointerInput must be keyed by something stable. Keying it by the
-    // onSwipeUp lambda itself (a fresh closure on every recomposition of this page,
-    // e.g. whenever showGlobalSearch/showClockSettings/longPressTarget changes)
-    // cancels and restarts the gesture-detector coroutine mid-touch, which can
-    // misfire detectVerticalDragGestures as a phantom swipe-up — observed as tapping
-    // the search icon spuriously navigating the pager to the Apps page. Key on Unit
-    // (never restarts) and read the latest callback via rememberUpdatedState instead.
+    // v9.4 FIX: pointerInput must be keyed by something stable. Keying it by a
+    // callback lambda (a fresh closure on every recomposition) cancels and
+    // restarts the gesture-detector coroutine mid-touch, which misfired as a
+    // phantom swipe-up. Key on Unit and read the latest callbacks via
+    // rememberUpdatedState instead.
     val latestOnSwipeUp = rememberUpdatedState(onSwipeUp)
+    val latestOnSwipeDown = rememberUpdatedState(onSwipeDown)
+    val latestOnDoubleTap = rememberUpdatedState(onDoubleTap)
+    val gridState = rememberLazyGridState()
     Column(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(gridColumns),
+            state = gridState,
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
@@ -98,33 +119,76 @@ fun HomeScreen(
                 .weight(1f)
                 .fillMaxSize()
                 .statusBarsPadding()
+                .testTag("home_grid")
                 .pointerInput(Unit) {
-                    detectVerticalDragGestures { _, dragAmount ->
-                        if (dragAmount < -45f) latestOnSwipeUp.value?.invoke()
+                    // v10: home swipes are read from the raw pointer stream in the
+                    // Initial pass, without consuming anything. A regular drag
+                    // detector never saw them: on Android 12+ the grid's stretch
+                    // overscroll consumes the drag first. Swipe down only counts when
+                    // the grid is at its top, swipe up when it can't scroll further,
+                    // so normal scrolling of a long home screen still works.
+                    val threshold = 48.dp.toPx()
+                    awaitEachGesture {
+                        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                        val atTop = !gridState.canScrollBackward
+                        val atBottom = !gridState.canScrollForward
+                        var dx = 0f
+                        var dy = 0f
+                        var fired = false
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                            if (!change.pressed) break
+                            dx += change.position.x - change.previousPosition.x
+                            dy += change.position.y - change.previousPosition.y
+                            if (!fired && kotlin.math.abs(dy) > threshold && kotlin.math.abs(dy) > 1.5f * kotlin.math.abs(dx)) {
+                                fired = true
+                                if (dy > 0 && atTop) latestOnSwipeDown.value?.invoke()
+                                else if (dy < 0 && atBottom) latestOnSwipeUp.value?.invoke()
+                            }
+                        }
                     }
+                }
+                .pointerInput(Unit) {
+                    // Empty-space double tap. Icons consume their own taps first.
+                    detectTapGestures(onDoubleTap = { latestOnDoubleTap.value?.invoke() })
                 }
         ) {
         // Clock — clickable to edit
         item(span = { GridItemSpan(maxLineSpan) }) {
             val weather by viewModel.weather.collectAsState()
-            ClockHeader(appearance.clock, weather, onClick = { showClockSettings = true })
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                ClockHeader(appearance.clock, weather, onClick = { showClockSettings = true })
+                JewishCalendarLines(jewishDay, appearance.jewishCalendar, shabbatActive, appearance.clock)
+            }
         }
 
         // Toolbar
         item(span = { GridItemSpan(maxLineSpan) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 // v8: Global search button — fast access to apps + contacts + web.
-                IconButton(onClick = onOpenSearch) {
+                IconButton(onClick = onOpenSearch, modifier = Modifier.testTag("home_search")) {
                     Icon(Icons.Rounded.Search, stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 IconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }) {
                     Icon(Icons.Rounded.Settings, stringResource(R.string.action_settings), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 if (!security.isLayoutLocked) {
-                    IconButton(onClick = { (context as? LauncherActivity)?.launchWidgetPicker() }) {
+                    IconButton(onClick = { context.findLauncherActivity()?.launchWidgetPicker() }) {
                         Icon(Icons.Rounded.Widgets, stringResource(R.string.action_widgets), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
+            }
+        }
+
+        // v10: opt-in update check found a newer release.
+        update?.let { info ->
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                UpdateBanner(info, onOpen = {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(info.url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    } catch (_: Exception) {}
+                }, onDismiss = { viewModel.dismissUpdate() })
             }
         }
 
@@ -135,9 +199,12 @@ fun HomeScreen(
             span = { GridItemSpan(maxLineSpan) }
         ) { slot ->
             WidgetView(
-                slot.widgetId,
-                slot.spanY * 80,
-                if (!security.isLayoutLocked) { { viewModel.removeWidget(slot.widgetId) } } else null
+                widgetId = slot.widgetId,
+                heightDp = (slot.spanY * WidgetHostController.ROW_HEIGHT_DP).toInt(),
+                onRemove = if (!security.isLayoutLocked) { { viewModel.removeWidget(slot.widgetId) } } else null,
+                onResize = if (!security.isLayoutLocked) {
+                    { viewModel.resizeWidget(slot.widgetId, slot.spanX, if (slot.spanY >= 4) 1 else slot.spanY + 1) }
+                } else null
             )
         }
 
@@ -147,14 +214,18 @@ fun HomeScreen(
         }
 
         // Top apps
-        items(topApps, key = { it.app.packageName }) { rankedApp ->
+        items(topApps, key = { it.app.key }) { rankedApp ->
             HomeAppItem(
                 rankedApp,
                 appearance.iconSizeDp,
                 appearance.fontSizeSp,
                 appearance.iconShape,
                 appearance.appFont,
-                onClick = { launchApp(context, rankedApp.app.packageName) },
+                onClick = {
+                    // v10: a tap here is the "this suggestion was right" signal.
+                    viewModel.recordSuggestionTap(rankedApp.app.packageName)
+                    launchApp(context, rankedApp.app)
+                },
                 onLongClick = { longPressTarget = rankedApp }
             )
         }
@@ -177,7 +248,7 @@ fun HomeScreen(
                         fontSizeSp = appearance.fontSizeSp,
                         iconShape = appearance.iconShape,
                         font = appearance.appFont,
-                        onClick = { launchApp(context, rankedApp.app.packageName) },
+                        onClick = { launchApp(context, rankedApp.app) },
                         onLongClick = { longPressTarget = rankedApp }
                     )
                 }
@@ -185,35 +256,9 @@ fun HomeScreen(
         }
     }  // Column
 
-    // v8: Long-press menu — hide, lock, app info, uninstall.
+    // v8: Long-press menu — shortcuts, hide, lock, app info, uninstall.
     longPressTarget?.let { target ->
-        AppActionsSheet(
-            target = target,
-            onDismiss = { longPressTarget = null },
-            onHide = { viewModel.hideApp(target.app.packageName); longPressTarget = null },
-            onPrivate = { viewModel.moveToPrivateFolder(target.app.packageName); longPressTarget = null },
-            onLockToggle = { viewModel.toggleAppLock(target.app.packageName); longPressTarget = null },
-            onAppInfo = {
-                try {
-                    context.startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData(android.net.Uri.parse("package:${target.app.packageName}"))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                } catch (_: Exception) {}
-                longPressTarget = null
-            },
-            onUninstall = {
-                try {
-                    context.startActivity(
-                        Intent(Intent.ACTION_DELETE)
-                            .setData(android.net.Uri.parse("package:${target.app.packageName}"))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                } catch (_: Exception) {}
-                longPressTarget = null
-            }
-        )
+        AppActionsSheet(target = target, viewModel = viewModel, onDismiss = { longPressTarget = null })
     }
 
     // Quick clock settings dialog
@@ -233,10 +278,95 @@ fun HomeScreen(
                     SwitchSetting(stringResource(R.string.clock_show_date), clock.showDate) { v ->
                         viewModel.updateAppearance { a -> a.copy(clock = a.clock.copy(showDate = v)) }
                     }
+                    SwitchSetting(stringResource(R.string.jc_show_hebrew_date), appearance.jewishCalendar.showHebrewDate) { v ->
+                        viewModel.updateAppearance { a -> a.copy(jewishCalendar = a.jewishCalendar.copy(showHebrewDate = v)) }
+                    }
                 }
             },
             confirmButton = { TextButton(onClick = { showClockSettings = false }) { Text(stringResource(R.string.action_close)) } }
         )
+    }
+}
+
+/**
+ * v10: Hebrew date, today's holiday or the next one, candle-lighting /
+ * Shabbat-ends times and the Shabbat-mode greeting — each line opt-in from
+ * Settings → Jewish calendar. Styled like the date line under the clock.
+ */
+@Composable
+fun JewishCalendarLines(
+    day: JewishDayInfo?,
+    settings: JewishCalendarSettings,
+    shabbatActive: Boolean,
+    clock: ClockSettings
+) {
+    if (day == null) return
+    val context = LocalContext.current
+    val color = parseHexColor(clock.fontColor).copy(alpha = clock.opacity * 0.8f)
+    val font = launcherFontFamily(clock.font)
+    val timeFormat = remember { android.text.format.DateFormat.getTimeFormat(context) }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(bottom = 8.dp)) {
+        if (shabbatActive) {
+            val today = java.time.LocalDate.now().dayOfWeek
+            val isShabbat = today == java.time.DayOfWeek.SATURDAY || today == java.time.DayOfWeek.FRIDAY
+            CalendarLine(stringResource(if (isShabbat) R.string.jc_shabbat_shalom else R.string.jc_chag_sameach), MaterialTheme.colorScheme.primary, font, emphasis = true)
+        }
+        if (settings.showHebrewDate) CalendarLine(day.hebrewDate, color, font)
+        if (settings.showHolidays) {
+            if (day.holidaysToday.isNotEmpty()) {
+                CalendarLine(day.holidaysToday.joinToString(" · ") { context.getString(it.nameRes) }, color, font)
+            } else {
+                day.nextHoliday?.let { (holiday, days) ->
+                    if (days <= 30) {
+                        val name = stringResource(holiday.nameRes)
+                        CalendarLine(
+                            if (days == 1) stringResource(R.string.jc_holiday_tomorrow, name)
+                            else pluralStringResource(R.plurals.jc_holiday_in_days, days, name, days),
+                            color, font
+                        )
+                    }
+                }
+            }
+        }
+        if (settings.showShabbatTimes) {
+            day.candleLighting?.let { CalendarLine(stringResource(R.string.jc_candle_lighting, timeFormat.format(Date(it))), color, font) }
+            day.havdalah?.let { CalendarLine(stringResource(R.string.jc_havdalah, timeFormat.format(Date(it))), color, font) }
+        }
+    }
+}
+
+@Composable
+private fun CalendarLine(
+    text: String,
+    color: androidx.compose.ui.graphics.Color,
+    font: androidx.compose.ui.text.font.FontFamily?,
+    emphasis: Boolean = false
+) {
+    Text(
+        text,
+        fontSize = if (emphasis) 15.sp else 13.sp,
+        color = color,
+        fontFamily = font,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(top = 2.dp)
+    )
+}
+
+@Composable
+private fun UpdateBanner(info: UpdateChecker.UpdateInfo, onOpen: () -> Unit, onDismiss: () -> Unit) {
+    Card(
+        Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+    ) {
+        Row(Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.SystemUpdate, null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(12.dp))
+            Text(stringResource(R.string.update_available, info.version), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f), fontSize = 14.sp)
+            TextButton(onClick = onOpen) { Text(stringResource(R.string.update_download)) }
+            IconButton(onClick = onDismiss) { Icon(Icons.Rounded.Close, stringResource(R.string.action_close), modifier = Modifier.size(18.dp)) }
+        }
     }
 }
 
@@ -423,7 +553,7 @@ fun HomeAppItem(
         // v9: hand off to the process-lifetime IconCache so page swipes and
         // re-Composition don't re-rasterise the bitmap each time.
         val bitmap = icon?.let { drw ->
-            com.ailauncher.app.ui.LocalIconCache.current.getOrLoad(rankedApp.app.packageName) { drw }
+            com.ailauncher.app.ui.LocalIconCache.current.getOrLoad(rankedApp.app.key) { drw }
         }
         Box(Modifier.size(iconSizeDp.dp)) {
             if (bitmap != null) {
@@ -461,12 +591,19 @@ fun HomeAppItem(
     }
 }
 
+/**
+ * A hosted third-party widget. v10: reports its real on-screen size to the
+ * widget (AppWidgetHostView.updateAppWidgetSize), so providers pick the right
+ * responsive layout instead of guessing, and can be cycled through four heights.
+ */
 @Composable
-fun WidgetView(widgetId: Int, heightDp: Int, onRemove: (() -> Unit)?) {
+fun WidgetView(widgetId: Int, heightDp: Int, onRemove: (() -> Unit)?, onResize: (() -> Unit)? = null) {
     // v8 FIX: key the AndroidView on widgetId so scrolling in/out of the viewport
     // reuses the same hostView. Without the key, LazyGrid recomposition rebuilds
     // the widget view on every scroll, blanking third-party widgets.
     val host = LocalAppWidgetHost.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    var sizeDp by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     Box(Modifier.fillMaxWidth()) {
         androidx.compose.runtime.key(widgetId) {
             AndroidView(
@@ -476,91 +613,43 @@ fun WidgetView(widgetId: Int, heightDp: Int, onRemove: (() -> Unit)?) {
                     if (info != null) host.createView(ctx, widgetId, info).apply {
                         layoutParams = FrameLayout.LayoutParams(
                             FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
+                            FrameLayout.LayoutParams.MATCH_PARENT
                         )
                     } else FrameLayout(ctx)
                 },
-                modifier = Modifier.fillMaxWidth().heightIn(min = heightDp.dp).clip(RoundedCornerShape(16.dp))
+                update = { view ->
+                    val (w, h) = sizeDp ?: return@AndroidView
+                    val hostView = view as? android.appwidget.AppWidgetHostView ?: return@AndroidView
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                            hostView.updateAppWidgetSize(android.os.Bundle(), listOf(android.util.SizeF(w.toFloat(), h.toFloat())))
+                        } else {
+                            @Suppress("DEPRECATION")
+                            hostView.updateAppWidgetSize(null, w, h, w, h)
+                        }
+                    } catch (_: Exception) {}
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(heightDp.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .onSizeChanged { px ->
+                        val dp = with(density) { px.width.toDp().value.toInt() to px.height.toDp().value.toInt() }
+                        if (dp != sizeDp) sizeDp = dp
+                    }
             )
         }
-        onRemove?.let {
-            IconButton(onClick = it, modifier = Modifier.align(Alignment.TopEnd)) {
-                Icon(Icons.Rounded.Close, stringResource(R.string.action_remove), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+        Row(Modifier.align(Alignment.TopEnd)) {
+            onResize?.let {
+                IconButton(onClick = it) {
+                    Icon(Icons.Rounded.Height, stringResource(R.string.action_resize_widget), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                }
+            }
+            onRemove?.let {
+                IconButton(onClick = it) {
+                    Icon(Icons.Rounded.Close, stringResource(R.string.action_remove), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                }
             }
         }
-    }
-}
-
-/**
- * v8 FIX (critical security regression): every UI screen previously called
- * `launchApp(context, pkg)` which went straight to PackageManager, completely
- * bypassing AppLockManager. Locked apps could be opened from Home/Apps/Personal
- * with no PIN/biometric prompt — the entire CredentialDialog flow in
- * LauncherActivity was dead code.
- *
- * Now we walk the context chain looking for a LauncherActivity. If found, the
- * launch goes through `launchAppWithLockCheck` which branches on lock method.
- * Fallback (e.g. when called from SettingsActivity) is a direct launch.
- */
-/**
- * v8: Bottom-sheet menu that appears on long-press of an app icon.
- * Provides hide, move-to-private, toggle lock, app info, uninstall.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppActionsSheet(
-    target: RankedApp,
-    onDismiss: () -> Unit,
-    onHide: () -> Unit,
-    onPrivate: () -> Unit,
-    onLockToggle: () -> Unit,
-    onAppInfo: () -> Unit,
-    onUninstall: () -> Unit
-) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                target.app.label,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            AppActionRow(Icons.Rounded.VisibilityOff, stringResource(R.string.action_hide_app), onHide)
-            AppActionRow(Icons.Rounded.Shield, stringResource(R.string.action_move_private), onPrivate)
-            AppActionRow(Icons.Rounded.Lock, stringResource(R.string.action_toggle_lock), onLockToggle)
-            AppActionRow(Icons.Rounded.Info, stringResource(R.string.action_app_info), onAppInfo)
-            if (!target.app.isSystemApp) {
-                AppActionRow(Icons.Rounded.Delete, stringResource(R.string.action_uninstall), onUninstall)
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-    }
-}
-
-@Composable
-private fun AppActionRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
-        Spacer(Modifier.width(16.dp))
-        Text(label, color = MaterialTheme.colorScheme.onSurface)
-    }
-}
-
-fun launchApp(context: Context, packageName: String) {
-    val activity = generateSequence<Context>(context) {
-        (it as? android.content.ContextWrapper)?.baseContext
-    }.filterIsInstance<LauncherActivity>().firstOrNull()
-    if (activity != null) {
-        activity.launchAppWithLockCheck(packageName)
-        return
-    }
-    context.packageManager.getLaunchIntentForPackage(packageName)?.let {
-        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); context.startActivity(it)
     }
 }

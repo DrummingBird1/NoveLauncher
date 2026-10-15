@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v10: LockScreenAccessibilityService only performs two global actions (screen
+     off, open notifications). It listens to a single rare event type, never
+     retrieves window content, and isn't an accessibility tool. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/a11y_service_description"
+    android:accessibilityEventTypes="typeAnnouncement"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault"
+    android:canRetrieveWindowContent="false"
+    android:isAccessibilityTool="false"
+    android:notificationTimeout="0" />

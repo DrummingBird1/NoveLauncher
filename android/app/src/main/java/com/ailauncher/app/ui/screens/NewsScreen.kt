@@ -26,6 +26,7 @@ import android.webkit.WebViewClient
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.NewsSettings
 import com.ailauncher.app.domain.models.NewsSource
+import com.ailauncher.app.ui.launchApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

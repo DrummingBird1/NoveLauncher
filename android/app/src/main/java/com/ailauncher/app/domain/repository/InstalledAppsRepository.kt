@@ -1,6 +1,8 @@
 package com.ailauncher.app.domain.repository
 
 import com.ailauncher.app.domain.models.AppInfo
+import com.ailauncher.app.domain.models.ProfileState
+import kotlinx.coroutines.flow.Flow
 
 /**
  * v9: Domain-layer contract for the launchable-apps query. Real impl in
@@ -9,9 +11,21 @@ import com.ailauncher.app.domain.models.AppInfo
  * touching PackageManager.
  */
 interface InstalledAppsRepository {
-    /** Returns every launchable app on the device. Cached; cheap on subsequent calls. */
-    suspend fun getInstalledApps(): List<AppInfo>
+    /**
+     * Every launchable app across the user's available profiles. Cached; cheap on
+     * subsequent calls. [iconPackPackage] blank = system icons (v10).
+     */
+    suspend fun getInstalledApps(iconPackPackage: String = ""): List<AppInfo>
 
-    /** Force the next [getInstalledApps] to re-walk PackageManager. */
+    /** Non-personal profiles (work, Private Space, clone) and whether each is paused/locked. */
+    fun getProfiles(): List<ProfileState>
+
+    /** Pause/resume a profile (work) or lock/unlock it (Private Space). False if refused. */
+    fun setQuietMode(userSerial: Long, enabled: Boolean): Boolean
+
+    /** Emits whenever the app list or a profile's availability changed. */
+    val changes: Flow<Unit>
+
+    /** Force the next [getInstalledApps] to re-query. */
     fun invalidate()
 }

@@ -1,5 +1,11 @@
 package com.ailauncher.app.ui.theme
 
+import android.app.Activity
+import android.content.ContextWrapper
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import android.graphics.Typeface
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -52,6 +58,23 @@ fun AILauncherTheme(
         if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
         buildPresetColorScheme(appearance, isDark)
+    }
+
+    // v10: status/navigation bar icons follow the *theme's* background, not the
+    // system's light/dark setting. enableEdgeToEdge() alone picks icon colour from
+    // the system mode, so a dark launcher theme on a phone in light mode drew
+    // dark icons on a dark background — the status-bar clock was unreadable.
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        val lightBackground = colorScheme.background.luminance() > 0.5f
+        SideEffect {
+            val window = generateSequence(view.context) { (it as? ContextWrapper)?.baseContext }
+                .filterIsInstance<Activity>().firstOrNull()?.window ?: return@SideEffect
+            WindowCompat.getInsetsController(window, view).apply {
+                isAppearanceLightStatusBars = lightBackground
+                isAppearanceLightNavigationBars = lightBackground
+            }
+        }
     }
 
     MaterialTheme(colorScheme = colorScheme, content = content)

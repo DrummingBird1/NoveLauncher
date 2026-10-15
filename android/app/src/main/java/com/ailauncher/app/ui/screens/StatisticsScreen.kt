@@ -23,37 +23,60 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ailauncher.app.R
-import com.ailauncher.app.data.db.DailyStatsEntity
-import com.ailauncher.app.data.db.UsageDao
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
+import com.ailauncher.app.data.UsageStatsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 /**
  * v6 feature #6: Usage statistics screen with top apps, screen time, launch count.
+ *
+ * v10: reads UsageStatsManager directly (UsageStatsRepository.getRangeTotals).
+ * It used to read a Room table that nothing ever populated, so it was always
+ * empty. Rows show the app's name and icon instead of its package name, and the
+ * page explains how to grant usage access when it's missing.
  */
 @Composable
-fun StatisticsScreen(usageDao: UsageDao) {
-    var topApps by remember { mutableStateOf<List<DailyStatsEntity>>(emptyList()) }
+fun StatisticsScreen(usageStatsRepo: UsageStatsRepository, onResetLearning: () -> Unit) {
+    var topApps by remember { mutableStateOf<List<UsageStatsRepository.AppUsageTotal>>(emptyList()) }
     var selectedRange by remember { mutableStateOf(StatsRange.WEEK) }
-    val scope = rememberCoroutineScope()
+    var hasPermission by remember { mutableStateOf(true) }
+    var resetDone by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     LaunchedEffect(selectedRange) {
+        hasPermission = withContext(Dispatchers.Default) { usageStatsRepo.hasPermission() }
         val cal = Calendar.getInstance()
         when (selectedRange) {
             StatsRange.DAY -> cal.add(Calendar.DAY_OF_YEAR, -1)
             StatsRange.WEEK -> cal.add(Calendar.DAY_OF_YEAR, -7)
             StatsRange.MONTH -> cal.add(Calendar.MONTH, -1)
         }
-        val fromDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cal.time)
-        topApps = usageDao.getTopAppsByScreenTime(fromDate, 20)
+        topApps = usageStatsRepo.getRangeTotals(cal.timeInMillis, excludePackage = context.packageName).take(20)
     }
 
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Spacer(Modifier.height(16.dp))
+
+        if (!hasPermission) {
+            Card(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(stringResource(R.string.stats_permission_needed), color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                    TextButton(onClick = {
+                        try { context.startActivity(android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)) } catch (_: Exception) {}
+                    }) { Text(stringResource(R.string.stats_grant)) }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+        }
 
         // Range selector
         Row(
@@ -100,15 +123,22 @@ fun StatisticsScreen(usageDao: UsageDao) {
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.weight(1f)
         ) {
-            items(topApps) { app ->
+            items(topApps, key = { it.packageName }) { app ->
                 AppStatRow(
                     packageName = app.packageName,
                     screenTimeMs = app.screenTimeMs,
                     launches = app.launches,
                     maxScreenTime = topApps.firstOrNull()?.screenTimeMs ?: 1L
                 )
+            }
+            item {
+                // v10: forget what "Recommended now" learned from taps/ignores.
+                TextButton(onClick = { onResetLearning(); resetDone = true }, enabled = !resetDone) {
+                    Text(stringResource(if (resetDone) R.string.stats_reset_learning_done else R.string.stats_reset_learning))
+                }
             }
         }
     }
@@ -134,6 +164,14 @@ private fun RowScope.SummaryItem(label: String, value: String, icon: androidx.co
 private fun AppStatRow(packageName: String, screenTimeMs: Long, launches: Int, maxScreenTime: Long) {
     val context = LocalContext.current
     val ratio = if (maxScreenTime > 0) (screenTimeMs.toFloat() / maxScreenTime) else 0f
+    // v10: show what the user recognises — the app's name and icon, not its package.
+    val (label, icon) = remember(packageName) {
+        val pm = context.packageManager
+        try {
+            val ai = pm.getApplicationInfo(packageName, 0)
+            pm.getApplicationLabel(ai).toString() to runCatching { pm.getApplicationIcon(ai).toBitmap(72, 72).asImageBitmap() }.getOrNull()
+        } catch (_: Exception) { packageName to null }
+    }
     Card(
         Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -141,7 +179,11 @@ private fun AppStatRow(packageName: String, screenTimeMs: Long, launches: Int, m
     ) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(packageName, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
+                if (icon != null) {
+                    androidx.compose.foundation.Image(icon, null, Modifier.size(24.dp).clip(RoundedCornerShape(6.dp)))
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                 Text(formatDuration(context, screenTimeMs), fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
             }
             Spacer(Modifier.height(4.dp))
