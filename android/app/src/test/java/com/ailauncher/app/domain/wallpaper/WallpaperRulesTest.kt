@@ -47,6 +47,16 @@ class WallpaperRulesTest {
     }
 
     @Test
+    fun `hourly counts an entry without a start hour as midnight once another has one`() {
+        // Settings shows an unset hour as "Starts at 00:00"; it must not silently drop out.
+        val s = WallpaperSettings(mode = WallpaperMode.HOURLY, entries = listOf(a, b.copy(hour = 18)))
+        assertEquals("a", pick(s, hour = 0))
+        assertEquals("a", pick(s, hour = 17))
+        assertEquals("b", pick(s, hour = 18))
+        assertEquals("b", pick(s, hour = 23))
+    }
+
+    @Test
     fun `hourly without start hours rotates`() {
         val s = WallpaperSettings(mode = WallpaperMode.HOURLY, entries = listOf(a, b))
         assertEquals("a", pick(s, hour = 10))

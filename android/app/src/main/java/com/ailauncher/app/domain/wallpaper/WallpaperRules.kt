@@ -26,10 +26,13 @@ object WallpaperRules {
             WallpaperMode.PER_PAGE ->
                 entries.firstOrNull { it.page == pageId } ?: entries.firstOrNull { it.page.isBlank() } ?: entries.first()
             WallpaperMode.HOURLY -> {
-                val timed = entries.filter { it.hour in 0..23 }.sortedBy { it.hour }
-                if (timed.isEmpty()) entries[hour % entries.size]
-                // The latest start hour that has passed today; before the first one, the last from yesterday.
-                else timed.lastOrNull { it.hour <= hour } ?: timed.last()
+                if (entries.none { it.hour in 0..23 }) entries[hour % entries.size]
+                else {
+                    // An entry without a start hour counts as 00:00 — what Settings shows for it.
+                    val timed = entries.sortedBy { it.hour.coerceIn(0, 23) }
+                    // The latest start hour that has passed today; before the first one, the last from yesterday.
+                    timed.lastOrNull { it.hour.coerceIn(0, 23) <= hour } ?: timed.last()
+                }
             }
             WallpaperMode.DAILY ->
                 entries.firstOrNull { it.dayOfWeek == dayOfWeek } ?: entries[(dayOfYear - 1).coerceAtLeast(0) % entries.size]
