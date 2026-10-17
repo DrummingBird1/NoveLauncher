@@ -15,37 +15,47 @@
 
 🚀 **NoveLauncher — The Smart Launcher That Learns You**
 
-NoveLauncher is a next-generation Android launcher that automatically organizes your home screen using AI. The app learns your habits and shows the right apps at the right time — no manual setup required.
+NoveLauncher is a private Android launcher that organizes your home screen around how you actually use your phone. It learns your habits on the device and puts the right apps in front of you at the right time — no account, no setup.
 
 ✨ **What makes NoveLauncher special?**
 
-🧠 **On-device AI** — Analyzes your usage patterns (time, frequency, context) and ranks apps by relevance. Everything runs on your device — no data sent to any server.
+🧠 **On-device AI** — Ranks apps by time of day, frequency, recency and category, and "Recommended now" learns from which suggestions you actually tap. Everything runs on your phone — your usage data is never uploaded.
 
-📂 **Smart Folders** — Apps are auto-sorted into categories: Work, Social, Entertainment, Games, Tools, Health, and more. No manual sorting needed.
+📂 **Smart Folders** — Apps are auto-sorted into categories: Work, Social, Entertainment, Games, Shopping, Health, Education and more. No manual sorting needed.
 
-🎨 **Full Customization** — 12 theme presets, hundreds of colors, 16 fonts, 12 icon shapes, customizable clock styles (digital + analog), and live preview of every change.
+💼 **Work Profile & Private Space** — Work apps keep their badge and can be paused with one tap. Android 15's Private Space gets its own lockable section and never mixes into your suggestions.
 
-📰 **News Page** — Built-in RSS reader with 12+ Hebrew & English sources (ynet, Walla, BBC, CNN, Google News, TechCrunch, and more). Or embed any news app directly.
+⚡ **App Shortcuts** — Long-press any app for its shortcuts: a new message, a saved route, a quick action.
 
-🔒 **Advanced Security** — App lock with PIN, password, pattern, fingerprint, or face authentication. Hidden private folder. Layout lock to prevent accidental moves.
+🔍 **Smart Search** — Apps, contacts and settings in one box. Finds apps across Hebrew and English spellings, forgives typos, understands initials — and answers calculations and unit conversions instantly.
 
-💾 **Backups** — Back up your settings locally, to Google Drive, or to your own NAS. Schedule them, and optionally encrypt with a password only you hold.
+🕯️ **Jewish Calendar & Shabbat Mode** — Hebrew date, holidays (Israel or diaspora), candle-lighting and Havdalah times calculated on your phone. Shabbat mode quiets distracting suggestions and badges from candle lighting until nightfall.
 
-🧩 **Widgets** — Add any system widget to your home screen. Resize freely.
+🖼️ **Wallpapers** — Your own photos or built-in gradients: one for every screen, per page, by hour, by weekday — or your live wallpaper. Adjust brightness, contrast, saturation, warmth, blur and vignette.
 
-📱 **Custom Pages** — Create new pages, reorder them, enable/disable individual pages.
+👆 **Gestures** — Swipe up for apps, swipe down for notifications, double-tap to turn the screen off.
 
-🖼️ **Wallpaper System** — Static, per-page, hourly, daily, or live wallpapers. Adjust brightness, blur, saturation, contrast, and warmth.
+🎨 **Full Customization** — 12 theme presets, Material You, custom colors, 16 fonts, 12 icon shapes, digital, analog or minimal clock, and a live preview of every change.
 
-👁️ **Privacy First** — Zero data sent to servers. All AI runs on-device. No analytics, no ads, no tracking.
+🧷 **Icon Packs** — Apply any Nova / ADW / Lawnchair-compatible icon pack. Apps it doesn't cover keep their own icon.
 
-⚡ **Battery Friendly** — Smart sampling every 15 minutes, minimal background processing, efficient Jetpack Compose UI.
+📰 **News Page** — Built-in RSS reader with 12 Hebrew & English sources (ynet, Walla, BBC, CNN, Google News, TechCrunch and more), plus any feed you add. Or embed any news app directly.
+
+🔒 **Advanced Security** — App lock with PIN, password, pattern, fingerprint or face authentication. Hidden private folder. Layout lock to prevent accidental moves.
+
+💾 **Backups** — Back up your settings locally, to your own Google Drive, or to your own NAS. Schedule them, and optionally encrypt them with a password only you hold.
+
+🧩 **Widgets** — Add any widget, run its setup, and resize it.
+
+📱 **Custom Pages** — Create new pages, reorder them, enable or disable individual pages.
+
+📊 **Usage Statistics** — See how you spend your time, by day, week or month.
+
+👁️ **Privacy First** — No account, no analytics, no ads, no tracking. The app goes online only for weather, the news feeds you choose, backups you set up, and an optional update check.
+
+⚡ **Battery Friendly** — Refreshes every 15 minutes, and only while the home screen is visible. Efficient Jetpack Compose UI.
 
 🌍 **Multi-language** — Hebrew, English, Arabic, French, Russian, Spanish and German — with full RTL support.
-
-🔧 **Repair Mode** — Built-in troubleshooting if something goes wrong.
-
-📊 **Usage Statistics** — See exactly how you spend your time, by app and category.
 
 ---
 
@@ -53,35 +63,47 @@ NoveLauncher is a next-generation Android launcher that automatically organizes 
 
 🚀 **NoveLauncher — הלאנצ'ר החכם שלומד אותך**
 
-NoveLauncher הוא לאנצ'ר אנדרואיד מהדור הבא שמארגן את מסך הבית שלך באופן אוטומטי באמצעות AI. הוא לומד את ההרגלים שלך ומציב את האפליקציות הנכונות בזמן הנכון — בלי שתצטרך לעשות שום דבר.
+NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמסדר את מסך הבית לפי הדרך שבה אתה באמת משתמש בטלפון. הוא לומד את ההרגלים שלך על המכשיר ומציב את האפליקציות הנכונות בזמן הנכון — בלי חשבון ובלי הגדרות.
 
 ✨ **מה מיוחד ב-NoveLauncher?**
 
-🧠 **AI מקומי** — המערכת מנתחת את דפוסי השימוש שלך (שעות, תדירות, הקשר) ומדרגת את האפליקציות לפי רלוונטיות. הכל מתבצע על המכשיר.
+🧠 **AI מקומי** — האפליקציות מדורגות לפי שעה ביום, תדירות, שימוש אחרון וקטגוריה, ו"מומלצות עכשיו" לומדת מאילו הצעות אתה באמת פותח. הכל רץ על הטלפון — נתוני השימוש שלך לא מועלים לשום מקום.
 
-📂 **תיקיות חכמות** — אפליקציות מתמיינות אוטומטית: עבודה, חברה, פנאי, משחקים, ועוד.
+📂 **תיקיות חכמות** — אפליקציות מתמיינות אוטומטית: עבודה, חברה, פנאי, משחקים, קניות, בריאות, חינוך ועוד.
 
-🎨 **התאמה אישית מלאה** — 12 ערכות נושא, מאות צבעים, 16 פונטים, 12 צורות אייקון, שעון דיגיטלי או אנלוגי, תצוגה מקדימה בזמן אמת.
+💼 **פרופיל עבודה ומרחב פרטי** — אפליקציות העבודה שומרות על התג שלהן ואפשר להשהות אותן בלחיצה. המרחב הפרטי של אנדרואיד 15 מקבל אזור נפרד שאפשר לנעול, ולא מתערבב בהצעות.
 
-📰 **עמוד חדשות** — RSS מובנה עם 12+ מקורות (ynet, וואלה, BBC, Google News, ועוד). או להציג אפליקציית חדשות חיצונית.
+⚡ **קיצורי דרך** — לחיצה ארוכה על אפליקציה פותחת את קיצורי הדרך שלה: הודעה חדשה, מסלול שמור, פעולה מהירה.
 
-🔒 **אבטחה מתקדמת** — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת.
+🔍 **חיפוש חכם** — אפליקציות, אנשי קשר והגדרות מתיבה אחת. מוצא אפליקציות גם כשכותבים בעברית או באנגלית, סולח על שגיאות הקלדה, מבין ראשי תיבות — ועונה מיד על חישובים והמרות יחידות.
 
-💾 **גיבויים** — מקומי, Google Drive או NAS משלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
+🕯️ **לוח עברי ומצב שבת** — תאריך עברי, חגים (ארץ ישראל או חוץ לארץ), זמני הדלקת נרות וצאת שבת שמחושבים בטלפון. מצב שבת מסתיר הצעות מסיחות ותגי התראות מהדלקת הנרות ועד צאת הכוכבים.
 
-🧩 **גאדג'טים** — הוסף כל וידג'ט מהמערכת. שנה גודל בחופשיות.
+🖼️ **רקעים** — תמונות משלך או מעברי צבע מובנים: רקע אחד לכל המסכים, לפי עמוד, לפי שעה, לפי יום בשבוע — או רקע חי. בהירות, ניגודיות, רוויה, חמימות, טשטוש וויניאטה.
 
-📱 **עמודים מותאמים** — צור עמודים חדשים, שנה סדר, הפעל/כבה עמודים.
+👆 **מחוות** — החלקה למעלה לאפליקציות, החלקה למטה להתראות, הקשה כפולה לכיבוי המסך.
 
-🖼️ **רקעים** — קבוע, לפי עמוד, לפי שעה, לפי יום, או רקע חי.
+🎨 **התאמה אישית מלאה** — 12 ערכות נושא, Material You, צבעים מותאמים, 16 גופנים, 12 צורות אייקון, שעון דיגיטלי, אנלוגי או מינימלי, ותצוגה מקדימה בזמן אמת.
 
-👁️ **פרטיות לפני הכל** — אפס נתונים נשלחים לשרתים. אין פרסומות, אין מעקב.
+🧷 **חבילות אייקונים** — החלת כל חבילת אייקונים תואמת Nova / ADW / Lawnchair.
 
-⚡ **חסכוני בסוללה** — דגימה חכמה, עיבוד מינימלי ברקע.
+📰 **עמוד חדשות** — RSS מובנה עם 12 מקורות בעברית ובאנגלית (ynet, וואלה, BBC, Google News ועוד), וגם פידים משלך. או להציג אפליקציית חדשות חיצונית.
+
+🔒 **אבטחה מתקדמת** — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה נגד הזזה בטעות.
+
+💾 **גיבויים** — מקומי, ל-Google Drive שלך או ל-NAS שלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
+
+🧩 **ווידג'טים** — הוסף כל ווידג'ט, הגדר אותו ושנה את גודלו.
+
+📱 **עמודים מותאמים** — צור עמודים חדשים, שנה סדר, הפעל או כבה עמודים.
+
+📊 **סטטיסטיקות שימוש** — איך אתה מבלה את הזמן, לפי יום, שבוע או חודש.
+
+👁️ **פרטיות לפני הכל** — בלי חשבון, בלי אנליטיקס, בלי פרסומות, בלי מעקב. האפליקציה מתחברת לרשת רק בשביל מזג האוויר, פידי החדשות שבחרת, גיבויים שהגדרת ובדיקת עדכונים אופציונלית.
+
+⚡ **חסכוני בסוללה** — רענון כל 15 דקות, ורק כשמסך הבית מוצג.
 
 🌍 **רב-לשוני** — עברית, אנגלית, ערבית, צרפתית, רוסית, ספרדית וגרמנית — עם תמיכה מלאה ב-RTL.
-
-📊 **סטטיסטיקות שימוש** — תראה בדיוק איך אתה מבלה את הזמן.
 
 ---
 
@@ -94,14 +116,26 @@ NoveLauncher הוא לאנצ'ר אנדרואיד מהדור הבא שמארגן 
 ## Tags / Keywords
 launcher, home screen, AI, smart launcher, customization, themes, privacy,
 hebrew launcher, RTL, dark mode, app drawer, smart folders, productivity,
-no ads, on-device AI, customizable
+no ads, on-device AI, customizable, work profile, private space, wallpapers,
+gestures, icon packs, jewish calendar, shabbat mode
 
-## What's New (release notes for v9.3.0)
-- Much faster cold start — icons now load from a disk cache
-- See when your last backup ran, and whether it succeeded
-- A heads-up in Security settings if your device appears to be rooted
-- More reliable updates — fixed an issue where new versions could fail to install
-- Fixed a crash on launch, a duplicated Settings header, and a stuck search overlay
+## What's New (release notes for v10.0.0, max 500 chars)
+
+**EN**
+- Work profile & Private Space support, plus app shortcuts on long-press
+- Wallpapers: your photos or gradients, per page, hour or weekday
+- Gestures: swipe up for apps, down for notifications, double-tap to turn the screen off
+- Smarter search: Hebrew ↔ English names, typos, calculator, unit conversion
+- Jewish calendar with candle-lighting times, and Shabbat mode
+- Fixed: Google Drive backup now connects, Statistics shows real data, icon packs apply
+
+**HE**
+- תמיכה בפרופיל עבודה ובמרחב פרטי, וקיצורי דרך בלחיצה ארוכה
+- רקעים: תמונות משלך או מעברי צבע, לפי עמוד, שעה או יום בשבוע
+- מחוות: למעלה לאפליקציות, למטה להתראות, הקשה כפולה לכיבוי המסך
+- חיפוש חכם יותר: עברית ↔ אנגלית, שגיאות הקלדה, מחשבון והמרת יחידות
+- לוח עברי עם זמני הדלקת נרות, ומצב שבת
+- תוקן: גיבוי ל-Google Drive מתחבר, הסטטיסטיקות מציגות נתונים אמיתיים, חבילות אייקונים מוחלות
 
 ## Pricing
 **Free** (no in-app purchases planned, no ads)

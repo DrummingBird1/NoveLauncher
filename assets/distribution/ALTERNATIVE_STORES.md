@@ -53,9 +53,10 @@ channel, whatever you do.
 - Upload the same signed AAB/APK you'd use for Play — own key, no rebuild.
 - Review is generally faster than Play's and reasonably similar in rigor.
   Expect the same scrutiny on `PACKAGE_USAGE_STATS` / `QUERY_ALL_PACKAGES` /
-  notification-listener permissions — have a one-paragraph justification for
-  each ready (the Play Console's "why does your app need this" answers work
-  verbatim).
+  notification-listener permissions, and since v10 the optional gestures
+  AccessibilityService — have a one-paragraph justification for each ready
+  ([PLAY_POLICY_NOTES.md](PLAY_POLICY_NOTES.md) has them, written for the Play
+  Console, and they work verbatim).
 - Pre-installed on every Galaxy device, which is a large share of Android
   outside the US specifically — good reach for a launcher app.
 - Needs its own privacy-policy URL entry and its own data-safety-style
@@ -196,9 +197,9 @@ channel that needs actual engineering work first, not just a submission form.
 - **Data-safety-style questionnaires** differ in exact wording per store
   (Play's "Data Safety" form, Samsung/Huawei/Amazon's own equivalents) but
   ask fundamentally the same things. The answers already drafted in
-  [CHECKLIST.md](CHECKLIST.md) (nothing collected off-device, location only
-  for the weather widget, no ads, no IAP) are a solid template to adapt per
-  store rather than rewrite from scratch.
+  [CHECKLIST.md](CHECKLIST.md) (only approximate location leaves the device,
+  for the weather request and only if granted; no ads, no IAP) are a solid
+  template to adapt per store rather than rewrite from scratch.
 - **Support email** (`solvaris2@gmail.com`) needs to stay consistent and
   actually monitored across every listing — reviewers at multiple stores do
   test that the contact address works before approving.
@@ -216,5 +217,6 @@ channel that needs actual engineering work first, not just a submission form.
 - **Use staged/internal testing where a store offers it** (Play has internal
   testing tracks, Samsung/Huawei have staged rollout options) before a full
   public release — especially relevant here given the sensitive permission
-  set (usage stats, notification access, query-all-packages) a launcher
-  legitimately needs but that any reviewer will look at twice.
+  set (usage stats, notification access, query-all-packages, the optional
+  accessibility helper) a launcher legitimately needs but that any reviewer
+  will look at twice.

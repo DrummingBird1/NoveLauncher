@@ -1,4 +1,8 @@
-# NoveLauncher — Google Play Store Listing
+# NoveLauncher — Google Play Store Listing (Hebrew-first)
+
+The Hebrew-first variant of the listing. The full bilingual copy, release
+notes and store URLs live in [STORE_LISTING.md](STORE_LISTING.md); keep the
+two in agreement.
 
 ## App Name
 NoveLauncher - AI Smart Launcher
@@ -10,88 +14,107 @@ NoveLauncher - AI Smart Launcher
 
 🚀 NoveLauncher — הלאנצ'ר החכם שלומד אותך
 
-NoveLauncher הוא לאנצ'ר אנדרואיד מהדור הבא שמארגן את מסך הבית שלך באופן אוטומטי באמצעות בינה מלאכותית. המערכת לומדת את הרגלי השימוש שלך ומציבה את האפליקציות הנכונות בזמן הנכון — בלי שתצטרך לעשות שום דבר.
+NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמארגן את מסך הבית לפי הדרך שבה אתה באמת משתמש בטלפון. הוא לומד את הרגלי השימוש שלך על המכשיר ומציב את האפליקציות הנכונות בזמן הנכון — בלי חשבון ובלי הגדרות.
 
 ✨ מה מיוחד ב-NoveLauncher?
 
-🧠 AI מקומי — המערכת מנתחת את דפוסי השימוש שלך (שעות, תדירות, הקשר) ומדרגת את האפליקציות לפי רלוונטיות. הכל מתבצע על המכשיר — בלי שליחת נתונים לשום שרת.
+🧠 AI מקומי — דירוג לפי שעה ביום, תדירות, שימוש אחרון וקטגוריה, ו"מומלצות עכשיו" לומדת מאילו הצעות אתה באמת פותח. הכל מתבצע על המכשיר — בלי שליחת נתוני שימוש לשום שרת.
 
-📂 תיקיות חכמות — אפליקציות מתמיינות אוטומטית לקטגוריות: עבודה, חברה, פנאי, משחקים ועוד. לא צריך לסדר ידנית.
+📂 תיקיות חכמות — אפליקציות מתמיינות אוטומטית ל-11 קטגוריות: עבודה, חברה, פנאי, משחקים, קניות ועוד. לא צריך לסדר ידנית.
 
-🎨 עיצוב מלא — 12 ערכות נושא, מאות צבעים, 16 פונטים, 6 צורות אייקונים, עיצוב שעון מותאם אישית, ותצוגה מקדימה בזמן אמת.
+💼 פרופיל עבודה ומרחב פרטי — אפליקציות עבודה עם התג שלהן ומתג השהיה; המרחב הפרטי של אנדרואיד 15 באזור נפרד שאפשר לנעול.
 
-📰 עמוד חדשות — RSS מובנה עם 14 מקורות (ynet, Google News, BBC, CNN ועוד). בחר מה מעניין אותך.
+⚡ קיצורי דרך — לחיצה ארוכה על אפליקציה פותחת את קיצורי הדרך שלה.
 
-🔒 אבטחה מתקדמת — נעילת אפליקציות בPIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת הזזה של אייקונים.
+🔍 חיפוש חכם — עברית ואנגלית, סבלנות לשגיאות הקלדה וראשי תיבות, מחשבון והמרת יחידות.
 
-💾 גיבוי — גיבוי מקומי, Google Drive, OneDrive, Box, או שרת NAS פרטי. שחזור בלחיצה אחת.
+🕯️ לוח עברי ומצב שבת — תאריך עברי, חגים, זמני הדלקת נרות וצאת שבת שמחושבים בטלפון; מצב שבת מסתיר הצעות מסיחות ותגי התראות.
 
-🧩 גאדג'טים — הוסף כל וידג'ט מהמערכת למסך הבית.
+🖼️ רקעים — תמונות משלך או מעברי צבע: קבוע, לפי עמוד, לפי שעה, לפי יום, או רקע חי. בהירות, ניגודיות, רוויה, חמימות, טשטוש וויניאטה.
+
+👆 מחוות — החלקה למעלה לאפליקציות, למטה להתראות, הקשה כפולה לכיבוי המסך.
+
+🎨 עיצוב מלא — 12 ערכות נושא, Material You, צבעים מותאמים, 16 גופנים, 12 צורות אייקונים, חבילות אייקונים, עיצוב שעון ותצוגה מקדימה בזמן אמת.
+
+📰 עמוד חדשות — RSS מובנה עם 12 מקורות (ynet, Google News, BBC, CNN ועוד) ופידים משלך.
+
+🔒 אבטחה מתקדמת — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה של אייקונים.
+
+💾 גיבוי — מקומי, Google Drive או שרת NAS פרטי, עם תזמון והצפנה אופציונלית בסיסמה.
+
+🧩 ווידג'טים — הוסף כל ווידג'ט מהמערכת, הגדר אותו ושנה את גודלו.
 
 📱 עמודים מותאמים — צור עמודים חדשים, שנה סדר, הפעל או כבה עמודים.
 
-🖼️ רקעים — רקע קבוע, לפי עמוד, לפי שעה, לפי יום, או רקע חי. שליטה בבהירות, טשטוש ורוויה.
+👁️ פרטיות — בלי חשבון, בלי אנליטיקס, בלי פרסומות. הקוד גלוי לעיון ב-GitHub.
 
-👁️ פרטיות — אפס נתונים נשלחים לשרתים. כל ה-AI רץ על המכשיר. קוד פתוח.
-
-⚡ חסכוני בסוללה — דגימה חכמה כל 15 דקות, עיבוד ברקע מינימלי, ממשק Jetpack Compose יעיל.
+⚡ חסכוני בסוללה — רענון כל 15 דקות ורק כשמסך הבית מוצג, ממשק Jetpack Compose יעיל.
 
 ## Category
 Personalization
 
 ## Tags
-launcher, home screen, AI, smart, customization, themes, privacy, hebrew
+launcher, home screen, AI, smart, customization, themes, privacy, hebrew,
+work profile, private space, jewish calendar
 
 ---
 
-# מדיניות פרטיות / Privacy Policy
+# מדיניות פרטיות / Privacy Policy — summary
 
-## NoveLauncher Privacy Policy
-Last updated: April 2026
+The full, binding policy is published at
+<https://drummingbird1.github.io/NoveLauncher/privacy.html> (source:
+[`docs/privacy.html`](../../docs/privacy.html)). This is a summary for store
+forms that ask for one.
 
 ### Data Collection
-NoveLauncher does NOT collect, transmit, or store any personal data on external servers.
+NoveLauncher does NOT collect personal data and has no servers of its own.
 
-All data processing occurs entirely on-device:
-- App usage statistics are read from Android's UsageStatsManager and processed locally
+- App usage statistics are read from Android's UsageStatsManager and processed on the device
 - App categorization uses on-device heuristics (no cloud AI)
-- Settings and preferences are stored locally using Android DataStore
-- Backup data is encrypted and stored only in destinations YOU choose (local file, your own cloud storage, your own NAS)
+- Settings are stored locally using Android DataStore; security and backup settings are encrypted
+- Backups go only to destinations YOU choose (local file, your own Google Drive, your own NAS) and are encrypted only if you set a backup password
+
+### Network connections
+- Weather: Open-Meteo, with approximate coordinates only if location permission is granted (a default city otherwise)
+- News: the RSS feeds enabled on the News page, fetched directly from each publisher
+- Backups (opt-in): your Google Drive (`drive.file` scope only, via Google Play services) or your NAS over HTTPS
+- Update check (opt-in, off by default): GitHub's releases API, at most once a day
+- Nothing else. No analytics, tracking or advertising SDKs.
 
 ### Permissions Explained
-- PACKAGE_USAGE_STATS: Required to analyze your app usage patterns for AI ranking
-- QUERY_ALL_PACKAGES: Required to display all installed apps as a launcher
-- ACCESS_COARSE_LOCATION: Optional, used for context-aware app ranking (never transmitted)
-- USE_BIOMETRIC: For fingerprint/face app lock feature
-- INTERNET: Only used for RSS news feed and cloud backup (user-initiated)
-- CAMERA: Only for face unlock feature (processed on-device)
-
-### Third-Party Services
-- RSS feeds are fetched directly from public news sources
-- Cloud backup connects to services you explicitly authorize (Google Drive, OneDrive, Box)
-- No analytics, tracking, or advertising SDKs are included
+- PACKAGE_USAGE_STATS: to rank apps from your usage and show the Statistics page
+- QUERY_ALL_PACKAGES: to show every installed app, as a launcher must
+- ACCESS_HIDDEN_PROFILES: to show Android 15's Private Space in its own section
+- BIND_NOTIFICATION_LISTENER_SERVICE (optional): unread badges — counts only, never content
+- ACCESS_COARSE_LOCATION (optional): local weather and Jewish-calendar times
+- READ_CONTACTS (optional): contacts in search results, on the device only
+- USE_BIOMETRIC: fingerprint/face app lock, handled by Android
+- INTERNET: weather, news feeds, the backups you set up and the optional update check
+- EXPAND_STATUS_BAR: swipe down on the home screen to open notifications
+- Accessibility service (optional, off by default): screen off on double-tap and open notifications — it cannot read screen content
 
 ### Contact
 solvaris2@gmail.com
 
 ---
 
-# תנאי שימוש / Terms of Service
+# תנאי שימוש / Terms of Service — summary
 
-## NoveLauncher Terms of Service
-Last updated: April 2026
+The full terms are published at
+<https://drummingbird1.github.io/NoveLauncher/terms.html> (source:
+[`docs/terms.html`](../../docs/terms.html)).
 
 1. ACCEPTANCE: By using NoveLauncher, you agree to these terms.
 
-2. LICENSE: NoveLauncher grants you a personal, non-exclusive, non-transferable license to use the app.
+2. LICENSE: NoveLauncher grants you a personal, non-exclusive, non-transferable, revocable licence to use the app. The source code is published for transparency and review under the repository's LICENSE — it is not an open-source licence.
 
-3. PRIVACY: We do not collect personal data. See Privacy Policy for details.
+3. PRIVACY: We do not collect personal data. See the Privacy Policy for details.
 
-4. AS-IS: The app is provided "as is" without warranties of any kind. We are not responsible for data loss, device issues, or any damages arising from use of the app.
+4. AS-IS: The app is provided "as is" without warranties of any kind. We are not responsible for data loss, device issues, or any damages arising from use of the app. Jewish-calendar times are a convenience, not a religious authority.
 
 5. MODIFICATIONS: We reserve the right to update the app and these terms. Continued use after changes constitutes acceptance.
 
-6. INTELLECTUAL PROPERTY: NoveLauncher and its design are protected by copyright. You may not reverse engineer, modify, or redistribute the app.
+6. INTELLECTUAL PROPERTY: NoveLauncher and its design are protected by copyright. You may not sell, sublicense or redistribute the app.
 
 7. TERMINATION: We may terminate access to the app at any time for violation of these terms.
 
