@@ -15,7 +15,6 @@ import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Crop
 import androidx.compose.material.icons.rounded.FontDownload
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.LocaleListCompat
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.ClockSettings
@@ -77,13 +75,13 @@ fun AppearanceSection(
                         selected = appearance.appLanguage == code,
                         onClick = {
                             onUpdate(appearance.copy(appLanguage = code))
-                            // Neither Activity in this app is an AppCompatActivity, so the
-                            // usual "AppCompat recreates it for you" locale-change behavior
-                            // doesn't apply — recreate explicitly for an immediate effect
-                            // instead of waiting for the next natural activity recreation.
-                            val locales = if (code.isBlank()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(code)
-                            AppCompatDelegate.setApplicationLocales(locales)
-                            (context as? android.app.Activity)?.recreate()
+                            com.ailauncher.app.AppLocales.apply(context, code)
+                            // Android 13+ recreates the activities itself after the locale
+                            // change. Below that, neither Activity is an AppCompatActivity, so
+                            // nothing recreates them for us — do it explicitly.
+                            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+                                (context as? android.app.Activity)?.recreate()
+                            }
                         },
                         label = { Text(label) }
                     )

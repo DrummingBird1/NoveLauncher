@@ -5,8 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.os.StrictMode
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
@@ -157,8 +155,7 @@ class AILauncherApp : Application(), Configuration.Provider {
             try {
                 val tag = settingsRepoProvider.get().appearanceFlow.first().appLanguage
                 if (tag.isBlank()) return@launch
-                val locales = LocaleListCompat.forLanguageTags(tag)
-                AppCompatDelegate.setApplicationLocales(locales)
+                AppLocales.apply(this@AILauncherApp, tag)
             } catch (e: Exception) { Timber.w(e, "Could not apply configured language") }
         }
     }
