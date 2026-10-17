@@ -309,6 +309,7 @@
     <string name="backup_error_box">Box עדיין לא נתמך. השתמש ב-Google Drive או בגיבוי מקומי.</string>
     <string name="backup_error_not_connected">לא מחובר ל-Google Drive.\nעבור להגדרות → גיבוי → חבר חשבון Google</string>
     <string name="backup_error_token_expired">טוקן פג תוקף. נסה שוב או חבר מחדש בהגדרות.</string>
+    <string name="backup_error_play_services_missing">גיבוי ל-Google Drive דורש את שירותי Google Play, שאינם זמינים במכשיר הזה.</string>
 
     <!-- ═════════ Biometric prompt ═════════ -->
     <string name="biometric_prompt_subtitle">השתמש בטביעת אצבע או בזיהוי פנים</string>

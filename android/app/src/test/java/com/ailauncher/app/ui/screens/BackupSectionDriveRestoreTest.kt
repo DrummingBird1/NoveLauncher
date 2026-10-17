@@ -2,6 +2,7 @@ package com.ailauncher.app.ui.screens
 
 import android.app.Application
 import android.content.Context
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
@@ -18,6 +19,7 @@ import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.backup.BackupManager
 import com.ailauncher.app.data.backup.DriveClient
+import com.ailauncher.app.domain.models.BackupDestination
 import com.ailauncher.app.domain.models.BackupSettings
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -56,6 +58,8 @@ class BackupSectionDriveRestoreTest {
             .edit()
             .putString("account_email", "someone@example.com")
             .commit()
+        // Robolectric has no Google Play services; the real check would hide Drive.
+        every { backupManager.isDriveAvailable() } returns true
         every { backupManager.listLocalBackups() } returns emptyList()
         coEvery { backupManager.listDriveBackups() } returns BackupManager.DriveResult.Success(listOf(driveFile))
         coEvery { backupManager.downloadDriveBackup(driveFile) } returns BackupManager.DriveResult.Success(envelope)
@@ -122,5 +126,39 @@ class BackupSectionDriveRestoreTest {
 
         coVerify { backupManager.restoreFromJson("""{"appearance":{}}""", "") }
         assertTrue(composeRule.onAllNodesWithText(ctx.getString(R.string.restore_password_title)).fetchSemanticsNodes().isEmpty())
+    }
+
+    @Test
+    fun `Drive is offered with Google Play services`() {
+        composeRule.setContent {
+            BackupSection(BackupSettings(), backupManager, mockk<SettingsRepository>(relaxed = true), onUpdate = {})
+        }
+
+        // Control for the test below: both sit on the first screen when Drive is offered.
+        composeRule.onNodeWithText(ctx.getString(BackupDestination.GOOGLE_DRIVE.displayNameRes)).assertExists()
+        composeRule.onNodeWithText(ctx.getString(R.string.drive_section_title)).assertExists()
+    }
+
+    @Test
+    fun `Drive is hidden without Google Play services`() {
+        every { backupManager.isDriveAvailable() } returns false
+
+        composeRule.setContent {
+            BackupSection(BackupSettings(), backupManager, mockk<SettingsRepository>(relaxed = true), onUpdate = {})
+        }
+
+        // Destinations: Local and NAS stay, Drive and its account card are gone.
+        composeRule.onNodeWithText(ctx.getString(BackupDestination.LOCAL.displayNameRes)).assertExists()
+        composeRule.onNodeWithText(ctx.getString(BackupDestination.NAS.displayNameRes)).assertExists()
+        composeRule.onAllNodesWithText(ctx.getString(BackupDestination.GOOGLE_DRIVE.displayNameRes)).assertCountEquals(0)
+        composeRule.onAllNodesWithText(ctx.getString(R.string.drive_section_title)).assertCountEquals(0)
+
+        // Restore: the local list is there, the Drive list (which would follow it) isn't,
+        // even though an account is still recorded as connected.
+        val noBackups = ctx.getString(R.string.no_backups)
+        composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(noBackups))
+        composeRule.onNodeWithText(noBackups).assertExists()
+        composeRule.onAllNodesWithText(ctx.getString(R.string.drive_restore_show)).assertCountEquals(0)
+        composeRule.onAllNodesWithText(ctx.getString(BackupDestination.GOOGLE_DRIVE.displayNameRes)).assertCountEquals(0)
     }
 }

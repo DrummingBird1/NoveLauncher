@@ -1,7 +1,9 @@
 package com.ailauncher.app.data.update
 
 import android.content.Context
+import android.os.Build
 import com.ailauncher.app.BuildConfig
+import com.ailauncher.app.domain.install.InstallSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,6 +25,9 @@ import javax.inject.Singleton
  * what any HTTPS request carries (IP address, a User-Agent naming the app
  * version). The result just links to the release page; nothing is downloaded
  * or installed by the app itself.
+ *
+ * Off entirely when an app store installed the build ([isAvailable]): the store
+ * updates the app itself, and store policies forbid pointing users elsewhere.
  */
 @Singleton
 class UpdateChecker
@@ -41,8 +46,31 @@ class UpdateChecker
         private val prefs by lazy { context.getSharedPreferences("update_check", Context.MODE_PRIVATE) }
         private val json = Json { ignoreUnknownKeys = true }
 
+        /**
+         * False when Google Play, Galaxy Store, AppGallery etc. is the installer of
+         * record ([InstallSource]) — then Settings hides the toggle, [check] never
+         * goes online and nothing is ever reported. The installer can only change
+         * with an update, which restarts the process, so it's read once.
+         */
+        val isAvailable: Boolean by lazy { !InstallSource.isStoreInstall(installerPackage()) }
+
+        private fun installerPackage(): String? =
+            try {
+                val pm = context.packageManager
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    pm.getInstallSourceInfo(context.packageName).installingPackageName
+                } else {
+                    @Suppress("DEPRECATION")
+                    pm.getInstallerPackageName(context.packageName)
+                }
+            } catch (e: Exception) {
+                Timber.w(e, "Couldn't read the installer package")
+                null
+            }
+
         /** Cached result of the last check, if it found something newer than this build. */
         fun cached(): UpdateInfo? {
+            if (!isAvailable) return null
             val version = prefs.getString(KEY_VERSION, null) ?: return null
             val url = prefs.getString(KEY_URL, null) ?: return null
             return UpdateInfo(version, url).takeIf { isNewer(version, BuildConfig.VERSION_NAME) }
@@ -54,6 +82,7 @@ class UpdateChecker
          */
         suspend fun check(force: Boolean = false): UpdateInfo? =
             withContext(Dispatchers.IO) {
+                if (!isAvailable) return@withContext null
                 val now = System.currentTimeMillis()
                 if (!force && now - prefs.getLong(KEY_LAST_CHECK, 0L) < DAY_MS) return@withContext cached()
                 try {

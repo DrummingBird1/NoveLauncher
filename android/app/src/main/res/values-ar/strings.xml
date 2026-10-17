@@ -276,6 +276,7 @@
     <string name="backup_error_box">Box غير مدعوم بعد. استخدم Google Drive أو النسخ الاحتياطي المحلي.</string>
     <string name="backup_error_not_connected">غير متصل بـ Google Drive.\nاذهب إلى الإعدادات ← النسخ الاحتياطي ← ربط حساب Google</string>
     <string name="backup_error_token_expired">انتهت صلاحية الرمز. حاول مرة أخرى أو أعد الاتصال في الإعدادات.</string>
+    <string name="backup_error_play_services_missing">يتطلب النسخ الاحتياطي إلى Google Drive خدمات Google Play، وهي غير متوفرة على هذا الجهاز.</string>
 
     <string name="biometric_prompt_subtitle">استخدم بصمتك أو وجهك</string>
 

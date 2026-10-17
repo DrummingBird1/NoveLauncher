@@ -121,32 +121,40 @@ fun AboutSection(
 
         item { HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant) }
 
-        item { SectionLabel(stringResource(R.string.about_updates_section)) }
-        item {
-            SwitchSetting(stringResource(R.string.about_check_updates_auto), smartControl.checkForUpdates) {
-                onUpdateSmartControl(smartControl.copy(checkForUpdates = it))
-            }
-        }
-        item {
-            Text(stringResource(R.string.about_check_updates_note), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        item {
-            val upToDate = stringResource(R.string.about_up_to_date)
-            OutlinedButton(onClick = {
-                checking = true
-                scope.launch {
-                    val found = updateChecker.check(force = true)
-                    checking = false
-                    updateStatus = found?.let { context.getString(R.string.update_available, it.version) } ?: upToDate
-                    found?.let { open(it.url) }
+        // Hidden when a store installed the app — the store handles updates, and
+        // its review policy forbids pointing users anywhere else (Pitfall #40).
+        if (updateChecker.isAvailable) {
+            item { SectionLabel(stringResource(R.string.about_updates_section)) }
+            item {
+                SwitchSetting(stringResource(R.string.about_check_updates_auto), smartControl.checkForUpdates) {
+                    onUpdateSmartControl(smartControl.copy(checkForUpdates = it))
                 }
-            }, enabled = !checking, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.about_check_updates_now))
             }
-        }
-        updateStatus?.let { item { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) } }
+            item {
+                Text(
+                    stringResource(R.string.about_check_updates_note),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            item {
+                val upToDate = stringResource(R.string.about_up_to_date)
+                OutlinedButton(onClick = {
+                    checking = true
+                    scope.launch {
+                        val found = updateChecker.check(force = true)
+                        checking = false
+                        updateStatus = found?.let { context.getString(R.string.update_available, it.version) } ?: upToDate
+                        found?.let { open(it.url) }
+                    }
+                }, enabled = !checking, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.about_check_updates_now))
+                }
+            }
+            updateStatus?.let { item { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) } }
 
-        item { HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant) }
+            item { HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant) }
+        }
 
         item {
             AboutButton(Icons.Rounded.Language, stringResource(R.string.about_website)) { open(SITE) }

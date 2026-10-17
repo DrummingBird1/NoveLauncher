@@ -276,6 +276,7 @@
     <string name="backup_error_box">Box n\'est pas encore pris en charge. Utilisez Google Drive ou la sauvegarde locale.</string>
     <string name="backup_error_not_connected">Non connecté à Google Drive.\nAllez dans Paramètres → Sauvegarde → Connecter un compte Google</string>
     <string name="backup_error_token_expired">Jeton expiré. Réessayez ou reconnectez-vous dans les paramètres.</string>
+    <string name="backup_error_play_services_missing">La sauvegarde sur Google Drive nécessite les services Google Play, absents de cet appareil.</string>
 
     <string name="biometric_prompt_subtitle">Utilisez votre empreinte ou votre visage</string>
 

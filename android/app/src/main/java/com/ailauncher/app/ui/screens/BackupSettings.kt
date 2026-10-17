@@ -78,12 +78,16 @@ fun BackupSection(
     // as any password prompt. Blank = today's plain-JSON behavior, unchanged.
     var backupPassword by remember { mutableStateOf("") }
 
+    // Drive needs Google Play services (Huawei phones have none), so it's hidden
+    // without them — connect, backup and restore alike (Pitfall #41).
+    val playServices = remember { backupManager.isDriveAvailable() }
+
     // OneDrive/Box are declared in BackupDestination but backupManager.backup() always
     // returns an error for them until Microsoft/Box OAuth is wired up — don't offer an
-    // option that can never succeed.
+    // option that can never succeed. Same for Drive without Play services.
     val availableDestinations =
         BackupDestination.entries.filter {
-            it == BackupDestination.LOCAL || it == BackupDestination.GOOGLE_DRIVE || it == BackupDestination.NAS
+            it == BackupDestination.LOCAL || it == BackupDestination.NAS || (it == BackupDestination.GOOGLE_DRIVE && playServices)
         }
 
     val dateFormat = remember { java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()) }
@@ -248,33 +252,39 @@ fun BackupSection(
         }
         if (status != null) item { Text(status!!, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) }
 
-        item { SectionLabel(stringResource(R.string.drive_section_title)) }
-        item {
-            Card(
-                Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    val email = driveEmail
-                    if (email != null) {
-                        Text(stringResource(R.string.drive_connected_as, email), color = MaterialTheme.colorScheme.onSurface)
-                        TextButton(onClick = {
-                            DriveAuth.disconnect(context)
-                            driveEmail = null
-                            driveBackups = null
-                        }) {
-                            Text(stringResource(R.string.drive_disconnect), color = MaterialTheme.colorScheme.error)
+        if (playServices) {
+            item { SectionLabel(stringResource(R.string.drive_section_title)) }
+            item {
+                Card(
+                    Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        val email = driveEmail
+                        if (email != null) {
+                            Text(stringResource(R.string.drive_connected_as, email), color = MaterialTheme.colorScheme.onSurface)
+                            TextButton(onClick = {
+                                DriveAuth.disconnect(context)
+                                driveEmail = null
+                                driveBackups = null
+                            }) {
+                                Text(stringResource(R.string.drive_disconnect), color = MaterialTheme.colorScheme.error)
+                            }
+                        } else {
+                            Button(onClick = { connectDrive() }, modifier = Modifier.fillMaxWidth()) {
+                                Icon(Icons.Rounded.Cloud, null)
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.drive_connect))
+                            }
                         }
-                    } else {
-                        Button(onClick = { connectDrive() }, modifier = Modifier.fillMaxWidth()) {
-                            Icon(Icons.Rounded.Cloud, null)
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.drive_connect))
-                        }
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            stringResource(R.string.drive_scope_note),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
-                    Spacer(Modifier.height(6.dp))
-                    Text(stringResource(R.string.drive_scope_note), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -337,7 +347,8 @@ fun BackupSection(
         }
 
         item { SectionLabel(stringResource(R.string.section_restore)) }
-        if (driveEmail != null) {
+        val driveRestore = playServices && driveEmail != null
+        if (driveRestore) {
             item { Text(stringResource(R.string.backup_dest_local), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         item {
@@ -360,7 +371,7 @@ fun BackupSection(
                 }
             }
         }
-        if (driveEmail != null) {
+        if (driveRestore) {
             item {
                 Text(
                     stringResource(R.string.backup_dest_google_drive),

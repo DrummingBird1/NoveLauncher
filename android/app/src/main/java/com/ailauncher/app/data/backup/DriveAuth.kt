@@ -6,6 +6,8 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.RevokeAccessRequest
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Tasks
 import timber.log.Timber
@@ -54,6 +56,15 @@ object DriveAuth {
             .build()
 
     fun client(context: Context) = Identity.getAuthorizationClient(context)
+
+    /**
+     * AuthorizationClient is a Google Play services API. Without Play services
+     * (Huawei phones, de-Googled ROMs) Drive can never connect, so Settings →
+     * Backup hides it and [BackupManager] says why instead of passing on
+     * Google's raw error.
+     */
+    fun isPlayServicesAvailable(context: Context): Boolean =
+        GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
 
     /** Unwraps the consent screen's result Intent. Throws ApiException on failure. */
     fun resultFromIntent(

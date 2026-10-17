@@ -282,12 +282,17 @@ class BackupManager(
      * Runs [block] with a fresh Drive access token. No token (never connected, or
      * consent revoked), a rejected token (401 — dropped from AuthorizationClient's
      * cache so the next attempt re-fetches) and any other failure become [onError]
-     * with a message for the UI.
+     * with a message for the UI. Without Google Play services nothing is tried —
+     * a Drive destination saved on another phone can still reach here after a
+     * restore, even though Settings no longer offers it.
      */
     private inline fun <T> withDriveToken(
         onError: (String) -> T,
         block: (token: String) -> T,
     ): T {
+        if (!isDriveAvailable()) {
+            return onError(context.getString(R.string.backup_error_play_services_missing))
+        }
         val token =
             DriveAuth.accessTokenBlocking(context)
                 ?: return onError(context.getString(R.string.backup_error_not_connected))
@@ -470,6 +475,9 @@ class BackupManager(
         }
         return results
     }
+
+    /** Google Drive works only with Google Play services — false on Huawei phones. */
+    fun isDriveAvailable(): Boolean = DriveAuth.isPlayServicesAvailable(context)
 
     fun isGoogleConnected(): Boolean = getConnectedEmail() != null
 

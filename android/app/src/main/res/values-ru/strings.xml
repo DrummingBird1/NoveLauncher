@@ -276,6 +276,7 @@
     <string name="backup_error_box">Box пока не поддерживается. Используйте Google Drive или локальную резервную копию.</string>
     <string name="backup_error_not_connected">Не подключено к Google Drive.\nПерейдите в Настройки → Резервная копия → Подключить аккаунт Google</string>
     <string name="backup_error_token_expired">Токен истёк. Попробуйте снова или переподключитесь в настройках.</string>
+    <string name="backup_error_play_services_missing">Для резервного копирования в Google Drive нужны сервисы Google Play, которых нет на этом устройстве.</string>
 
     <string name="biometric_prompt_subtitle">Используйте отпечаток или лицо</string>
 

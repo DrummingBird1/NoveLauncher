@@ -276,6 +276,7 @@
     <string name="backup_error_box">Box isn\'t supported yet. Use Google Drive or local backup.</string>
     <string name="backup_error_not_connected">Not connected to Google Drive.\nGo to Settings → Backup → Connect Google account</string>
     <string name="backup_error_token_expired">Token expired. Try again or reconnect in settings.</string>
+    <string name="backup_error_play_services_missing">Google Drive backup needs Google Play services, which this device doesn\'t have.</string>
 
     <string name="biometric_prompt_subtitle">Use your fingerprint or face</string>
 
