@@ -417,6 +417,13 @@
     <string name="drive_disconnect">Отключить</string>
     <string name="drive_connect_failed">Не удалось подключиться к Google Drive: %1$s</string>
     <string name="drive_scope_note">NoveLauncher видит только созданные им файлы резервных копий — и никогда остальное содержимое вашего Drive.</string>
+    <string name="drive_restore_show">Показать резервные копии в Google Drive</string>
+    <string name="drive_restore_loading">Загрузка из Google Drive…</string>
+    <string name="drive_restore_empty">В Google Drive нет резервных копий NoveLauncher</string>
+    <string name="restore_downloading">Скачивание резервной копии…</string>
+    <string name="restore_password_title">Зашифрованная резервная копия</string>
+    <string name="restore_password_message">Эта резервная копия защищена паролем. Введите пароль, с которым она была создана.</string>
+    <string name="restore_password_wrong">Неверный пароль</string>
     <string name="profile_toggle_failed">Не удалось изменить профиль — NoveLauncher должен быть главным экраном по умолчанию</string>
     <string name="toast_app_not_found">Не удалось открыть приложение</string>
     <string name="gesture_lock_setup_title">Двойное касание для блокировки</string>

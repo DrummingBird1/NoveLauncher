@@ -465,6 +465,13 @@
     <string name="drive_disconnect">נתק</string>
     <string name="drive_connect_failed">לא ניתן להתחבר ל-Google Drive: %1$s</string>
     <string name="drive_scope_note">NoveLauncher רואה רק את קובצי הגיבוי שהוא עצמו יוצר — אף פעם לא את שאר הקבצים ב-Drive שלך.</string>
+    <string name="drive_restore_show">הצג גיבויים ב-Google Drive</string>
+    <string name="drive_restore_loading">טוען מ-Google Drive…</string>
+    <string name="drive_restore_empty">אין גיבויים של NoveLauncher ב-Google Drive</string>
+    <string name="restore_downloading">מוריד את הגיבוי…</string>
+    <string name="restore_password_title">גיבוי מוצפן</string>
+    <string name="restore_password_message">הגיבוי הזה מוגן בסיסמה. הזן את הסיסמה שאיתה הוא נוצר.</string>
+    <string name="restore_password_wrong">סיסמה שגויה</string>
     <string name="profile_toggle_failed">לא ניתן לשנות את הפרופיל — צריך להגדיר את NoveLauncher כאפליקציית הבית</string>
     <string name="toast_app_not_found">לא ניתן לפתוח את האפליקציה</string>
     <string name="gesture_lock_setup_title">נעילת מסך בהקשה כפולה</string>

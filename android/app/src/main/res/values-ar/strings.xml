@@ -417,6 +417,13 @@
     <string name="drive_disconnect">قطع الاتصال</string>
     <string name="drive_connect_failed">تعذّر الاتصال بـ Google Drive: %1$s</string>
     <string name="drive_scope_note">يمكن لـ NoveLauncher رؤية ملفات النسخ الاحتياطي التي ينشئها فقط — وليس بقية ملفات Drive.</string>
+    <string name="drive_restore_show">عرض النسخ الاحتياطية في Google Drive</string>
+    <string name="drive_restore_loading">جارٍ التحميل من Google Drive…</string>
+    <string name="drive_restore_empty">لا توجد نسخ احتياطية لـ NoveLauncher في Google Drive</string>
+    <string name="restore_downloading">جارٍ تنزيل النسخة الاحتياطية…</string>
+    <string name="restore_password_title">نسخة احتياطية مشفّرة</string>
+    <string name="restore_password_message">هذه النسخة الاحتياطية محمية بكلمة مرور. أدخل كلمة المرور التي أُنشئت بها.</string>
+    <string name="restore_password_wrong">كلمة مرور خاطئة</string>
     <string name="profile_toggle_failed">تعذّر تغيير الملف الشخصي — يجب تعيين NoveLauncher كتطبيق الشاشة الرئيسية الافتراضي</string>
     <string name="toast_app_not_found">تعذّر فتح التطبيق</string>
     <string name="gesture_lock_setup_title">النقر المزدوج للقفل</string>

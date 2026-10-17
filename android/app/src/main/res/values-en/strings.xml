@@ -417,6 +417,13 @@
     <string name="drive_disconnect">Disconnect</string>
     <string name="drive_connect_failed">Couldn\'t connect to Google Drive: %1$s</string>
     <string name="drive_scope_note">NoveLauncher can only see the backup files it creates — never the rest of your Drive.</string>
+    <string name="drive_restore_show">Show backups in Google Drive</string>
+    <string name="drive_restore_loading">Loading from Google Drive…</string>
+    <string name="drive_restore_empty">No NoveLauncher backups in Google Drive</string>
+    <string name="restore_downloading">Downloading backup…</string>
+    <string name="restore_password_title">Encrypted backup</string>
+    <string name="restore_password_message">This backup is password-protected. Enter the password it was created with.</string>
+    <string name="restore_password_wrong">Wrong password</string>
     <string name="profile_toggle_failed">Couldn\'t change that profile — NoveLauncher needs to be your default home app</string>
     <string name="toast_app_not_found">Couldn\'t open the app</string>
     <string name="gesture_lock_setup_title">Double tap to lock</string>

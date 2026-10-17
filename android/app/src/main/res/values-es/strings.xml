@@ -417,6 +417,13 @@
     <string name="drive_disconnect">Desconectar</string>
     <string name="drive_connect_failed">No se pudo conectar con Google Drive: %1$s</string>
     <string name="drive_scope_note">NoveLauncher solo puede ver las copias de seguridad que crea, nunca el resto de tu Drive.</string>
+    <string name="drive_restore_show">Mostrar copias de seguridad en Google Drive</string>
+    <string name="drive_restore_loading">Cargando desde Google Drive…</string>
+    <string name="drive_restore_empty">No hay copias de seguridad de NoveLauncher en Google Drive</string>
+    <string name="restore_downloading">Descargando la copia de seguridad…</string>
+    <string name="restore_password_title">Copia de seguridad cifrada</string>
+    <string name="restore_password_message">Esta copia de seguridad está protegida con contraseña. Introduce la contraseña con la que se creó.</string>
+    <string name="restore_password_wrong">Contraseña incorrecta</string>
     <string name="profile_toggle_failed">No se pudo cambiar el perfil: NoveLauncher debe ser tu aplicación de inicio predeterminada</string>
     <string name="toast_app_not_found">No se pudo abrir la aplicación</string>
     <string name="gesture_lock_setup_title">Tocar dos veces para bloquear</string>

@@ -417,6 +417,13 @@
     <string name="drive_disconnect">Déconnecter</string>
     <string name="drive_connect_failed">Impossible de se connecter à Google Drive : %1$s</string>
     <string name="drive_scope_note">NoveLauncher ne voit que les fichiers de sauvegarde qu\'il crée — jamais le reste de votre Drive.</string>
+    <string name="drive_restore_show">Afficher les sauvegardes dans Google Drive</string>
+    <string name="drive_restore_loading">Chargement depuis Google Drive…</string>
+    <string name="drive_restore_empty">Aucune sauvegarde NoveLauncher dans Google Drive</string>
+    <string name="restore_downloading">Téléchargement de la sauvegarde…</string>
+    <string name="restore_password_title">Sauvegarde chiffrée</string>
+    <string name="restore_password_message">Cette sauvegarde est protégée par un mot de passe. Saisissez le mot de passe utilisé pour la créer.</string>
+    <string name="restore_password_wrong">Mot de passe incorrect</string>
     <string name="profile_toggle_failed">Impossible de modifier ce profil — NoveLauncher doit être votre application d\'accueil par défaut</string>
     <string name="toast_app_not_found">Impossible d\'ouvrir l\'application</string>
     <string name="gesture_lock_setup_title">Toucher deux fois pour verrouiller</string>

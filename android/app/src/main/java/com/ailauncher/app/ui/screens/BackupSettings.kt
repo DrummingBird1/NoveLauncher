@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -27,8 +28,10 @@ import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.data.backup.BackupManager
 import com.ailauncher.app.data.backup.DriveAuth
+import com.ailauncher.app.data.backup.DriveClient
 import com.ailauncher.app.domain.models.BackupDestination
 import com.ailauncher.app.domain.models.BackupSettings
+import com.ailauncher.app.security.PortableBackupCrypto
 import kotlinx.coroutines.launch
 
 /**
@@ -44,6 +47,7 @@ fun BackupSection(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     var status by remember { mutableStateOf<String?>(null) }
     val backingUpText = stringResource(R.string.backup_status_in_progress)
     val restoredText = stringResource(R.string.restore_success)
@@ -71,7 +75,7 @@ fun BackupSection(
             try {
                 driveEmail = DriveAuth.onAuthorized(context, DriveAuth.resultFromIntent(context, res.data))
             } catch (e: Exception) {
-                status = context.getString(R.string.drive_connect_failed, e.message ?: "")
+                status = resources.getString(R.string.drive_connect_failed, e.message ?: "")
             }
         }
     }
@@ -85,7 +89,74 @@ fun BackupSection(
                     driveEmail = DriveAuth.onAuthorized(context, r)
                 }
             }
-            .addOnFailureListener { e -> status = context.getString(R.string.drive_connect_failed, e.message ?: "") }
+            .addOnFailureListener { e -> status = resources.getString(R.string.drive_connect_failed, e.message ?: "") }
+    }
+
+    // Restore results show inside the Restore section — the backup [status] line
+    // sits at the top of the page, out of view when a restore is tapped.
+    var restoreStatus by remember { mutableStateOf<String?>(null) }
+    // null = not fetched yet. Fetched on demand: it's a network call.
+    var driveBackups by remember { mutableStateOf<List<DriveClient.DriveFile>?>(null) }
+    var driveLoading by remember { mutableStateOf(false) }
+    // A downloaded PortableBackupCrypto envelope waiting for its password.
+    var encryptedPending by remember { mutableStateOf<String?>(null) }
+    var encryptedWrongPassword by remember { mutableStateOf(false) }
+    val downloadingText = stringResource(R.string.restore_downloading)
+
+    fun loadDriveBackups() {
+        scope.launch {
+            driveLoading = true
+            when (val r = backupManager.listDriveBackups()) {
+                is BackupManager.DriveResult.Success -> driveBackups = r.value
+                is BackupManager.DriveResult.Error -> restoreStatus = resources.getString(R.string.backup_status_error, r.message)
+            }
+            driveLoading = false
+        }
+    }
+
+    // An encrypted backup is tried with the Encryption section's password first
+    // (same as local restore); if that's blank or wrong, the dialog asks for it.
+    fun restoreContent(content: String, password: String) {
+        scope.launch {
+            val encrypted = PortableBackupCrypto.isEncrypted(content)
+            if (encrypted && password.isEmpty()) {
+                restoreStatus = null
+                encryptedWrongPassword = false
+                encryptedPending = content
+                return@launch
+            }
+            when (val r = backupManager.restoreFromJson(content, password)) {
+                is BackupManager.BackupResult.Success -> {
+                    encryptedPending = null
+                    restoreStatus = restoredText
+                }
+                is BackupManager.BackupResult.Error -> if (encrypted) {
+                    restoreStatus = null
+                    encryptedWrongPassword = true
+                    encryptedPending = content
+                } else {
+                    restoreStatus = resources.getString(R.string.backup_status_error, r.message)
+                }
+            }
+        }
+    }
+
+    fun restoreFromDrive(file: DriveClient.DriveFile) {
+        scope.launch {
+            restoreStatus = downloadingText
+            when (val r = backupManager.downloadDriveBackup(file)) {
+                is BackupManager.DriveResult.Success -> restoreContent(r.value, backupPassword)
+                is BackupManager.DriveResult.Error -> restoreStatus = resources.getString(R.string.backup_status_error, r.message)
+            }
+        }
+    }
+
+    encryptedPending?.let { content ->
+        RestorePasswordDialog(
+            wrongPassword = encryptedWrongPassword,
+            onDismiss = { encryptedPending = null },
+            onConfirm = { restoreContent(content, it) }
+        )
     }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -108,9 +179,11 @@ fun BackupSection(
                     status = backingUpText
                     val result = backupManager.backup(dest, backupPassword)
                     status = when (result) {
-                        is BackupManager.BackupResult.Success -> context.getString(R.string.backup_status_success, result.path)
-                        is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, result.message)
+                        is BackupManager.BackupResult.Success -> resources.getString(R.string.backup_status_success, result.path)
+                        is BackupManager.BackupResult.Error -> resources.getString(R.string.backup_status_error, result.message)
                     }
+                    // A fetched Drive list no longer has the newest backup.
+                    if (dest == BackupDestination.GOOGLE_DRIVE) driveBackups = null
                     onUpdate(
                         backup.copy(
                             lastBackupTimestamp = System.currentTimeMillis(),
@@ -145,7 +218,7 @@ fun BackupSection(
                     val email = driveEmail
                     if (email != null) {
                         Text(stringResource(R.string.drive_connected_as, email), color = MaterialTheme.colorScheme.onSurface)
-                        TextButton(onClick = { DriveAuth.disconnect(context); driveEmail = null }) {
+                        TextButton(onClick = { DriveAuth.disconnect(context); driveEmail = null; driveBackups = null }) {
                             Text(stringResource(R.string.drive_disconnect), color = MaterialTheme.colorScheme.error)
                         }
                     } else {
@@ -203,28 +276,97 @@ fun BackupSection(
         }
 
         item { SectionLabel(stringResource(R.string.section_restore)) }
+        if (driveEmail != null) {
+            item { Text(stringResource(R.string.backup_dest_local), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
         item {
             val files = remember { backupManager.listLocalBackups() }
             if (files.isEmpty()) {
                 Text(stringResource(R.string.no_backups), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 files.take(5).forEach { backup ->
-                    Card(Modifier.fillMaxWidth().clickable {
+                    RestoreFileCard(backup.displayName) {
                         scope.launch {
-                            status = when (val r = backupManager.restoreFromLocal(backup, backupPassword)) {
+                            restoreStatus = when (val r = backupManager.restoreFromLocal(backup, backupPassword)) {
                                 is BackupManager.BackupResult.Success -> restoredText
-                                is BackupManager.BackupResult.Error -> context.getString(R.string.backup_status_error, r.message)
+                                is BackupManager.BackupResult.Error -> resources.getString(R.string.backup_status_error, r.message)
                             }
-                        }
-                    }, shape = RoundedCornerShape(10.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                        Row(Modifier.padding(12.dp)) {
-                            Icon(Icons.Rounded.Restore, null, tint = MaterialTheme.colorScheme.secondary)
-                            Spacer(Modifier.width(8.dp))
-                            Text(backup.displayName, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
             }
         }
+        if (driveEmail != null) {
+            item { Text(stringResource(R.string.backup_dest_google_drive), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            item {
+                val files = driveBackups
+                when {
+                    files == null -> OutlinedButton(
+                        onClick = { loadDriveBackups() },
+                        enabled = !driveLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Rounded.Cloud, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(if (driveLoading) R.string.drive_restore_loading else R.string.drive_restore_show))
+                    }
+                    files.isEmpty() -> Text(stringResource(R.string.drive_restore_empty), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    else -> Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        files.take(10).forEach { file ->
+                            RestoreFileCard(file.name) { restoreFromDrive(file) }
+                        }
+                    }
+                }
+            }
+        }
+        restoreStatus?.let { item { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary) } }
     }
+}
+
+@Composable
+private fun RestoreFileCard(name: String, onClick: () -> Unit) {
+    Card(
+        Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Row(Modifier.padding(12.dp)) {
+            Icon(Icons.Rounded.Restore, null, tint = MaterialTheme.colorScheme.secondary)
+            Spacer(Modifier.width(8.dp))
+            Text(name, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+/** Password prompt for a password-protected (PortableBackupCrypto) backup. */
+@Composable
+private fun RestorePasswordDialog(wrongPassword: Boolean, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    var password by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.restore_password_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.restore_password_message), fontSize = 14.sp)
+                Spacer(Modifier.height(8.dp))
+                if (wrongPassword) {
+                    Text(stringResource(R.string.restore_password_wrong), color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text(stringResource(R.string.backup_password_label)) },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(password) }, enabled = password.isNotEmpty()) {
+                Text(stringResource(R.string.action_ok))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+    )
 }

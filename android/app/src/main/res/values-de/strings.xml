@@ -417,6 +417,13 @@
     <string name="drive_disconnect">Trennen</string>
     <string name="drive_connect_failed">Verbindung zu Google Drive fehlgeschlagen: %1$s</string>
     <string name="drive_scope_note">NoveLauncher sieht nur die Sicherungsdateien, die es selbst erstellt – nie den Rest deines Drive.</string>
+    <string name="drive_restore_show">Sicherungen in Google Drive anzeigen</string>
+    <string name="drive_restore_loading">Wird aus Google Drive geladen…</string>
+    <string name="drive_restore_empty">Keine NoveLauncher-Sicherungen in Google Drive</string>
+    <string name="restore_downloading">Sicherung wird heruntergeladen…</string>
+    <string name="restore_password_title">Verschlüsselte Sicherung</string>
+    <string name="restore_password_message">Diese Sicherung ist passwortgeschützt. Gib das Passwort ein, mit dem sie erstellt wurde.</string>
+    <string name="restore_password_wrong">Falsches Passwort</string>
     <string name="profile_toggle_failed">Profil konnte nicht geändert werden – NoveLauncher muss deine Standard-Startbildschirm-App sein</string>
     <string name="toast_app_not_found">App konnte nicht geöffnet werden</string>
     <string name="gesture_lock_setup_title">Doppeltippen zum Sperren</string>
