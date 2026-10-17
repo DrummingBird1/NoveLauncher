@@ -1,222 +1,184 @@
 # Distributing NoveLauncher outside Google Play
 
-A practical launch plan for the other Android app stores, plus direct
-distribution. Written for a privacy-focused, no-ads, no-IAP, donation-supported
-launcher app (this one) — recommendations would differ for a different kind
-of app.
+Where NoveLauncher can be published besides Google Play, what each channel
+takes, and which are closed to it. Facts as of **2026-10-17**. Store rules
+change, so re-check the linked sources before acting on an old row.
 
-## TL;DR priority order
+Upload-ready material for each store (listing text in English and Hebrew,
+icons, banners, screenshots, permission and rating answers) is in
+[stores/](stores/README.md).
 
-1. **Samsung Galaxy Store** — easiest incremental reach, reuses your own signing key, huge install base.
-2. **Direct APK via GitHub Releases** — already have the infra (CI builds artifacts every push); zero gatekeeper.
-3. **Huawei AppGallery** — meaningful if you want the no-GMS Huawei audience; one real caveat (below).
-4. **Amazon Appstore** — cheap to also do since it reuses the same signed build, but low expected impact for a *launcher* specifically.
-5. **F-Droid** — best philosophical fit (on-device only, no tracking) but needs real engineering work first. Treat as a deliberate future project, not a same-week task.
-6. **APKPure / Aptoide / similar** — not worth pursuing as a growth channel. Relevant defensively (claiming your official listing) only once the app has real traction.
+## Summary
+
+| Channel | Status | What it takes |
+| --- | --- | --- |
+| **GitHub Releases** | Live. Since v9.3.0 every release carries a signed release APK and AAB. | Nothing new: push a `vX.Y.Z` tag ([release.yml](../../.github/workflows/release.yml)) |
+| **Obtainium** | Live, no submission needed | Nothing: it installs and updates straight from GitHub Releases. Badge on the README and website. |
+| **Samsung Galaxy Store** | Kit ready: [stores/samsung-galaxy-store](stores/samsung-galaxy-store/README.md) | Owner: Samsung account + commercial seller status, then submit |
+| **Huawei AppGallery** | Kit ready: [stores/huawei-appgallery](stores/huawei-appgallery/README.md) | Owner: HUAWEI ID + identity verification, then submit. Google Drive backup doesn't work there. |
+| **Uptodown** | Kit ready: [stores/uptodown](stores/uptodown/README.md) | Owner: free developer account, then submit |
+| **APKPure** | Kit ready: [stores/apkpure](stores/apkpure/README.md) | Owner: free developer account, claim the package, then submit |
+| **Aptoide** | Kit ready: [stores/aptoide](stores/aptoide/README.md) | Owner: Aptoide Connect subscription (**US$69 / €69 a year**), then submit |
+| **F-Droid** | **Not possible** | Needs an open-source license (see below) |
+| **IzzyOnDroid** | **Not possible** | Needs an open-source license (see below) |
+| **Amazon Appstore** | **Gone** | Discontinued on non-Amazon Android devices on 2025-08-20 |
+
+Suggested order for the owner: Android developer verification first (below),
+then Samsung (biggest reach, slowest account approval), Huawei, Uptodown and
+APKPure. Aptoide only if US$69 a year seems worth it.
+
+---
+
+## Applies to every channel
+
+### Google's Android developer verification
+
+Since **2026-09-30**, certified Android devices in Brazil, Indonesia, Singapore
+and Thailand only install apps from participating stores if the developer has
+verified their identity with Google and registered the app's package name with
+its signing key. Google's plan is to extend this to all installs on certified
+devices worldwide in **2027**, including direct APK downloads (GitHub,
+Obtainium). Once enforcement reaches a user, an unregistered app can only be
+installed or updated through Android's "advanced flow" for power users, or adb.
+
+The owner should do this once, well before 2027: open an
+[Android Developer Console](https://developer.android.com/developer-verification)
+**Full Distribution** account (US$25 one-time, identity verification), then
+register `com.ailauncher.app` with the release signing key. Details are in
+[stores/README.md](stores/README.md#before-any-store-googles-android-developer-verification).
+
+### One signing key everywhere
+
+The release key was created on 2026-08-16 and lives in
+`android/release.keystore`, outside git. **Never generate another one.** Every
+store listing, and Google's developer verification, is tied to the key that
+signs the first upload, and a different key can't update anything already
+installed. Back the file up in at least two places (a password-manager
+attachment plus an offline copy). CI signs with it through the
+`RELEASE_KEYSTORE_BASE64` / `RELEASE_KEYSTORE_PASSWORD` / `RELEASE_KEY_ALIAS` /
+`RELEASE_KEY_PASSWORD` Actions secrets (see [CLAUDE.md](../../CLAUDE.md),
+"Release signing").
+
+Because every channel ships the same signed APK, a user can move between
+GitHub, Obtainium, Samsung, Huawei, Uptodown, APKPure and Aptoide, and updates
+still install over each other.
+
+### Shared listing facts
+
+- Privacy policy: https://drummingbird1.github.io/NoveLauncher/privacy.html
+  (served from `docs/privacy.html`). Terms: `.../terms.html`.
+- Support email: `solvaris2@gmail.com`. Reviewers do write to it, so keep it monitored.
+- Same `versionCode`/`versionName` in every store. Each store tracks its own installs.
+- Permission justifications: [stores/PERMISSIONS.md](stores/PERMISSIONS.md), with
+  longer ready-to-paste text in [PLAY_POLICY_NOTES.md](PLAY_POLICY_NOTES.md).
+  Rating and data questionnaires: [stores/CONTENT_RATING.md](stores/CONTENT_RATING.md).
+  Only approximate location leaves the device (to the weather API, if granted).
+- No store accepts listings or screenshots that mention or show another store.
+  The kits' screenshots and text follow that rule.
+- The [LICENSE](../../LICENSE) doesn't let anyone except the owner publish the
+  app to a store. An unofficial mirror is a license violation the owner can
+  report, and claiming the listing (APKPure, Uptodown) is the practical fix.
 
 ---
 
-## The one thing to get right before any of this: signing key consistency
+## GitHub Releases
 
-Whichever key signs your **first** public release on a given store becomes
-permanent for that store's listing — there is no "rotate the key" option
-without publishing as a brand-new app and losing every review, install, and
-update path.
+Pushing a `vX.Y.Z` tag runs [release.yml](../../.github/workflows/release.yml).
+It builds the release APK and AAB, signs them, and opens a **draft** GitHub
+Release that a person reviews before publishing. The workflow deliberately
+fails if the signing secrets are missing, so an unsigned APK can never be
+attached. Since v9.3.0 each release has a signed release `.apk`
+and a matching `.aab`. v9.1.0 and v9.2.0 only had debug APKs, signed with a
+different key, so installs from those two can't update in place. Add the APK's
+SHA-256 to the release notes by hand; the workflow doesn't yet.
 
-**Do this once, before submitting anywhere:**
+Expect friction: users have to allow "install unknown apps", and Android
+warns them first. Updates don't arrive by themselves. The in-app update
+check (Settings → About, opt-in, once a day) shows a link to the newest
+release, and Obtainium automates the whole thing. Store installs never see
+that check: the app hides it when a store is the installer of record, and its
+Rate button opens that store (CLAUDE.md Pitfall #40).
 
-```bash
-keytool -genkeypair -v -keystore release.keystore -alias novelauncher -keyalg RSA -keysize 2048 -validity 10000
-```
+## Obtainium
 
-Back the `.keystore` file up somewhere durable (password manager attachment +
-at least one offline copy) — losing it is exactly as bad as losing the ability
-to update your app. This repo already has the plumbing for it:
-`android/app/build.gradle.kts` reads `RELEASE_KEYSTORE_PATH`,
-`RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD` from
-environment variables (see [CLAUDE.md](../../CLAUDE.md) "Release signing"),
-and CI will sign automatically once `RELEASE_KEYSTORE_BASE64` + the three
-secrets are added to the GitHub repo's Actions secrets.
+[Obtainium](https://github.com/ImranR98/Obtainium) installs apps straight from
+their release pages and keeps them updated. It needs no submission, account or
+approval. Users add `https://github.com/DrummingBird1/NoveLauncher` as an app
+and get every new GitHub Release as an update, signed with the same key.
 
-**Reuse that same key** for Play, Samsung, Amazon, Huawei, and direct/GitHub
-distribution — they all accept a self-signed AAB/APK. **F-Droid is the one
-exception**: it always builds and signs from source with its own key, so an
-F-Droid install is permanently a separate signature/identity from every other
-channel, whatever you do.
-
----
+The README (all seven languages) and the website show the official "Get it on
+Obtainium" badge (a self-hosted copy in `docs/assets/`, as Obtainium asks)
+with that one-line instruction. The badge links to Obtainium's GitHub page,
+not to Obtainium's `apps.obtainium.imranr.dev/redirect` helper, because that
+page loads ads and analytics. The website also offers a direct
+`obtainium://add/…` link for people who already have Obtainium. GitHub strips
+custom-scheme links from READMEs, so those can't have one. Each release
+attaches exactly one `.apk` (next to the `.aab` and a card image), so Obtainium
+picks it without any filter.
 
 ## Samsung Galaxy Store
 
-- Register at the Samsung Developers / Seller portal (free for a standard
-  developer account).
-- Upload the same signed AAB/APK you'd use for Play — own key, no rebuild.
-- Review is generally faster than Play's and reasonably similar in rigor.
-  Expect the same scrutiny on `PACKAGE_USAGE_STATS` / `QUERY_ALL_PACKAGES` /
-  notification-listener permissions, and since v10 the optional gestures
-  AccessibilityService — have a one-paragraph justification for each ready
-  ([PLAY_POLICY_NOTES.md](PLAY_POLICY_NOTES.md) has them, written for the Play
-  Console, and they work verbatim).
-- Pre-installed on every Galaxy device, which is a large share of Android
-  outside the US specifically — good reach for a launcher app.
-- Needs its own privacy-policy URL entry and its own data-safety-style
-  questionnaire (similar shape to Play's, not identical wording) — reuse the
-  answers already drafted in [CHECKLIST.md](CHECKLIST.md) as a starting point.
+Preinstalled on every Samsung phone, and it takes the release APK unchanged.
+The owner needs commercial seller status even for a free app: a bank account
+or PayPal, plus business or identity checks that can take up to two weeks.
+Reviewers look hard at launcher permissions. Kit, steps and review risks:
+[stores/samsung-galaxy-store](stores/samsung-galaxy-store/README.md).
 
 ## Huawei AppGallery
 
-- Primary store for Huawei devices sold since the 2019 US sanctions, which
-  ship without Google Play Services entirely. Meaningful reach in parts of
-  Europe, the Middle East, Africa, and China specifically.
-- **Real caveat, not hypothetical**: `BackupManager.kt`'s Google Drive backup
-  destination uses `com.google.android.gms.auth.GoogleAuthUtil` (Google Play
-  Services). On a Huawei device without GMS installed, that one backup
-  destination won't work — everything else (the launcher itself, local
-  backup, NAS backup) has no GMS dependency and is unaffected. Worth a quick
-  pass to confirm Drive backup fails with a clean, worded error on such
-  devices rather than a confusing one, but no code changes are required to
-  list the app there.
-- Requires a free Huawei Developer account + AppGallery Connect console.
-  Accepts your own signing key.
+The store on Huawei phones, which ship without Google Play services. It
+reaches Europe, the Middle East and Africa. Google Drive backup needs Google
+Play services, so on those phones the app hides it and the AppGallery copy
+doesn't mention it; local and NAS backups work. Exclude mainland China, which needs an ICP filing.
+Kit: [stores/huawei-appgallery](stores/huawei-appgallery/README.md).
 
-## Amazon Appstore
+## Uptodown, APKPure, Aptoide
 
-- Free developer account, accepts your own signed APK — cheap to also submit
-  here once you're set up for Samsung/Huawei.
-- **Set expectations low for a launcher specifically**: on actual Fire OS
-  devices (Fire tablets, Fire TV), Amazon's own launcher is locked in and
-  third-party apps generally can't become the default home screen the way
-  they can on stock/Samsung/Huawei Android. The realistic audience here is
-  regular Android phone users who separately installed the Amazon Appstore
-  app — a real but small slice.
-- Still worth doing if time allows (near-zero marginal cost), just don't
-  expect it to move the needle the way Samsung or direct distribution would.
+All three accept the release APK as-is:
 
-## F-Droid
+- **Uptodown:** free, self-service, strong in Spanish-, Portuguese- and
+  Arabic-speaking markets. [Kit](stores/uptodown/README.md).
+- **APKPure:** free. Mostly worth doing defensively, so the official build is
+  what people find. [Kit](stores/apkpure/README.md).
+- **Aptoide Connect:** reaches Aptoide's partner OEM and carrier stores, but
+  it's free only for apps already on Google Play. NoveLauncher isn't, so a
+  submission needs the **US$69 / €69 a year** subscription.
+  [Kit](stores/aptoide/README.md).
 
-Best philosophical fit for this app — "everything runs on-device, nothing
-sent to external servers" is exactly F-Droid's audience — but it's the one
-channel that needs actual engineering work first, not just a submission form.
+## F-Droid and IzzyOnDroid: not possible
 
-- F-Droid **builds from source itself** on its own infrastructure; you submit
-  metadata (a merge request to the `fdroiddata` repo), not a pre-built APK.
-  It signs with its own key — this install will never share a signature with
-  any other channel.
-- **The real blocker**: `play-services-auth` (used for the Google Drive
-  backup destination) is a non-free Google dependency. F-Droid's inclusion
-  policy would flag this with an "Anti-Feature: Non-Free Dep" tag rather than
-  reject outright, but a lot of F-Droid's own user base specifically avoids
-  anti-feature-tagged apps. To get a genuinely clean listing, the practical
-  fix is a Gradle **product flavor** that excludes Google Drive backup (and
-  the `play-services-auth` dependency) entirely for the F-Droid build,
-  leaving Local/NAS backup as that flavor's only destinations. This is a
-  contained, well-understood Android technique — `flavorDimensions` +
-  `productFlavors { fdroid { ... }; standard { ... } }` — but it's real work, not
-  a checkbox. Both flavors should keep the **same `applicationId`** (no
-  `.fdroid` suffix) — a different applicationId would also require a
-  per-flavor fix to `res/xml/shortcuts.xml`'s hardcoded
-  `android:targetPackage` (see Pitfall #15 in [CLAUDE.md](../../CLAUDE.md)),
-  which same-applicationId flavors sidestep entirely. Concretely, the
-  Google-Drive-specific code that would need to move behind a flavor-specific
-  interface (same package + class name, one implementation per
-  `src/fdroid/java/...` and `src/standard/java/...` source set — the standard
-  Android pattern for flavor-swappable implementations) lives in exactly two
-  places:
-  - [android/app/src/main/java/com/ailauncher/app/data/backup/BackupManager.kt](../../android/app/src/main/java/com/ailauncher/app/data/backup/BackupManager.kt) —
-    `backupToGoogleDrive()`, `fetchDriveAccessToken()`, `isGoogleConnected()`,
-    `getConnectedEmail()` (all the `GoogleAuthUtil`/Drive REST calls).
-  - [android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt](../../android/app/src/main/java/com/ailauncher/app/ui/LauncherActivity.kt) —
-    `initiateGoogleSignIn()`, the `googleSignInLauncher` `ActivityResultLauncher`,
-    and the `GoogleSignIn`/`GoogleSignInOptions` imports.
-  The `fdroid` flavor's versions of both would make `BackupDestination.GOOGLE_DRIVE`
-  behave like `ONEDRIVE`/`BOX` already do today — return a clear
-  "not available in this build" `BackupResult.Error` — and the Settings UI's
-  Google Drive card would need the same kind of availability filter
-  `BackupSection` already applies to OneDrive/Box.
-- `QUERY_ALL_PACKAGES` and `PACKAGE_USAGE_STATS` will also draw reviewer
-  questions — both are legitimately justified for a launcher and should be
-  fine with a clear explanation, just expect back-and-forth.
-- Timeline: F-Droid is volunteer-run; inclusion review can take weeks to
-  months depending on backlog. Don't block a launch on it.
-- **Recommendation**: treat as a separate, deliberate future project — do the
-  flavor split first, then submit, rather than trying to fold it into the
-  same push as everything else.
+Both only distribute free and open-source software:
 
-## Direct APK distribution (GitHub Releases)
+- [F-Droid's inclusion policy](https://f-droid.org/docs/Inclusion_Policy/)
+  requires an OSI- or FSF-approved license and builds every app from source.
+- [IzzyOnDroid's inclusion policy](https://izzyondroid.org/docs/general/AppInclusionPolicy/)
+  also requires an OSI/FSF license, even though it ships the developer's own APK.
 
-- Zero gatekeeper, full control, your own signing key. `.github/workflows/release.yml`
-  (added v9.3) already does this: push a `vX.Y.Z` tag and it builds the release
-  APK + AAB and opens a **draft** GitHub Release with both attached — signed
-  automatically once the keystore secrets described above are added to the
-  repo, unsigned (with an explicit CI warning) otherwise. It's deliberately
-  left as a draft rather than auto-published, so a human reviews the release
-  notes and artifacts before anyone can download them.
-- **Real friction to expect**: users must enable "install unknown apps" for
-  whatever app they downloaded the APK with, and Android shows a genuinely
-  scary-looking warning first. This meaningfully hurts conversion for
-  non-technical users — direct APK works best as a channel for power users,
-  beta testers, and people who already trust you (e.g., from this GitHub
-  repo), not as a general-audience channel.
-- **No automatic updates** unless you build an update-check mechanism
-  yourself (e.g., an in-app check against the GitHub Releases API prompting
-  the user to download the new APK). Worth calling out explicitly in the
-  release notes/README so users aren't surprised they need to manually
-  reinstall for updates.
-- **Publish a SHA-256 checksum** alongside every release APK so technically-
-  inclined users can verify integrity before installing — cheap trust signal,
-  one line in the release notes (`sha256sum app-release.apk`).
-- Good secondary use: an internal/beta channel for testing a release before
-  pushing it to Play/Samsung/Huawei, independent of whether you pursue direct
-  distribution as a real ongoing channel.
+NoveLauncher's [LICENSE](../../LICENSE) is "All Rights Reserved" (source
+available, no redistribution). On **2026-10-17 the owner decided to keep it**,
+so neither repository can list the app. Relicensing released code can't be
+undone, which is why it's the owner's decision alone.
 
-## APKPure / Aptoide / similar third-party repositories
+For the record, if that ever changes, the work would be:
 
-- These aren't developer-controlled the way an app store submission is — both
-  platforms have historically mirrored apps by scraping other stores or
-  accepting community uploads, sometimes without the developer's direct
-  involvement. Don't be surprised if the app shows up there on its own once
-  it's live elsewhere.
-- Both do offer an official developer/verified-publisher upload path if you
-  want to claim your own listing. The main reason to bother is **defensive**:
-  an official, verified listing makes it harder for a malicious repackaged
-  clone to impersonate you convincingly. It's not a meaningful growth channel
-  on its own.
-- **Recommendation**: not worth proactive effort now. Revisit only if you
-  notice an unofficial/suspicious listing for the app gaining traction and
-  want to displace it with an official one.
+1. Relicense: a new `LICENSE` and an announcement. The git history has only
+   the owner's and Claude's commits, so there are no outside contributors to ask.
+2. A `foss` product flavor without `play-services-auth` (F-Droid rejects
+   non-free dependencies). The Google-specific code is
+   [data/backup/DriveAuth.kt](../../android/app/src/main/java/com/ailauncher/app/data/backup/DriveAuth.kt),
+   the Drive branch of
+   [data/backup/BackupManager.kt](../../android/app/src/main/java/com/ailauncher/app/data/backup/BackupManager.kt),
+   and the Connect/Disconnect control in
+   [ui/screens/BackupSettings.kt](../../android/app/src/main/java/com/ailauncher/app/ui/screens/BackupSettings.kt).
+   In the `foss` flavor, Google Drive would be filtered out of the destination
+   list the way OneDrive and Box already are. Keep the same `applicationId`
+   so `res/xml/shortcuts.xml` stays valid (CLAUDE.md, Pitfall #15).
+3. Fastlane metadata (`fastlane/metadata/android/<locale>/`) for IzzyOnDroid,
+   plus an `fdroiddata` merge request on GitLab, opened by the owner.
 
----
+## Amazon Appstore: gone
 
-## Cross-cutting notes that apply to every store
-
-- **Privacy policy + terms of service** need a real, stable public HTTPS URL
-  for every single store, not just Play. The repo already has
-  `PRIVACY_POLICY.html` and a hosting walkthrough in
-  [PRIVACY_URL_GUIDE.md](PRIVACY_URL_GUIDE.md) — host it once, reuse the same
-  URL everywhere.
-- **Data-safety-style questionnaires** differ in exact wording per store
-  (Play's "Data Safety" form, Samsung/Huawei/Amazon's own equivalents) but
-  ask fundamentally the same things. The answers already drafted in
-  [CHECKLIST.md](CHECKLIST.md) (only approximate location leaves the device,
-  for the weather request and only if granted; no ads, no IAP) are a solid
-  template to adapt per store rather than rewrite from scratch.
-- **Support email** (`solvaris2@gmail.com`) needs to stay consistent and
-  actually monitored across every listing — reviewers at multiple stores do
-  test that the contact address works before approving.
-- **versionCode/versionName** don't need to diverge across stores — each
-  store tracks its own install base independently, so submitting the same
-  build with the same version numbers everywhere is normal and expected.
-- **Localization as a targeting signal**: the app now ships in seven
-  languages (he/en/ar/fr/ru/es/de). Worth weighing when prioritizing — e.g.
-  Huawei AppGallery's strength in Arabic-speaking and European markets, or
-  Samsung's global reach, line up naturally with the existing locale list.
-- **Store listing assets**: `assets/graphics/` and `assets/screenshots/`
-  cover Play's requirements; other stores mostly accept the same PNGs with
-  only minor resizing — check each store's exact dimension requirements
-  before upload rather than assuming byte-for-byte reuse.
-- **Use staged/internal testing where a store offers it** (Play has internal
-  testing tracks, Samsung/Huawei have staged rollout options) before a full
-  public release — especially relevant here given the sensitive permission
-  set (usage stats, notification access, query-all-packages, the optional
-  accessibility helper) a launcher legitimately needs but that any reviewer
-  will look at twice.
+Amazon discontinued the Appstore on non-Amazon Android devices on
+**2025-08-20**. It now exists only on Fire tablets and Fire TV, where Amazon's
+own launcher is locked in and a third-party home screen can't be made the
+default.

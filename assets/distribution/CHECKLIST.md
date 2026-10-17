@@ -5,7 +5,7 @@
 ### Graphics
 - [x] **Hi-res icon** — `../graphics/playstore-icon-512.png` (512×512, 32-bit PNG with alpha)
 - [x] **Feature graphic** — `../graphics/feature-graphic-1024x500.png` (1024×500 JPG/PNG)
-- [x] **Phone screenshots** — `../screenshots/google-play/01-welcome.png` to `10-apps.png` (1080×2160 each; APKPure-sized copies in `../screenshots/apkpure/`, raw captures in `../screenshots/raw/`). They show v9.3 — consider adding wallpapers, Private Space, gestures or the Jewish calendar for v10.
+- [x] **Phone screenshots** — `../screenshots/google-play/01-home.png` to `09-settings.png` (1080×2160 each, captured from v10: Jewish calendar and Shabbat mode, search answers, app shortcuts, work profile and Private Space, wallpapers). APKPure-sized copies are in `../screenshots/apkpure/`, raw captures in `../screenshots/raw/`, and every other store's sizes in [stores/](stores/README.md).
 - [ ] **Tablet screenshots** (optional, recommended) — render at 1600×2560 if you want to target tablets
 - [ ] **Promo video** (optional) — 30-second YouTube link
 

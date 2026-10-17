@@ -1,23 +1,43 @@
 # Screenshots
 
-Captured from a real emulator run (Android 36, Pixel-class device, 1080×2400)
-of the signed v9.3.0 release build — not mockups.
+Captured on 2026-10-17 from a real emulator run (AVD `Medium_Phone_API_36.1`,
+Android 16, 1080×2400) of a v10 debug build of `main`, English UI. They're not
+mockups. A debug build looks identical to the release: same app ID, label and
+UI. The emulator had a test work profile and a Private Space so the Apps page
+shows both, and Play Store plus a few system utilities were hidden in
+NoveLauncher's own Hidden apps so no store or developer tool shows up (Samsung
+and Huawei reject screenshots that show another store).
 
-- `raw/` — the original 1080×2400 captures. Source of truth; not directly
-  uploadable to either store (see below).
-- `google-play/` — 1080×2160 (cropped to exactly 2:1). Google Play requires
-  screenshots between 320px and 3840px per side, and the longer side can't
-  be more than **twice** the shorter side — the raw 1080×2400 captures
-  violate that (2400/1080 ≈ 2.22×), so these are cropped from the top
-  (removing empty space at the bottom of each screen) to land exactly at
-  the 2:1 limit.
-- `apkpure/` — 480×800, APKPure's stated screenshot spec. Cropped to a 0.6
-  aspect ratio first (matching 480:800), then downscaled. Content-heavy
-  screens (e.g. `08-security.png`) may have the last line or two of text
-  cropped off at this size — that's an inherent tradeoff of fitting a
-  scrolling settings screen into a fixed thumbnail ratio, not a bug.
+| File | Shows |
+| --- | --- |
+| `01-home` | Home with a built-in gradient wallpaper, Shabbat mode's greeting, the Hebrew date, Havdalah time, weather and "Recommended now" |
+| `02-search` | Search with an instant answer (`10 km to mi`) |
+| `03-shortcuts` | Long-press sheet: the app's own shortcuts plus hide / lock / App info |
+| `04-apps-profiles` | Apps page with All / Personal / Work filters, badged work apps and the lockable Private Space section |
+| `05-wallpaper` | Wallpaper modes (single, per page, hourly, daily, live) and an active wallpaper's controls |
+| `06-calendar` | Jewish calendar settings: today's Hebrew date, next holiday, Shabbat times, Shabbat mode |
+| `07-themes` | Display mode, Material You and the 12 theme presets |
+| `08-security` | App lock methods and the "deterrent, not a sandbox" note |
+| `09-settings` | The Settings index |
 
-To regenerate `google-play/`/`apkpure/` after re-capturing `raw/`, see the
-crop logic (top-anchored crop to the target aspect ratio, then resize) — a
-one-off Python/Pillow script, not currently checked into the repo as a
-reusable tool.
+- `raw/`: the original 1080×2400 captures. Source of truth, not directly
+  uploadable (Google Play's longer side can't exceed twice the shorter side,
+  and 2400/1080 ≈ 2.22).
+- `google-play/`: 1080×2160 (exactly 2:1). Also used by the README and,
+  as copies in `docs/assets/screenshots/`, by the website.
+- `apkpure/`: 480×800 (0.6 aspect ratio), APKPure's stated size.
+
+Both derived sets, and every other store's sizes under
+[../distribution/stores/](../distribution/stores/README.md), come from one
+script. Each capture is cropped to the target aspect ratio and then resized:
+
+```bash
+uv run --with pillow python assets/distribution/stores/build_kits.py
+```
+
+The crop keeps the full width and trims top or bottom around a per-shot
+anchor set in `SHOTS` in that script. `03-shortcuts` is anchored to the bottom
+(the sheet), `04-apps-profiles` at 0.8 (so the filter chips and Private Space
+both survive), and the rest to the top. To re-shoot, replace the files in
+`raw/` with the same names, then run the script. Stores with a lower maximum
+(Huawei takes 5) use the first N, so keep the strongest shots first.
