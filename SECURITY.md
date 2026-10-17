@@ -29,7 +29,8 @@ sandbox.** They intercept launches that go through NoveLauncher. A "locked"
 app is still reachable from recents, notifications, another launcher, ADB,
 app links or the assistant. This is inherent to every third-party launcher —
 no launcher can provide OS-level isolation. For real isolation, use Android's
-built-in Work Profile.
+built-in Work Profile or Private Space (Android 15+) — NoveLauncher shows both,
+but the isolation itself comes from Android.
 
 Reports that a locked app can be opened by one of those routes are therefore
 **expected behaviour**, not vulnerabilities.
@@ -51,5 +52,9 @@ Reports that a locked app can be opened by one of those routes are therefore
   excluded from Android's cloud auto-backup.
 - **Transport**: NAS/WebDAV backups are HTTPS-only and refuse plaintext
   endpoints.
+- **Least access**: Google Drive backups request only the `drive.file` scope
+  (files this app created), and the optional gestures accessibility service
+  is declared without window-content access and performs only two global
+  actions (screen off, open notifications).
 
 Findings that weaken any of the above **are** in scope, and are appreciated.

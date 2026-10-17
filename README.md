@@ -8,7 +8,7 @@
 
 [![Version](https://img.shields.io/badge/version-9.3.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
 [![Platform](https://img.shields.io/badge/Android-8.0%2B-4ECDC4?style=for-the-badge&logo=android&logoColor=white)](#requirements)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![CI](https://img.shields.io/github/actions/workflow/status/DrummingBird1/NoveLauncher/android.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/DrummingBird1/NoveLauncher/actions/workflows/android.yml)
 
 [**Website**](https://drummingbird1.github.io/NoveLauncher/) ·
@@ -42,16 +42,22 @@ analytics, no ads. Your usage data never leaves your phone.
 
 | | |
 |---|---|
-| 🧠 **Smart ranking** | Apps ordered by recency, frequency, time-of-day pattern and category — all computed locally |
+| 🧠 **Suggestions that learn** | Apps ranked by recency, frequency, time of day and category; "Recommended now" also learns from which suggestions you actually tap — all computed locally |
 | 📁 **Smart folders** | Automatic grouping into 11 categories, no manual sorting |
-| 🎨 **Deep theming** | 12 colour presets, Material You dynamic colour, custom colours, fonts, 12 icon shapes, icon-pack support (Nova / ADW / Lawnchair) |
+| 💼 **Work profile & Private Space** | Work apps with their badge and a pause switch; Android 15's Private Space in its own lockable section, never mixed into suggestions and hidden from search while locked |
+| ⚡ **App shortcuts** | Long-press an app for its own shortcuts — a new message, a saved route — straight from the home screen |
+| 🔍 **Smart search** | Apps, contacts and settings from one box. Hebrew ↔ English matching ("וואטסאפ" finds WhatsApp), typo tolerance and initials ("gm" → Google Maps), plus a calculator and unit conversion |
+| 🕯️ **Jewish calendar & Shabbat mode** | Hebrew date, holidays (Israel or diaspora schedule), candle-lighting and Havdalah times calculated on the phone; Shabbat mode hides distracting suggestions and badges from candle lighting to nightfall |
+| 🖼️ **Wallpapers** | Your own photos or built-in gradients — one for everything, per page, by hour, by weekday, or your system (live) wallpaper — with brightness, contrast, saturation, warmth, blur and vignette |
+| 👆 **Gestures** | Swipe up for apps, swipe down for notifications, double-tap to turn the screen off |
+| 🎨 **Deep theming** | 12 colour presets, Material You dynamic colour, custom colours, 16 fonts, 12 icon shapes |
+| 🧷 **Icon packs** | Apply any Nova / ADW / Lawnchair-compatible icon pack; apps it doesn't cover keep their own icon |
 | 🔒 **App lock** | PIN, password, pattern or biometric lock on individual apps, plus a private folder and hidden apps |
 | 🌍 **7 languages** | Hebrew, English, Arabic, French, Russian, Spanish, German — fully RTL-aware |
 | 📰 **News feed** | Built-in sources plus your own custom RSS feeds |
 | 💾 **Backups** | Local, Google Drive or NAS/WebDAV, on a schedule, optionally password-encrypted |
-| 📊 **Usage statistics** | Screen time and app usage, stored only on-device |
-| 🔍 **Global search** | Apps, contacts and settings from one search box |
-| 🧩 **Widgets & dock** | Standard Android widgets and a pinned bottom dock |
+| 📊 **Usage statistics** | Screen time and app usage by day, week or month, read from Android on your device |
+| 🧩 **Widgets & dock** | Standard Android widgets (with their setup screens, resizable) and a pinned bottom dock |
 
 ## Screenshots
 
@@ -70,13 +76,31 @@ This is the whole point of the project, so it's worth being precise:
 
 - **Nothing is collected.** No analytics, no telemetry, no crash reporting is
   enabled in shipped builds, no account, no ads.
-- **Usage data stays local.** App usage statistics live in a database on your
-  device and are used only to rank your apps.
-- **The one network call** is the weather widget, which sends approximate
-  coordinates to [Open-Meteo](https://open-meteo.com) — and only if you grant
-  location permission. Deny it and weather falls back to a default city.
+- **Usage data stays local.** App usage is read from Android's own usage
+  statistics and processed on your device; what the suggestions learn is kept
+  in a local database. None of it is uploaded.
+- **Four features use the network — nothing else does:**
+  - **Weather** — asks [Open-Meteo](https://open-meteo.com) for the current
+    conditions. It sends your approximate coordinates only if you grant
+    location permission; without it, it asks for a default city.
+  - **News** — the News page fetches the RSS feeds you have enabled, directly
+    from each publisher.
+  - **Backups** — only if you choose them: your own Google Drive (the
+    `drive.file` scope, so the app sees only the backup files it creates —
+    never the rest of your Drive) or your own NAS over HTTPS.
+  - **Update check** — off by default. When you turn it on, the app asks
+    GitHub's releases API for the latest version at most once a day. Nothing
+    about you or your device is sent, and nothing is downloaded automatically.
+
+  Everything else stays on your device.
 - **Backups are yours.** Local, your own Google Drive, or your own NAS. Exports
   can be encrypted with a password only you hold.
+- **The Jewish calendar is computed on the phone.** Holiday, candle-lighting
+  and Havdalah times use your approximate location if you allow it (a default
+  city otherwise), and are never sent anywhere.
+- **The gestures helper reads nothing.** Double-tap to turn the screen off uses
+  an optional accessibility service that performs exactly two actions (screen
+  off, open notifications) and cannot see what's on your screen.
 
 Full detail: [**Privacy Policy**](https://drummingbird1.github.io/NoveLauncher/privacy.html) ·
 [Terms of Service](https://drummingbird1.github.io/NoveLauncher/terms.html)
@@ -84,7 +108,8 @@ Full detail: [**Privacy Policy**](https://drummingbird1.github.io/NoveLauncher/p
 > **On app lock:** the app lock, private folder and hidden apps are a
 > *deterrent*, not a sandbox. A locked app is still reachable from recents,
 > notifications, another launcher or ADB — that's true of every third-party
-> launcher. For real isolation, use Android's built-in Work Profile.
+> launcher. For real isolation, use Android's built-in Work Profile or Private
+> Space (Android 15+), both of which NoveLauncher supports.
 
 ## Download
 
@@ -99,6 +124,10 @@ install cleanly over each other.
 - Android 8.0 (API 26) or newer
 - ~25 MB of storage
 
+A few features need more: Private Space needs Android 15, and double-tap to
+turn the screen off needs Android 9. Private Space, app shortcuts and pausing
+work apps work only while NoveLauncher is your default home app.
+
 ## Build from source
 
 ```bash
@@ -107,8 +136,10 @@ cd NoveLauncher/android
 ./gradlew assembleDebug
 ```
 
-Open the **`android/`** folder in Android Studio (Ladybug or newer) — not the
-repository root, which is not a Gradle project.
+Open the **`android/`** folder in an Android Studio version that supports
+Android Gradle Plugin 9.4 — not the repository root, which is not a Gradle
+project. Gradle needs **JDK 21** (set it as the Gradle JDK in Android Studio);
+the app itself compiles to Java 17 bytecode.
 
 ```bash
 ./gradlew testDebugUnitTest      # unit, Robolectric and screenshot tests

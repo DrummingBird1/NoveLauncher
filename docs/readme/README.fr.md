@@ -8,7 +8,7 @@
 
 [![Version](https://img.shields.io/badge/version-9.3.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
 [![Plateforme](https://img.shields.io/badge/Android-8.0%2B-4ECDC4?style=for-the-badge&logo=android&logoColor=white)](#configuration-requise)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
 
 [**Site web**](https://drummingbird1.github.io/NoveLauncher/) ·
 [**Télécharger**](https://github.com/DrummingBird1/NoveLauncher/releases/latest) ·
@@ -42,16 +42,22 @@ d'utilisation ne quittent jamais votre téléphone.
 
 | | |
 |---|---|
-| 🧠 **Classement intelligent** | Applications triées par récence, fréquence, heure de la journée et catégorie — calculé localement |
+| 🧠 **Suggestions qui apprennent** | Applications classées par récence, fréquence, heure de la journée et catégorie ; « Recommandés maintenant » apprend aussi des suggestions que vous ouvrez vraiment — tout est calculé localement |
 | 📁 **Dossiers intelligents** | Regroupement automatique en 11 catégories, sans tri manuel |
-| 🎨 **Personnalisation poussée** | 12 palettes, Material You, couleurs personnalisées, polices, 12 formes d'icônes, packs d'icônes |
+| 💼 **Profil professionnel et Espace privé** | Applis pro avec leur badge et un bouton de mise en pause ; l'Espace privé d'Android 15 dans sa propre section verrouillable, jamais mêlé aux suggestions et masqué de la recherche tant qu'il est verrouillé |
+| ⚡ **Raccourcis d'applications** | Appui long sur une appli pour accéder à ses raccourcis — nouveau message, itinéraire enregistré — directement depuis l'écran d'accueil |
+| 🔍 **Recherche intelligente** | Applications, contacts et paramètres depuis un seul champ. Correspondance hébreu ↔ alphabet latin (« וואטסאפ » trouve WhatsApp), tolérance aux fautes de frappe et aux initiales (« gm » → Google Maps), plus une calculatrice et la conversion d'unités |
+| 🕯️ **Calendrier hébraïque et mode Chabbat** | Date hébraïque, fêtes (calendrier d'Israël ou de la diaspora), heures d'allumage des bougies et de Havdala calculées sur le téléphone ; le mode Chabbat masque les suggestions distrayantes et les badges, de l'allumage des bougies à la tombée de la nuit |
+| 🖼️ **Fonds d'écran** | Vos propres photos ou des dégradés intégrés — un pour tout, par page, par heure, par jour de la semaine, ou le fond d'écran du système (animé compris) — avec luminosité, contraste, saturation, chaleur, flou et vignettage |
+| 👆 **Gestes** | Balayer vers le haut pour les applis, vers le bas pour les notifications, double toucher pour éteindre l'écran |
+| 🎨 **Personnalisation poussée** | 12 palettes, Material You, couleurs personnalisées, 16 polices, 12 formes d'icônes |
+| 🧷 **Packs d'icônes** | Appliquez n'importe quel pack d'icônes compatible Nova / ADW / Lawnchair ; les applis qu'il ne couvre pas gardent leur icône |
 | 🔒 **Verrouillage d'applications** | Code PIN, mot de passe, schéma ou biométrie par application, dossier privé et applications masquées |
 | 🌍 **7 langues** | Hébreu, anglais, arabe, français, russe, espagnol, allemand — entièrement compatible RTL |
 | 📰 **Fil d'actualités** | Sources intégrées et vos propres flux RSS |
 | 💾 **Sauvegardes** | Local, Google Drive ou NAS/WebDAV, planifiées, avec chiffrement par mot de passe en option |
-| 📊 **Statistiques d'usage** | Temps d'écran et utilisation, stockés uniquement sur l'appareil |
-| 🔍 **Recherche globale** | Applications, contacts et paramètres depuis un seul champ |
-| 🧩 **Widgets et dock** | Widgets Android standard et dock inférieur épinglé |
+| 📊 **Statistiques d'usage** | Temps d'écran et utilisation par jour, semaine ou mois, lus depuis Android sur votre appareil |
+| 🧩 **Widgets et dock** | Widgets Android standard (avec leur écran de configuration, redimensionnables) et dock inférieur épinglé |
 
 ## Captures d'écran
 
@@ -71,13 +77,36 @@ C'est la raison d'être du projet, autant être précis :
 - **Rien n'est collecté.** Aucune analyse d'audience, aucune télémétrie,
   aucun rapport de plantage dans les versions distribuées, aucun compte,
   aucune publicité.
-- **Les données d'usage restent locales.** Les statistiques sont stockées dans
-  une base de données sur votre appareil et servent uniquement au classement.
-- **Le seul appel réseau** est le widget météo, qui envoie des coordonnées
-  approximatives à [Open-Meteo](https://open-meteo.com) — et seulement si vous
-  accordez la permission de localisation. Sinon, une ville par défaut est utilisée.
+- **Les données d'usage restent locales.** L'utilisation des applis est lue
+  dans les statistiques d'usage d'Android et traitée sur votre appareil ; ce que
+  les suggestions apprennent est conservé dans une base de données locale. Rien
+  n'est envoyé.
+- **Quatre fonctions utilisent le réseau — rien d'autre :**
+  - **Météo** — demande les conditions actuelles à
+    [Open-Meteo](https://open-meteo.com). Vos coordonnées approximatives ne sont
+    envoyées que si vous accordez la permission de localisation ; sinon, c'est
+    la météo d'une ville par défaut qui est demandée.
+  - **Actualités** — la page Actualités récupère les flux RSS que vous avez
+    activés, directement auprès de chaque éditeur.
+  - **Sauvegardes** — seulement si vous les choisissez : votre propre Google
+    Drive (portée `drive.file` : l'appli ne voit que les fichiers de sauvegarde
+    qu'elle crée — jamais le reste de votre Drive) ou votre propre NAS en HTTPS.
+  - **Recherche de mises à jour** — désactivée par défaut. Une fois activée,
+    l'appli interroge l'API des versions de GitHub au plus une fois par jour.
+    Rien sur vous ni sur votre appareil n'est envoyé, et rien n'est téléchargé
+    automatiquement.
+
+  Tout le reste reste sur votre appareil.
 - **Vos sauvegardes vous appartiennent.** En local, sur votre Google Drive ou
   votre NAS, avec un chiffrement par mot de passe que vous seul détenez.
+- **Le calendrier hébraïque est calculé sur le téléphone.** Les heures des
+  fêtes, de l'allumage des bougies et de la Havdala utilisent votre position
+  approximative si vous l'autorisez (une ville par défaut sinon), et ne sont
+  envoyées nulle part.
+- **L'assistant de gestes ne lit rien.** Le double toucher pour éteindre l'écran
+  passe par un service d'accessibilité facultatif qui effectue exactement deux
+  actions (éteindre l'écran, ouvrir les notifications) et ne peut pas voir ce
+  qui s'affiche.
 
 Détail complet : [**Politique de confidentialité**](https://drummingbird1.github.io/NoveLauncher/privacy.html) ·
 [Conditions d'utilisation](https://drummingbird1.github.io/NoveLauncher/terms.html)
@@ -87,7 +116,8 @@ Détail complet : [**Politique de confidentialité**](https://drummingbird1.gith
 > sécurisé**. Une application « verrouillée » reste accessible via les
 > applications récentes, les notifications, un autre launcher ou ADB — c'est
 > vrai de tout launcher tiers. Pour une isolation réelle, utilisez le profil
-> professionnel intégré à Android.
+> professionnel intégré à Android ou l'Espace privé (Android 15 et plus) —
+> NoveLauncher prend en charge les deux.
 
 ## Téléchargement
 
@@ -102,6 +132,11 @@ proprement les unes sur les autres.
 - Android 8.0 (API 26) ou plus récent
 - Environ 25 Mo de stockage
 
+Certaines fonctions demandent davantage : l'Espace privé nécessite Android 15,
+et le double toucher pour éteindre l'écran Android 9. L'Espace privé, les
+raccourcis d'applications et la mise en pause des applis pro ne fonctionnent que
+si NoveLauncher est votre application d'accueil par défaut.
+
 ## Compiler depuis les sources
 
 ```bash
@@ -110,8 +145,10 @@ cd NoveLauncher/android
 ./gradlew assembleDebug
 ```
 
-Ouvrez le dossier **`android/`** dans Android Studio (Ladybug ou plus récent)
-— pas la racine du dépôt, qui n'est pas un projet Gradle.
+Ouvrez le dossier **`android/`** dans une version d'Android Studio compatible
+avec l'Android Gradle Plugin 9.4 — pas la racine du dépôt, qui n'est pas un
+projet Gradle. Gradle a besoin du **JDK 21** (à définir comme Gradle JDK dans
+Android Studio) ; l'application elle-même est compilée en bytecode Java 17.
 
 ## Contribuer
 
