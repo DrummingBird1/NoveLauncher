@@ -63,8 +63,8 @@ d'utilisation ne quittent jamais votre téléphone.
 
 <div align="center">
 
-<img src="../../assets/screenshots/google-play/04-home.png" width="24%" alt="Écran d'accueil">
-<img src="../../assets/screenshots/google-play/10-apps.png" width="24%" alt="Tiroir d'applications">
+<img src="../../assets/screenshots/google-play/01-home.png" width="24%" alt="Écran d'accueil">
+<img src="../../assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="Tiroir d'applications">
 <img src="../../assets/screenshots/google-play/07-themes.png" width="24%" alt="Thèmes">
 <img src="../../assets/screenshots/google-play/08-security.png" width="24%" alt="Sécurité">
 
@@ -126,6 +126,12 @@ Récupérez l'APK signé depuis la [**dernière version**](https://github.com/Dr
 Vous devrez autoriser l'installation depuis des sources inconnues. Toutes les
 versions sont signées avec la même clé, les mises à jour s'installent donc
 proprement les unes sur les autres.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="../assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**Mises à jour automatiques :** [Obtainium](https://github.com/ImranR98/Obtainium) installe NoveLauncher
+directement depuis ces versions GitHub et le tient à jour. Dans Obtainium,
+ajoutez une application et collez `https://github.com/DrummingBird1/NoveLauncher`.
 
 ### Configuration requise
 

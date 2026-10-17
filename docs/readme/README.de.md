@@ -63,8 +63,8 @@ Telefon nie.
 
 <div align="center">
 
-<img src="../../assets/screenshots/google-play/04-home.png" width="24%" alt="Startbildschirm">
-<img src="../../assets/screenshots/google-play/10-apps.png" width="24%" alt="App-Übersicht">
+<img src="../../assets/screenshots/google-play/01-home.png" width="24%" alt="Startbildschirm">
+<img src="../../assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="App-Übersicht">
 <img src="../../assets/screenshots/google-play/07-themes.png" width="24%" alt="Designs">
 <img src="../../assets/screenshots/google-play/08-security.png" width="24%" alt="Sicherheit">
 
@@ -122,6 +122,12 @@ Lade die signierte APK aus der [**neuesten Version**](https://github.com/Drummin
 Du musst die Installation aus unbekannten Quellen erlauben. Alle Versionen
 sind mit demselben Schlüssel signiert, Updates lassen sich also sauber
 übereinander installieren.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="../assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**Automatische Updates:** [Obtainium](https://github.com/ImranR98/Obtainium) installiert NoveLauncher direkt
+aus diesen GitHub-Releases und hält es aktuell. Füge in Obtainium eine neue App
+hinzu und trage `https://github.com/DrummingBird1/NoveLauncher` als Quelle ein.
 
 ### Systemvoraussetzungen
 

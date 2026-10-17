@@ -62,8 +62,8 @@ NoveLauncher מחליף את מסך הבית של אנדרואיד. הוא מד�
 
 <div align="center">
 
-<img src="../../assets/screenshots/google-play/04-home.png" width="24%" alt="מסך הבית">
-<img src="../../assets/screenshots/google-play/10-apps.png" width="24%" alt="מגירת אפליקציות">
+<img src="../../assets/screenshots/google-play/01-home.png" width="24%" alt="מסך הבית">
+<img src="../../assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="מגירת אפליקציות">
 <img src="../../assets/screenshots/google-play/07-themes.png" width="24%" alt="ערכות נושא">
 <img src="../../assets/screenshots/google-play/08-security.png" width="24%" alt="אבטחה">
 
@@ -114,6 +114,12 @@ NoveLauncher מחליף את מסך הבית של אנדרואיד. הוא מד�
 
 תצטרך לאשר התקנה ממקורות לא ידועים באפליקציה שאיתה הורדת. כל הגרסאות חתומות
 באותו מפתח, כך שעדכונים מותקנים חלק אחד מעל השני.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="../assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**עדכונים אוטומטיים:** [Obtainium](https://github.com/ImranR98/Obtainium) מתקין את NoveLauncher ישירות מהגרסאות
+כאן ב-GitHub ושומר אותו מעודכן. ב-Obtainium מוסיפים אפליקציה ומדביקים את
+`https://github.com/DrummingBird1/NoveLauncher`.
 
 ### דרישות מערכת
 

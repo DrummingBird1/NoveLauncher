@@ -63,8 +63,8 @@ NoveLauncher заменяет домашний экран Android. Он ранж
 
 <div align="center">
 
-<img src="../../assets/screenshots/google-play/04-home.png" width="24%" alt="Домашний экран">
-<img src="../../assets/screenshots/google-play/10-apps.png" width="24%" alt="Список приложений">
+<img src="../../assets/screenshots/google-play/01-home.png" width="24%" alt="Домашний экран">
+<img src="../../assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="Список приложений">
 <img src="../../assets/screenshots/google-play/07-themes.png" width="24%" alt="Темы">
 <img src="../../assets/screenshots/google-play/08-security.png" width="24%" alt="Безопасность">
 
@@ -123,6 +123,12 @@ NoveLauncher заменяет домашний экран Android. Он ранж
 Потребуется разрешить установку из неизвестных источников. Все релизы
 подписаны одним ключом, поэтому обновления устанавливаются поверх друг друга
 без проблем.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="../assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**Автоматические обновления:** [Obtainium](https://github.com/ImranR98/Obtainium) устанавливает NoveLauncher
+прямо из этих релизов на GitHub и обновляет его. В Obtainium добавьте приложение
+и вставьте `https://github.com/DrummingBird1/NoveLauncher`.
 
 ### Системные требования
 

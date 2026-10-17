@@ -63,8 +63,8 @@ analytics, no ads. Your usage data never leaves your phone.
 
 <div align="center">
 
-<img src="assets/screenshots/google-play/04-home.png" width="24%" alt="Home screen">
-<img src="assets/screenshots/google-play/10-apps.png" width="24%" alt="App drawer">
+<img src="assets/screenshots/google-play/01-home.png" width="24%" alt="Home screen">
+<img src="assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="App drawer">
 <img src="assets/screenshots/google-play/07-themes.png" width="24%" alt="Themes">
 <img src="assets/screenshots/google-play/08-security.png" width="24%" alt="Security">
 
@@ -118,6 +118,12 @@ Grab the signed APK from the [**latest release**](https://github.com/DrummingBir
 You'll need to allow installation from unknown sources for whichever app you
 download it with. Every release is signed with the same key, so updates
 install cleanly over each other.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="docs/assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**Automatic updates:** [Obtainium](https://github.com/ImranR98/Obtainium) installs NoveLauncher straight from
+these GitHub Releases and keeps it up to date. In Obtainium, tap **Add App** and
+paste `https://github.com/DrummingBird1/NoveLauncher`.
 
 ### Requirements
 

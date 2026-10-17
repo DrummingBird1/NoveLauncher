@@ -62,8 +62,8 @@
 
 <div align="center">
 
-<img src="../../assets/screenshots/google-play/04-home.png" width="24%" alt="الشاشة الرئيسية">
-<img src="../../assets/screenshots/google-play/10-apps.png" width="24%" alt="درج التطبيقات">
+<img src="../../assets/screenshots/google-play/01-home.png" width="24%" alt="الشاشة الرئيسية">
+<img src="../../assets/screenshots/google-play/04-apps-profiles.png" width="24%" alt="درج التطبيقات">
 <img src="../../assets/screenshots/google-play/07-themes.png" width="24%" alt="السمات">
 <img src="../../assets/screenshots/google-play/08-security.png" width="24%" alt="الأمان">
 
@@ -115,6 +115,12 @@
 
 ستحتاج إلى السماح بالتثبيت من مصادر غير معروفة. جميع الإصدارات موقّعة بالمفتاح
 نفسه، لذا تُثبَّت التحديثات فوق بعضها بسلاسة.
+
+<a href="https://github.com/ImranR98/Obtainium"><img src="../assets/badge-obtainium.png" alt="Get it on Obtainium" height="62"></a>
+
+**تحديثات تلقائية:** يثبّت [Obtainium](https://github.com/ImranR98/Obtainium) تطبيق NoveLauncher مباشرةً من
+إصدارات GitHub هذه ويحافظ على تحديثه. في Obtainium، أضف تطبيقًا والصق
+`https://github.com/DrummingBird1/NoveLauncher`.
 
 ### متطلبات النظام
 
