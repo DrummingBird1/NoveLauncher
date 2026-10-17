@@ -12,7 +12,7 @@ icons, banners, screenshots, permission and rating answers) is in
 
 | Channel | Status | What it takes |
 | --- | --- | --- |
-| **GitHub Releases** | Live. Since v9.3.0 every release carries a signed release APK and AAB. | Nothing new: push a `vX.Y.Z` tag ([release.yml](../../.github/workflows/release.yml)) |
+| **GitHub Releases** | Live. Since v9.3.0 every release carries a signed release APK. | Nothing new: push a `vX.Y.Z` tag ([release.yml](../../.github/workflows/release.yml)) |
 | **Obtainium** | Live, no submission needed | Nothing: it installs and updates straight from GitHub Releases. Badge on the README and website. |
 | **Samsung Galaxy Store** | Kit ready: [stores/samsung-galaxy-store](stores/samsung-galaxy-store/README.md) | Owner: Samsung account + commercial seller status, then submit |
 | **Huawei AppGallery** | Kit ready: [stores/huawei-appgallery](stores/huawei-appgallery/README.md) | Owner: HUAWEI ID + identity verification, then submit. Google Drive backup doesn't work there. |
@@ -84,11 +84,12 @@ still install over each other.
 ## GitHub Releases
 
 Pushing a `vX.Y.Z` tag runs [release.yml](../../.github/workflows/release.yml).
-It builds the release APK and AAB, signs them, and opens a **draft** GitHub
-Release that a person reviews before publishing. The workflow deliberately
+It builds the signed release APK and opens a **draft** GitHub Release that a
+person reviews before publishing. The workflow deliberately
 fails if the signing secrets are missing, so an unsigned APK can never be
-attached. Since v9.3.0 each release has a signed release `.apk`
-and a matching `.aab`. v9.1.0 and v9.2.0 only had debug APKs, signed with a
+attached. Since v9.3.0 each release has a signed release `.apk`. The `.aab`
+that 9.3.0 and 10.0.0 also carried was removed on 2026-10-17: it is only an
+upload format for Google Play, which isn't in use. v9.1.0 and v9.2.0 only had debug APKs, signed with a
 different key, so installs from those two can't update in place. Add the APK's
 SHA-256 to the release notes by hand; the workflow doesn't yet.
 
@@ -113,7 +114,7 @@ not to Obtainium's `apps.obtainium.imranr.dev/redirect` helper, because that
 page loads ads and analytics. The website also offers a direct
 `obtainium://add/…` link for people who already have Obtainium. GitHub strips
 custom-scheme links from READMEs, so those can't have one. Each release
-attaches exactly one `.apk` (next to the `.aab` and a card image), so Obtainium
+attaches exactly one `.apk` (next to a card image), so Obtainium
 picks it without any filter.
 
 ## Samsung Galaxy Store
