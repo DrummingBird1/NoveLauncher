@@ -271,9 +271,8 @@
     <string name="stats_range_month">شهر</string>
     <string name="duration_hours_minutes">%1$dس %2$dد</string>
     <string name="duration_minutes">%1$dد</string>
-
-    <string name="backup_error_onedrive">OneDrive غير مدعوم بعد. استخدم Google Drive أو النسخ الاحتياطي المحلي.</string>
-    <string name="backup_error_box">Box غير مدعوم بعد. استخدم Google Drive أو النسخ الاحتياطي المحلي.</string>
+    <string name="backup_error_onedrive">OneDrive غير مدعوم بعد. استخدم النسخ الاحتياطي المحلي أو NAS.</string>
+    <string name="backup_error_box">Box غير مدعوم بعد. استخدم النسخ الاحتياطي المحلي أو NAS.</string>
     <string name="backup_error_not_connected">غير متصل بـ Google Drive.\nاذهب إلى الإعدادات ← النسخ الاحتياطي ← ربط حساب Google</string>
     <string name="backup_error_token_expired">انتهت صلاحية الرمز. حاول مرة أخرى أو أعد الاتصال في الإعدادات.</string>
     <string name="backup_error_play_services_missing">يتطلب النسخ الاحتياطي إلى Google Drive خدمات Google Play، وهي غير متوفرة على هذا الجهاز.</string>
@@ -536,4 +535,5 @@
         <item quantity="many">%1$s بعد %2$d يومًا</item>
         <item quantity="other">%1$s بعد %2$d يوم</item>
     </plurals>
+    <string name="backup_error_drive_disabled">النسخ الاحتياطي إلى Google Drive غير متاح في هذا الإصدار.</string>
 </resources>

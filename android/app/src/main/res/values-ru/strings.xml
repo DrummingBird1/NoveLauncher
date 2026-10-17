@@ -271,9 +271,8 @@
     <string name="stats_range_month">Месяц</string>
     <string name="duration_hours_minutes">%1$dч %2$dм</string>
     <string name="duration_minutes">%1$dм</string>
-
-    <string name="backup_error_onedrive">OneDrive пока не поддерживается. Используйте Google Drive или локальную резервную копию.</string>
-    <string name="backup_error_box">Box пока не поддерживается. Используйте Google Drive или локальную резервную копию.</string>
+    <string name="backup_error_onedrive">OneDrive пока не поддерживается. Используйте локальную копию или NAS.</string>
+    <string name="backup_error_box">Box пока не поддерживается. Используйте локальную копию или NAS.</string>
     <string name="backup_error_not_connected">Не подключено к Google Drive.\nПерейдите в Настройки → Резервная копия → Подключить аккаунт Google</string>
     <string name="backup_error_token_expired">Токен истёк. Попробуйте снова или переподключитесь в настройках.</string>
     <string name="backup_error_play_services_missing">Для резервного копирования в Google Drive нужны сервисы Google Play, которых нет на этом устройстве.</string>
@@ -534,4 +533,5 @@
         <item quantity="many">%1$s через %2$d дней</item>
         <item quantity="other">%1$s через %2$d дня</item>
     </plurals>
+    <string name="backup_error_drive_disabled">Резервное копирование в Google Drive недоступно в этой версии.</string>
 </resources>

@@ -271,9 +271,8 @@
     <string name="stats_range_month">Mes</string>
     <string name="duration_hours_minutes">%1$dh %2$dm</string>
     <string name="duration_minutes">%1$dm</string>
-
-    <string name="backup_error_onedrive">OneDrive aún no es compatible. Usa Google Drive o copia local.</string>
-    <string name="backup_error_box">Box aún no es compatible. Usa Google Drive o copia local.</string>
+    <string name="backup_error_onedrive">OneDrive aún no es compatible. Usa una copia local o en NAS.</string>
+    <string name="backup_error_box">Box aún no es compatible. Usa una copia local o en NAS.</string>
     <string name="backup_error_not_connected">No conectado a Google Drive.\nVe a Ajustes → Copia de seguridad → Conectar cuenta de Google</string>
     <string name="backup_error_token_expired">Token caducado. Inténtalo de nuevo o reconéctate en ajustes.</string>
     <string name="backup_error_play_services_missing">La copia de seguridad en Google Drive necesita los servicios de Google Play, que no están disponibles en este dispositivo.</string>
@@ -533,4 +532,5 @@
         <item quantity="many">%1$s en %2$d días</item>
         <item quantity="other">%1$s en %2$d días</item>
     </plurals>
+    <string name="backup_error_drive_disabled">La copia de seguridad en Google Drive no está disponible en esta versión.</string>
 </resources>

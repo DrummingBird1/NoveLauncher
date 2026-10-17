@@ -271,9 +271,8 @@
     <string name="stats_range_month">Mois</string>
     <string name="duration_hours_minutes">%1$dh %2$dm</string>
     <string name="duration_minutes">%1$dm</string>
-
-    <string name="backup_error_onedrive">OneDrive n\'est pas encore pris en charge. Utilisez Google Drive ou la sauvegarde locale.</string>
-    <string name="backup_error_box">Box n\'est pas encore pris en charge. Utilisez Google Drive ou la sauvegarde locale.</string>
+    <string name="backup_error_onedrive">OneDrive n\'est pas encore pris en charge. Utilisez une sauvegarde locale ou NAS.</string>
+    <string name="backup_error_box">Box n\'est pas encore pris en charge. Utilisez une sauvegarde locale ou NAS.</string>
     <string name="backup_error_not_connected">Non connecté à Google Drive.\nAllez dans Paramètres → Sauvegarde → Connecter un compte Google</string>
     <string name="backup_error_token_expired">Jeton expiré. Réessayez ou reconnectez-vous dans les paramètres.</string>
     <string name="backup_error_play_services_missing">La sauvegarde sur Google Drive nécessite les services Google Play, absents de cet appareil.</string>
@@ -533,4 +532,5 @@
         <item quantity="many">%1$s dans %2$d jours</item>
         <item quantity="other">%1$s dans %2$d jours</item>
     </plurals>
+    <string name="backup_error_drive_disabled">La sauvegarde sur Google Drive n\'est pas disponible dans cette version.</string>
 </resources>

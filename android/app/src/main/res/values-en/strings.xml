@@ -271,9 +271,8 @@
     <string name="stats_range_month">Month</string>
     <string name="duration_hours_minutes">%1$dh %2$dm</string>
     <string name="duration_minutes">%1$dm</string>
-
-    <string name="backup_error_onedrive">OneDrive isn\'t supported yet. Use Google Drive or local backup.</string>
-    <string name="backup_error_box">Box isn\'t supported yet. Use Google Drive or local backup.</string>
+    <string name="backup_error_onedrive">OneDrive isn\'t supported yet. Use a local or NAS backup.</string>
+    <string name="backup_error_box">Box isn\'t supported yet. Use a local or NAS backup.</string>
     <string name="backup_error_not_connected">Not connected to Google Drive.\nGo to Settings → Backup → Connect Google account</string>
     <string name="backup_error_token_expired">Token expired. Try again or reconnect in settings.</string>
     <string name="backup_error_play_services_missing">Google Drive backup needs Google Play services, which this device doesn\'t have.</string>
@@ -532,4 +531,5 @@
         <item quantity="one">%1$s in %2$d day</item>
         <item quantity="other">%1$s in %2$d days</item>
     </plurals>
+    <string name="backup_error_drive_disabled">Google Drive backup isn\'t available in this version.</string>
 </resources>

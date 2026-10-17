@@ -181,13 +181,13 @@ fun AboutSection(
             }
         }
         item {
-            AboutButton(Icons.Rounded.Favorite, stringResource(R.string.about_support)) { open("https://buymeacoffee.com/novelauncher") }
+            AboutButton(Icons.Rounded.Favorite, stringResource(R.string.about_support)) { open("https://buymeacoffee.com/solvaris") }
         }
         item {
             AboutButton(
                 Icons.Rounded.VolunteerActivism,
                 stringResource(R.string.about_patreon),
-            ) { open("https://www.patreon.com/cw/MrIdan") }
+            ) { open("https://www.patreon.com/c/Solvaris") }
         }
         item {
             val contactLabel = stringResource(R.string.about_contact)

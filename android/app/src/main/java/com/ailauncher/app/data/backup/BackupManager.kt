@@ -290,6 +290,9 @@ class BackupManager(
         onError: (String) -> T,
         block: (token: String) -> T,
     ): T {
+        if (!com.ailauncher.app.BuildConfig.DRIVE_BACKUP_ENABLED) {
+            return onError(context.getString(R.string.backup_error_drive_disabled))
+        }
         if (!isDriveAvailable()) {
             return onError(context.getString(R.string.backup_error_play_services_missing))
         }
@@ -476,8 +479,12 @@ class BackupManager(
         return results
     }
 
-    /** Google Drive works only with Google Play services — false on Huawei phones. */
-    fun isDriveAvailable(): Boolean = DriveAuth.isPlayServicesAvailable(context)
+    /**
+     * Whether Settings offers Google Drive at all. False while the build switch
+     * BuildConfig.DRIVE_BACKUP_ENABLED is off (no Google Cloud OAuth client yet),
+     * and on phones without Google Play services (Huawei).
+     */
+    fun isDriveAvailable(): Boolean = com.ailauncher.app.BuildConfig.DRIVE_BACKUP_ENABLED && DriveAuth.isPlayServicesAvailable(context)
 
     fun isGoogleConnected(): Boolean = getConnectedEmail() != null
 

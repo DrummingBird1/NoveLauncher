@@ -60,6 +60,13 @@ android {
         testInstrumentationRunner = "com.ailauncher.app.HiltTestRunner"
         vectorDrawables { useSupportLibrary = true }
         buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
+        // v10: Google Drive backup is built but switched off. It needs an Android
+        // OAuth client in Google Cloud Console for this package + signing key
+        // (assets/distribution/GOOGLE_DRIVE_SETUP.md); without one, Connect always
+        // fails. Off = Drive is hidden everywhere in Settings → Backup, exactly
+        // as on a phone without Google Play services (Pitfall #41). Flip to true
+        // once the OAuth client exists.
+        buildConfigField("boolean", "DRIVE_BACKUP_ENABLED", "false")
     }
 
     signingConfigs {

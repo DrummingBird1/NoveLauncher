@@ -271,9 +271,8 @@
     <string name="stats_range_month">Monat</string>
     <string name="duration_hours_minutes">%1$dh %2$dm</string>
     <string name="duration_minutes">%1$dm</string>
-
-    <string name="backup_error_onedrive">OneDrive wird noch nicht unterstützt. Nutze Google Drive oder eine lokale Sicherung.</string>
-    <string name="backup_error_box">Box wird noch nicht unterstützt. Nutze Google Drive oder eine lokale Sicherung.</string>
+    <string name="backup_error_onedrive">OneDrive wird noch nicht unterstützt. Nutze eine lokale oder NAS-Sicherung.</string>
+    <string name="backup_error_box">Box wird noch nicht unterstützt. Nutze eine lokale oder NAS-Sicherung.</string>
     <string name="backup_error_not_connected">Nicht mit Google Drive verbunden.\nGehe zu Einstellungen → Sicherung → Google-Konto verbinden</string>
     <string name="backup_error_token_expired">Token abgelaufen. Erneut versuchen oder in den Einstellungen neu verbinden.</string>
     <string name="backup_error_play_services_missing">Die Sicherung in Google Drive benötigt die Google-Play-Dienste, die auf diesem Gerät nicht verfügbar sind.</string>
@@ -532,4 +531,5 @@
         <item quantity="one">%1$s in %2$d Tag</item>
         <item quantity="other">%1$s in %2$d Tagen</item>
     </plurals>
+    <string name="backup_error_drive_disabled">Die Sicherung in Google Drive ist in dieser Version nicht verfügbar.</string>
 </resources>
