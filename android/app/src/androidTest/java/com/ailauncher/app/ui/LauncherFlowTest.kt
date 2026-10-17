@@ -1,7 +1,9 @@
 package com.ailauncher.app.ui
 
 import android.content.Context
+import android.os.ParcelFileDescriptor
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -57,10 +59,11 @@ class LauncherFlowTest {
         hiltRule.inject()
         val pkg = context.packageName
         // No system dialogs over the activity: usage access and notifications pre-granted.
-        InstrumentationRegistry.getInstrumentation().uiAutomation.apply {
-            executeShellCommand("appops set $pkg GET_USAGE_STATS allow").close()
-            executeShellCommand("pm grant $pkg android.permission.POST_NOTIFICATIONS").close()
-        }
+        // The output is read to the end because executeShellCommand is asynchronous —
+        // closing the pipe right away let the activity start before the grant landed,
+        // and its onResume then opened the usage-access screen on top of the test.
+        shell("appops set $pkg GET_USAGE_STATS allow")
+        shell("pm grant $pkg android.permission.POST_NOTIFICATIONS")
         runBlocking {
             settingsRepo.saveOnboarding(OnboardingState(completed = true, lastSeenVersionCode = BuildConfig.VERSION_CODE))
             settingsRepo.saveSecurity(SecuritySettings())
@@ -75,8 +78,24 @@ class LauncherFlowTest {
         scenario.close()
     }
 
+    private fun shell(command: String) {
+        val pfd = InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command)
+        ParcelFileDescriptor.AutoCloseInputStream(pfd).use { it.readBytes() }
+    }
+
+    /**
+     * Unlocking reads DataStore and hashes the PIN off the main thread, which
+     * Compose's idling doesn't track, so wait for the result to appear.
+     */
+    private fun waitForText(text: String) =
+        composeRule.waitUntil(TIMEOUT_MS) { composeRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+
+    private fun waitForLocked(pkg: String, locked: Boolean) =
+        composeRule.waitUntil(TIMEOUT_MS) { runBlocking { appLockManager.isAppLocked(pkg) } == locked }
+
     @Test
     fun homeScreen_showsRecommendedSection() {
+        waitForText(context.getString(R.string.recommended_now))
         composeRule.onNodeWithText(context.getString(R.string.recommended_now)).assertIsDisplayed()
     }
 
@@ -90,17 +109,23 @@ class LauncherFlowTest {
         }
 
         scenario.onActivity { it.launchPackageWithLockCheck(target) }
+        waitForText(context.getString(R.string.auth_required_title))
         composeRule.onNodeWithText(context.getString(R.string.auth_required_title)).assertIsDisplayed()
 
         val field = composeRule.onAllNodes(hasSetTextAction())[0]
         field.performTextInput("1111")
         composeRule.onNodeWithText(context.getString(R.string.action_ok)).performClick()
+        waitForText(context.getString(R.string.auth_wrong_try_again))
         composeRule.onNodeWithText(context.getString(R.string.auth_wrong_try_again)).assertIsDisplayed()
         runBlocking { assertTrue("a wrong PIN must not unlock", appLockManager.isAppLocked(target)) }
 
         field.performTextInput("2468")
         composeRule.onNodeWithText(context.getString(R.string.action_ok)).performClick()
-        composeRule.waitForIdle()
+        waitForLocked(target, locked = false)
         runBlocking { assertFalse("the right PIN unlocks for the grace period", appLockManager.isAppLocked(target)) }
+    }
+
+    private companion object {
+        const val TIMEOUT_MS = 10_000L
     }
 }
