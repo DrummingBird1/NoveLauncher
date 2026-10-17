@@ -99,7 +99,8 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
         else -> appearance.gridColumns
     }
 
-    // v10: LIVE mode shows the system (live) wallpaper through a transparent window.
+    // v10: LIVE mode shows the system (live) wallpaper through the window, which
+    // is transparent from the start (Theme.AILauncher.Home in themes.xml).
     val showSystemWallpaper = appearance.wallpaper.mode == WallpaperMode.LIVE
     DisposableEffect(showSystemWallpaper) {
         if (showSystemWallpaper) activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)

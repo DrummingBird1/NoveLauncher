@@ -5,7 +5,7 @@
         <item name="windowSplashScreenBackground">#0A0A1A</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
         <item name="windowSplashScreenAnimationDuration">500</item>
-        <item name="postSplashScreenTheme">@style/Theme.AILauncher</item>
+        <item name="postSplashScreenTheme">@style/Theme.AILauncher.Home</item>
     </style>
 
     <!-- Main app theme (used after splash) -->
@@ -15,5 +15,15 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">#0A0A0F</item>
         <item name="android:supportsRtl">true</item>
+    </style>
+
+    <!-- v10: LauncherActivity only. Its window has to be translucent from the
+         start for LIVE wallpaper mode (FLAG_SHOW_WALLPAPER) to show the system
+         wallpaper: the inherited windowBackground is opaque grey and covered it,
+         and swapping it for a transparent one at runtime left the renderer
+         treating the window as opaque, so old frames were never cleared. Compose
+         draws the theme background itself in every other mode. -->
+    <style name="Theme.AILauncher.Home" parent="Theme.AILauncher">
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>
