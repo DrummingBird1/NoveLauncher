@@ -6,7 +6,7 @@
 
 **A private, on-device Android launcher that learns your habits — without sending them anywhere.**
 
-[![Version](https://img.shields.io/badge/version-9.3.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
+[![Version](https://img.shields.io/badge/version-10.0.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
 [![Platform](https://img.shields.io/badge/Android-8.0%2B-4ECDC4?style=for-the-badge&logo=android&logoColor=white)](#requirements)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![CI](https://img.shields.io/github/actions/workflow/status/DrummingBird1/NoveLauncher/android.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/DrummingBird1/NoveLauncher/actions/workflows/android.yml)

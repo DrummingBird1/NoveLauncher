@@ -53,8 +53,8 @@ android {
         // v10: Google Play requires new apps and updates to target API 36
         // (Android 16) since 2026-08-31.
         targetSdk = 36
-        versionCode = 12
-        versionName = "9.3.0"
+        versionCode = 13
+        versionName = "10.0.0"
         // v10: HiltTestApplication-based runner, so instrumented tests can drive
         // the real @AndroidEntryPoint LauncherActivity — see androidTest/HiltTestRunner.kt.
         testInstrumentationRunner = "com.ailauncher.app.HiltTestRunner"

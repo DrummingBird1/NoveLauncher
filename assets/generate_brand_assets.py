@@ -187,6 +187,7 @@ RELEASES = [
     ("9.1.0", "Accessibility, encrypted backups, dynamic colour"),
     ("9.2.0", "Language picker, custom RSS, quick-settings tile"),
     ("9.3.0", "Infrastructure, testing and performance overhaul"),
+    ("10.0.0", "Profiles, wallpapers, gestures, Jewish calendar"),
 ]
 
 if __name__ == "__main__":

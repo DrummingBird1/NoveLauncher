@@ -6,7 +6,7 @@
 
 **לאנצ'ר אנדרואיד שלומד את ההרגלים שלך — בלי לשלוח אותם לשום מקום.**
 
-[![גרסה](https://img.shields.io/badge/%D7%92%D7%A8%D7%A1%D7%94-9.3.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
+[![גרסה](https://img.shields.io/badge/%D7%92%D7%A8%D7%A1%D7%94-10.0.0-7C7CFF?style=for-the-badge)](https://github.com/DrummingBird1/NoveLauncher/releases/latest)
 [![פלטפורמה](https://img.shields.io/badge/Android-8.0%2B-4ECDC4?style=for-the-badge&logo=android&logoColor=white)](#דרישות-מערכת)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
 

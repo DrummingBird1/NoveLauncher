@@ -5,8 +5,8 @@ All notable changes to NoveLauncher. Versions follow the app's
 
 ---
 
-## [10.0.0] — Unreleased
-*On `main`, not released yet — will ship as versionCode 13. Profiles, shortcuts, wallpapers, gestures, smart search and the Jewish calendar.*
+## v10.0.0 — Profiles, wallpapers, gestures, Jewish calendar
+*Released 2026-10-17 · versionCode 13. Work profile and Private Space, app shortcuts, wallpapers, gestures, smart search and the Jewish calendar.*
 
 ### Added
 - **Work profile and Private Space.** Apps now come from every profile on the
