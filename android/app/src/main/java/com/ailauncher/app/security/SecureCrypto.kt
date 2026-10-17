@@ -22,7 +22,6 @@ import javax.crypto.spec.GCMParameterSpec
  * generates per encryption. The first 12 bytes of the decoded payload are the IV.
  */
 class SecureCrypto {
-
     companion object {
         private const val KEYSTORE = "AndroidKeyStore"
         private const val KEY_ALIAS = "novelauncher_security_v1"
@@ -36,14 +35,14 @@ class SecureCrypto {
         (keystore.getKey(KEY_ALIAS, null) as? SecretKey)?.let { return it }
         val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE)
         generator.init(
-            KeyGenParameterSpec.Builder(
-                KEY_ALIAS,
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            )
-                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            KeyGenParameterSpec
+                .Builder(
+                    KEY_ALIAS,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+                ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                 .setKeySize(256)
-                .build()
+                .build(),
         )
         return generator.generateKey()
     }

@@ -6,7 +6,18 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.ailauncher.app.domain.models.*
+import com.ailauncher.app.domain.models.AdaptiveDisplaySettings
+import com.ailauncher.app.domain.models.AppearanceSettings
+import com.ailauncher.app.domain.models.BackupSettings
+import com.ailauncher.app.domain.models.HiddenAppsSettings
+import com.ailauncher.app.domain.models.LauncherSettings
+import com.ailauncher.app.domain.models.NewsSettings
+import com.ailauncher.app.domain.models.OnboardingState
+import com.ailauncher.app.domain.models.PagesSettings
+import com.ailauncher.app.domain.models.RepairSettings
+import com.ailauncher.app.domain.models.SecuritySettings
+import com.ailauncher.app.domain.models.SmartControlSettings
+import com.ailauncher.app.domain.models.WidgetSlot
 import com.ailauncher.app.security.SecureCrypto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -29,10 +40,14 @@ private val Context.defaultDataStore: DataStore<Preferences> by preferencesDataS
  */
 class SettingsRepository(
     private val context: Context,
-    private val dataStore: DataStore<Preferences> = context.defaultDataStore
+    private val dataStore: DataStore<Preferences> = context.defaultDataStore,
 ) : com.ailauncher.app.domain.repository.SettingsRepository {
-
-    private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true; prettyPrint = true }
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = true
+            prettyPrint = true
+        }
 
     // v8: SecuritySettings (PBKDF2 hashes + locked-package list) is encrypted before
     // landing in DataStore so it's useless if exfiltrated via Android auto-backup.
@@ -41,7 +56,10 @@ class SettingsRepository(
 
     // v9: password-derived (not AndroidKeyStore-bound) so an exported backup can be
     // decrypted on a different device. See PortableBackupCrypto kdoc.
-    private val portableBackupCrypto by lazy { com.ailauncher.app.security.PortableBackupCrypto() }
+    private val portableBackupCrypto by lazy {
+        com.ailauncher.app.security
+            .PortableBackupCrypto()
+    }
 
     companion object {
         private val K_APPEARANCE = stringPreferencesKey("appearance")
@@ -57,12 +75,18 @@ class SettingsRepository(
         private val K_ONBOARDING = stringPreferencesKey("onboarding")
     }
 
-    private inline fun <reified T> flow(key: Preferences.Key<String>, default: T): Flow<T> where T : Any =
+    private inline fun <reified T> flow(
+        key: Preferences.Key<String>,
+        default: T,
+    ): Flow<T> where T : Any =
         dataStore.data.map { prefs ->
             prefs[key]?.let { runCatching { json.decodeFromString<T>(it) }.getOrNull() } ?: default
         }
 
-    private suspend inline fun <reified T> save(key: Preferences.Key<String>, value: T) where T : Any {
+    private suspend inline fun <reified T> save(
+        key: Preferences.Key<String>,
+        value: T,
+    ) where T : Any {
         dataStore.edit { it[key] = json.encodeToString(kotlinx.serialization.serializer<T>(), value) }
     }
 
@@ -82,30 +106,35 @@ class SettingsRepository(
      * SecuritySettings) and skip the work when the ciphertext hasn't changed.
      */
     @Volatile private var securityCache: Pair<String, SecuritySettings>? = null
-    override val securityFlow: Flow<SecuritySettings> = dataStore.data.map { prefs ->
-        val raw = prefs[K_SECURITY] ?: return@map SecuritySettings()
-        securityCache?.takeIf { it.first == raw }?.second?.let { return@map it }
-        val plain = secureCrypto.decryptOrNull(raw) ?: raw  // legacy
-        val decoded = runCatching { json.decodeFromString<SecuritySettings>(plain) }
-            .getOrNull() ?: SecuritySettings()
-        securityCache = raw to decoded
-        decoded
-    }
+    override val securityFlow: Flow<SecuritySettings> =
+        dataStore.data.map { prefs ->
+            val raw = prefs[K_SECURITY] ?: return@map SecuritySettings()
+            securityCache?.takeIf { it.first == raw }?.second?.let { return@map it }
+            val plain = secureCrypto.decryptOrNull(raw) ?: raw // legacy
+            val decoded =
+                runCatching { json.decodeFromString<SecuritySettings>(plain) }
+                    .getOrNull() ?: SecuritySettings()
+            securityCache = raw to decoded
+            decoded
+        }
+
     // v9: BackupSettings is encrypted at rest, same as SecuritySettings — it carries
     // the NAS password (nasPassword), which must not sit in plaintext in DataStore
     // (and therefore in the auto-backup feed to Drive). Legacy plain-JSON values are
     // still readable and get re-encrypted on the next saveBackup. Decrypt is memoised
     // per ciphertext to avoid re-running AES-GCM on every collector emission.
     @Volatile private var backupCache: Pair<String, BackupSettings>? = null
-    override val backupFlow: Flow<BackupSettings> = dataStore.data.map { prefs ->
-        val raw = prefs[K_BACKUP] ?: return@map BackupSettings()
-        backupCache?.takeIf { it.first == raw }?.second?.let { return@map it }
-        val plain = secureCrypto.decryptOrNull(raw) ?: raw  // legacy plain JSON
-        val decoded = runCatching { json.decodeFromString<BackupSettings>(plain) }
-            .getOrNull() ?: BackupSettings()
-        backupCache = raw to decoded
-        decoded
-    }
+    override val backupFlow: Flow<BackupSettings> =
+        dataStore.data.map { prefs ->
+            val raw = prefs[K_BACKUP] ?: return@map BackupSettings()
+            backupCache?.takeIf { it.first == raw }?.second?.let { return@map it }
+            val plain = secureCrypto.decryptOrNull(raw) ?: raw // legacy plain JSON
+            val decoded =
+                runCatching { json.decodeFromString<BackupSettings>(plain) }
+                    .getOrNull() ?: BackupSettings()
+            backupCache = raw to decoded
+            decoded
+        }
     override val widgetsFlow: Flow<List<WidgetSlot>> = flow(K_WIDGETS, emptyList<WidgetSlot>())
     override val newsFlow: Flow<NewsSettings> = flow(K_NEWS, NewsSettings())
     override val hiddenAppsFlow: Flow<HiddenAppsSettings> = flow(K_HIDDEN, HiddenAppsSettings())
@@ -115,24 +144,43 @@ class SettingsRepository(
     override val onboardingFlow: Flow<OnboardingState> = flow(K_ONBOARDING, OnboardingState())
 
     override suspend fun saveAppearance(s: AppearanceSettings) = save(K_APPEARANCE, s)
+
     override suspend fun savePages(s: PagesSettings) = save(K_PAGES, s)
 
     override suspend fun saveSecurity(s: SecuritySettings) {
         val plain = json.encodeToString(SecuritySettings.serializer(), s)
-        val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
+        val encrypted =
+            try {
+                secureCrypto.encrypt(plain)
+            } catch (_: Exception) {
+                plain
+            }
         dataStore.edit { it[K_SECURITY] = encrypted }
     }
+
     override suspend fun saveBackup(s: BackupSettings) {
         val plain = json.encodeToString(BackupSettings.serializer(), s)
-        val encrypted = try { secureCrypto.encrypt(plain) } catch (_: Exception) { plain }
+        val encrypted =
+            try {
+                secureCrypto.encrypt(plain)
+            } catch (_: Exception) {
+                plain
+            }
         dataStore.edit { it[K_BACKUP] = encrypted }
     }
+
     override suspend fun saveWidgets(w: List<WidgetSlot>) = save(K_WIDGETS, w)
+
     override suspend fun saveNews(s: NewsSettings) = save(K_NEWS, s)
+
     override suspend fun saveHiddenApps(s: HiddenAppsSettings) = save(K_HIDDEN, s)
+
     override suspend fun saveSmartControl(s: SmartControlSettings) = save(K_SMART, s)
+
     override suspend fun saveAdaptiveDisplay(s: AdaptiveDisplaySettings) = save(K_ADAPTIVE, s)
+
     override suspend fun saveRepair(s: RepairSettings) = save(K_REPAIR, s)
+
     override suspend fun saveOnboarding(s: OnboardingState) = save(K_ONBOARDING, s)
 
     /**
@@ -143,8 +191,7 @@ class SettingsRepository(
      * security). With one read, everything in the exported JSON describes
      * exactly the same on-disk moment.
      */
-    override suspend fun exportAllSettings(): String =
-        json.encodeToString(LauncherSettings.serializer(), buildExportSnapshot())
+    override suspend fun exportAllSettings(): String = json.encodeToString(LauncherSettings.serializer(), buildExportSnapshot())
 
     override suspend fun exportAllSettingsEncrypted(password: String): String {
         val plain = json.encodeToString(LauncherSettings.serializer(), buildExportSnapshot())
@@ -153,44 +200,53 @@ class SettingsRepository(
 
     private suspend fun buildExportSnapshot(): LauncherSettings {
         val prefs = dataStore.data.first()
-        fun <T> decode(key: Preferences.Key<String>, default: T, serializer: kotlinx.serialization.KSerializer<T>): T {
+
+        fun <T> decode(
+            key: Preferences.Key<String>,
+            default: T,
+            serializer: kotlinx.serialization.KSerializer<T>,
+        ): T {
             val raw = prefs[key] ?: return default
             return runCatching { json.decodeFromString(serializer, raw) }.getOrNull() ?: default
         }
         // SecuritySettings + BackupSettings both use the encrypted-or-legacy decode path.
-        val security = run {
-            val raw = prefs[K_SECURITY] ?: return@run SecuritySettings()
-            securityCache?.takeIf { it.first == raw }?.second ?: run {
-                val plain = secureCrypto.decryptOrNull(raw) ?: raw
-                runCatching { json.decodeFromString<SecuritySettings>(plain) }.getOrNull()
-                    ?: SecuritySettings()
+        val security =
+            run {
+                val raw = prefs[K_SECURITY] ?: return@run SecuritySettings()
+                securityCache?.takeIf { it.first == raw }?.second ?: run {
+                    val plain = secureCrypto.decryptOrNull(raw) ?: raw
+                    runCatching { json.decodeFromString<SecuritySettings>(plain) }.getOrNull()
+                        ?: SecuritySettings()
+                }
             }
-        }
-        val backup = run {
-            val raw = prefs[K_BACKUP] ?: return@run BackupSettings()
-            val decoded = backupCache?.takeIf { it.first == raw }?.second ?: run {
-                val plain = secureCrypto.decryptOrNull(raw) ?: raw
-                runCatching { json.decodeFromString<BackupSettings>(plain) }.getOrNull()
-                    ?: BackupSettings()
+        val backup =
+            run {
+                val raw = prefs[K_BACKUP] ?: return@run BackupSettings()
+                val decoded =
+                    backupCache?.takeIf { it.first == raw }?.second ?: run {
+                        val plain = secureCrypto.decryptOrNull(raw) ?: raw
+                        runCatching { json.decodeFromString<BackupSettings>(plain) }.getOrNull()
+                            ?: BackupSettings()
+                    }
+                // A portable backup file (local .json or Drive) must never carry the NAS
+                // password. Address/path/username are not secrets and stay so a restore
+                // only needs the password re-entered.
+                decoded.copy(nasPassword = "")
             }
-            // A portable backup file (local .json or Drive) must never carry the NAS
-            // password. Address/path/username are not secrets and stay so a restore
-            // only needs the password re-entered.
-            decoded.copy(nasPassword = "")
-        }
-        val full = LauncherSettings(
-            appearance = decode(K_APPEARANCE, AppearanceSettings(), AppearanceSettings.serializer()),
-            pages = decode(K_PAGES, PagesSettings(), PagesSettings.serializer()),
-            security = security,
-            backup = backup,
-            widgets = decode(K_WIDGETS, emptyList(), kotlinx.serialization.builtins.ListSerializer(WidgetSlot.serializer())),
-            news = decode(K_NEWS, NewsSettings(), NewsSettings.serializer()),
-            hiddenApps = decode(K_HIDDEN, HiddenAppsSettings(), HiddenAppsSettings.serializer()),
-            smartControl = decode(K_SMART, SmartControlSettings(), SmartControlSettings.serializer()),
-            adaptiveDisplay = decode(K_ADAPTIVE, AdaptiveDisplaySettings(), AdaptiveDisplaySettings.serializer()),
-            repair = decode(K_REPAIR, RepairSettings(), RepairSettings.serializer()),
-            onboarding = decode(K_ONBOARDING, OnboardingState(), OnboardingState.serializer())
-        )
+        val full =
+            LauncherSettings(
+                appearance = decode(K_APPEARANCE, AppearanceSettings(), AppearanceSettings.serializer()),
+                pages = decode(K_PAGES, PagesSettings(), PagesSettings.serializer()),
+                security = security,
+                backup = backup,
+                widgets = decode(K_WIDGETS, emptyList(), kotlinx.serialization.builtins.ListSerializer(WidgetSlot.serializer())),
+                news = decode(K_NEWS, NewsSettings(), NewsSettings.serializer()),
+                hiddenApps = decode(K_HIDDEN, HiddenAppsSettings(), HiddenAppsSettings.serializer()),
+                smartControl = decode(K_SMART, SmartControlSettings(), SmartControlSettings.serializer()),
+                adaptiveDisplay = decode(K_ADAPTIVE, AdaptiveDisplaySettings(), AdaptiveDisplaySettings.serializer()),
+                repair = decode(K_REPAIR, RepairSettings(), RepairSettings.serializer()),
+                onboarding = decode(K_ONBOARDING, OnboardingState(), OnboardingState.serializer()),
+            )
         return full
     }
 
@@ -201,20 +257,38 @@ class SettingsRepository(
      * failure.
      */
     override suspend fun importAllSettings(jsonStr: String): Boolean {
-        val s = try { json.decodeFromString<LauncherSettings>(jsonStr) }
-                catch (_: Exception) { return false }
+        val s =
+            try {
+                json.decodeFromString<LauncherSettings>(jsonStr)
+            } catch (_: Exception) {
+                return false
+            }
         return try {
             dataStore.edit { prefs ->
-                fun <T> putJson(key: Preferences.Key<String>, value: T, serializer: kotlinx.serialization.KSerializer<T>) {
+                fun <T> putJson(
+                    key: Preferences.Key<String>,
+                    value: T,
+                    serializer: kotlinx.serialization.KSerializer<T>,
+                ) {
                     prefs[key] = json.encodeToString(serializer, value)
                 }
                 putJson(K_APPEARANCE, s.appearance, AppearanceSettings.serializer())
                 putJson(K_PAGES, s.pages, PagesSettings.serializer())
                 // SecuritySettings + BackupSettings must go through the encrypted path.
                 val secPlain = json.encodeToString(SecuritySettings.serializer(), s.security)
-                prefs[K_SECURITY] = try { secureCrypto.encrypt(secPlain) } catch (_: Exception) { secPlain }
+                prefs[K_SECURITY] =
+                    try {
+                        secureCrypto.encrypt(secPlain)
+                    } catch (_: Exception) {
+                        secPlain
+                    }
                 val backupPlain = json.encodeToString(BackupSettings.serializer(), s.backup)
-                prefs[K_BACKUP] = try { secureCrypto.encrypt(backupPlain) } catch (_: Exception) { backupPlain }
+                prefs[K_BACKUP] =
+                    try {
+                        secureCrypto.encrypt(backupPlain)
+                    } catch (_: Exception) {
+                        backupPlain
+                    }
                 putJson(K_WIDGETS, s.widgets, kotlinx.serialization.builtins.ListSerializer(WidgetSlot.serializer()))
                 putJson(K_NEWS, s.news, NewsSettings.serializer())
                 putJson(K_HIDDEN, s.hiddenApps, HiddenAppsSettings.serializer())
@@ -224,15 +298,23 @@ class SettingsRepository(
                 putJson(K_ONBOARDING, s.onboarding, OnboardingState.serializer())
             }
             true
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            false
+        }
     }
 
-    override suspend fun importAllSettingsEncrypted(content: String, password: String): Boolean {
-        val plain = if (com.ailauncher.app.security.PortableBackupCrypto.isEncrypted(content)) {
-            portableBackupCrypto.decryptOrNull(content, password) ?: return false
-        } else {
-            content
-        }
+    override suspend fun importAllSettingsEncrypted(
+        content: String,
+        password: String,
+    ): Boolean {
+        val plain =
+            if (com.ailauncher.app.security.PortableBackupCrypto
+                    .isEncrypted(content)
+            ) {
+                portableBackupCrypto.decryptOrNull(content, password) ?: return false
+            } else {
+                content
+            }
         return importAllSettings(plain)
     }
 

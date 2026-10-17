@@ -22,7 +22,10 @@ import androidx.core.os.LocaleListCompat
  * Pitfall #12).
  */
 object AppLocales {
-    fun apply(context: Context, tag: String) {
+    fun apply(
+        context: Context,
+        tag: String,
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val manager = context.getSystemService(LocaleManager::class.java) ?: return
             val wanted = if (tag.isBlank()) LocaleList.getEmptyLocaleList() else LocaleList.forLanguageTags(tag)
@@ -30,7 +33,7 @@ object AppLocales {
             if (manager.applicationLocales != wanted) manager.applicationLocales = wanted
         } else {
             AppCompatDelegate.setApplicationLocales(
-                if (tag.isBlank()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag)
+                if (tag.isBlank()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag),
             )
         }
     }

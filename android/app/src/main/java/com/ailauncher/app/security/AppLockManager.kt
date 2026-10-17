@@ -25,7 +25,7 @@ import javax.crypto.spec.PBEKeySpec
  */
 class AppLockManager(
     private val context: Context,
-    private val settingsRepo: SettingsRepository
+    private val settingsRepo: SettingsRepository,
 ) {
     // v9: ConcurrentHashMap + atomics. unlockCache, launcherUnlockedUntil, and the
     // failed-attempt counters are all touched from both the Main thread (UI dialog
@@ -34,7 +34,6 @@ class AppLockManager(
     // stale "unlocked" state — the LockManager is on the critical path for app
     // launch, so subtle races here are scary.
     private val unlockCache = ConcurrentHashMap<String, Long>()
-    private val UNLOCK_DURATION_MS = 5 * 60 * 1000L
     private val launcherUnlockedUntil = AtomicLong(0L)
 
     // v8: Failed-attempt lockout. Resets on success.
@@ -45,8 +44,6 @@ class AppLockManager(
     private val failedAttempts = AtomicInteger(0)
     private val lockoutUntil = AtomicLong(0L)
     private val lockoutHydrated = AtomicBoolean(false)
-    private val MAX_ATTEMPTS = 5
-    private val LOCKOUT_DURATION_MS = 30_000L  // 30 sec — grows after repeated trips
 
     /** Lazily load persisted lockout state on first access (off the constructor path). */
     private fun hydrateLockoutIfNeeded() {
@@ -60,7 +57,8 @@ class AppLockManager(
 
     private fun persistLockout() {
         runCatching {
-            securePrefs.edit()
+            securePrefs
+                .edit()
                 .putInt(ATTEMPTS_KEY, failedAttempts.get())
                 .putLong(LOCKOUT_UNTIL_KEY, lockoutUntil.get())
                 .apply()
@@ -99,6 +97,9 @@ class AppLockManager(
     // ── Hashing ──────────────────────────────────────────────────────
 
     companion object {
+        private const val UNLOCK_DURATION_MS = 5 * 60 * 1000L
+        private const val MAX_ATTEMPTS = 5
+        private const val LOCKOUT_DURATION_MS = 30_000L // 30 sec — grows after repeated trips
         private const val PBKDF2_PREFIX = "pbkdf2:"
         private const val ITERATIONS = 100_000
         private const val KEY_LENGTH_BITS = 256
@@ -112,13 +113,17 @@ class AppLockManager(
 
     private val securePrefs: SharedPreferences by lazy {
         try {
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
+            val masterKey =
+                MasterKey
+                    .Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
             EncryptedSharedPreferences.create(
-                context, SECURE_PREFS, masterKey,
+                context,
+                SECURE_PREFS,
+                masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
             )
         } catch (_: Exception) {
             // Hardware-backed keystore unavailable — fall back to plain SharedPreferences.
@@ -155,13 +160,23 @@ class AppLockManager(
      * Returns the upgraded hash if the stored value used a legacy format and matched,
      * so callers can persist the new format. Returns null if input did not verify.
      */
-    private fun verifyAndUpgrade(input: String, stored: String): String? {
+    private fun verifyAndUpgrade(
+        input: String,
+        stored: String,
+    ): String? {
         if (stored.isEmpty()) return null
         return when {
-            stored.startsWith(PBKDF2_PREFIX) -> if (hash(input) == stored) stored else null
-            stored.length == 64 && stored.all { it.isDigit() || it in 'a'..'f' } ->
+            stored.startsWith(PBKDF2_PREFIX) -> {
+                if (hash(input) == stored) stored else null
+            }
+
+            stored.length == 64 && stored.all { it.isDigit() || it in 'a'..'f' } -> {
                 if (legacySha256(input) == stored) hash(input) else null
-            else -> if (input == stored) hash(input) else null
+            }
+
+            else -> {
+                if (input == stored) hash(input) else null
+            }
         }
     }
 
@@ -176,6 +191,7 @@ class AppLockManager(
     }
 
     suspend fun getAppLockMethod(): LockMethod = settingsRepo.securityFlow.first().appLockMethod
+
     suspend fun getLauncherLockMethod(): LockMethod = settingsRepo.securityFlow.first().launcherLockMethod
 
     /**
@@ -197,7 +213,11 @@ class AppLockManager(
     suspend fun verifyPin(pin: String): Boolean {
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
-        val upgraded = verifyAndUpgrade(pin, sec.appLockPin) ?: run { recordFailure(); return false }
+        val upgraded =
+            verifyAndUpgrade(pin, sec.appLockPin) ?: run {
+                recordFailure()
+                return false
+            }
         if (upgraded != sec.appLockPin) settingsRepo.saveSecurity(sec.copy(appLockPin = upgraded))
         recordSuccess()
         return true
@@ -206,7 +226,11 @@ class AppLockManager(
     suspend fun verifyPassword(pw: String): Boolean {
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
-        val upgraded = verifyAndUpgrade(pw, sec.appLockPassword) ?: run { recordFailure(); return false }
+        val upgraded =
+            verifyAndUpgrade(pw, sec.appLockPassword) ?: run {
+                recordFailure()
+                return false
+            }
         if (upgraded != sec.appLockPassword) settingsRepo.saveSecurity(sec.copy(appLockPassword = upgraded))
         recordSuccess()
         return true
@@ -216,25 +240,35 @@ class AppLockManager(
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
         val candidate = p.joinToString("-")
-        val ok = when {
-            sec.appLockPatternHash.isNotEmpty() -> hash(candidate) == sec.appLockPatternHash
-            sec.appLockPattern.isNotEmpty() -> p == sec.appLockPattern  // legacy plaintext
-            else -> false
-        }
+        val ok =
+            when {
+                sec.appLockPatternHash.isNotEmpty() -> hash(candidate) == sec.appLockPatternHash
+
+                sec.appLockPattern.isNotEmpty() -> p == sec.appLockPattern
+
+                // legacy plaintext
+                else -> false
+            }
         if (ok) {
             // Migrate a legacy plaintext pattern to a hash on first successful verify.
             if (sec.appLockPatternHash.isEmpty() && sec.appLockPattern.isNotEmpty()) {
                 settingsRepo.saveSecurity(sec.copy(appLockPatternHash = hash(candidate), appLockPattern = emptyList()))
             }
             recordSuccess()
-        } else recordFailure()
+        } else {
+            recordFailure()
+        }
         return ok
     }
 
     suspend fun verifyLauncherPin(pin: String): Boolean {
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
-        val upgraded = verifyAndUpgrade(pin, sec.launcherLockPin) ?: run { recordFailure(); return false }
+        val upgraded =
+            verifyAndUpgrade(pin, sec.launcherLockPin) ?: run {
+                recordFailure()
+                return false
+            }
         if (upgraded != sec.launcherLockPin) settingsRepo.saveSecurity(sec.copy(launcherLockPin = upgraded))
         recordSuccess()
         return true
@@ -243,7 +277,11 @@ class AppLockManager(
     suspend fun verifyLauncherPassword(pw: String): Boolean {
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
-        val upgraded = verifyAndUpgrade(pw, sec.launcherLockPassword) ?: run { recordFailure(); return false }
+        val upgraded =
+            verifyAndUpgrade(pw, sec.launcherLockPassword) ?: run {
+                recordFailure()
+                return false
+            }
         if (upgraded != sec.launcherLockPassword) settingsRepo.saveSecurity(sec.copy(launcherLockPassword = upgraded))
         recordSuccess()
         return true
@@ -252,7 +290,11 @@ class AppLockManager(
     suspend fun verifyPersonalZonePin(pin: String): Boolean {
         if (lockoutRemainingMs() > 0) return false
         val sec = settingsRepo.securityFlow.first()
-        val upgraded = verifyAndUpgrade(pin, sec.personalZonePin) ?: run { recordFailure(); return false }
+        val upgraded =
+            verifyAndUpgrade(pin, sec.personalZonePin) ?: run {
+                recordFailure()
+                return false
+            }
         if (upgraded != sec.personalZonePin) settingsRepo.saveSecurity(sec.copy(personalZonePin = upgraded))
         recordSuccess()
         return true
@@ -260,21 +302,34 @@ class AppLockManager(
 
     // ── Grant unlock ─────────────────────────────────────────────────
 
-    fun grantAppUnlock(packageName: String) { unlockCache[packageName] = System.currentTimeMillis() + UNLOCK_DURATION_MS }
-    fun grantLauncherUnlock() { launcherUnlockedUntil.set(System.currentTimeMillis() + UNLOCK_DURATION_MS) }
+    fun grantAppUnlock(packageName: String) {
+        unlockCache[packageName] = System.currentTimeMillis() + UNLOCK_DURATION_MS
+    }
+
+    fun grantLauncherUnlock() {
+        launcherUnlockedUntil.set(System.currentTimeMillis() + UNLOCK_DURATION_MS)
+    }
+
     fun isLauncherUnlocked(): Boolean = System.currentTimeMillis() < launcherUnlockedUntil.get()
 
     /** Quick Settings Tile "lock now" action — expires the unlock grace period
      *  immediately without touching the configured launcherLockMethod, so the
      *  next resume re-prompts even if it's well within the normal TTL. */
-    fun revokeLauncherUnlock() { launcherUnlockedUntil.set(0L) }
+    fun revokeLauncherUnlock() {
+        launcherUnlockedUntil.set(0L)
+    }
 
     /**
      * FIX: Called after successful BiometricPrompt authentication.
      * Grants unlock just like PIN/password verification does.
      */
-    fun grantBiometricUnlock(packageName: String) { grantAppUnlock(packageName) }
-    fun grantLauncherBiometricUnlock() { grantLauncherUnlock() }
+    fun grantBiometricUnlock(packageName: String) {
+        grantAppUnlock(packageName)
+    }
+
+    fun grantLauncherBiometricUnlock() {
+        grantLauncherUnlock()
+    }
 
     // ── Set credentials ──────────────────────────────────────────────
 
@@ -290,11 +345,13 @@ class AppLockManager(
 
     suspend fun setAppLockPattern(pattern: List<Int>) {
         val c = settingsRepo.securityFlow.first()
-        settingsRepo.saveSecurity(c.copy(
-            appLockMethod = LockMethod.PATTERN,
-            appLockPatternHash = hash(pattern.joinToString("-")),
-            appLockPattern = emptyList()  // never persist the raw pattern
-        ))
+        settingsRepo.saveSecurity(
+            c.copy(
+                appLockMethod = LockMethod.PATTERN,
+                appLockPatternHash = hash(pattern.joinToString("-")),
+                appLockPattern = emptyList(), // never persist the raw pattern
+            ),
+        )
     }
 
     /**

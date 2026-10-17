@@ -1,7 +1,6 @@
 package com.ailauncher.app.domain.calendar
 
 import android.app.Application
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -19,9 +18,12 @@ import java.util.Locale
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class JewishCalendarTest {
-
-    private fun on(y: Int, m: Int, d: Int, diaspora: Boolean = false) =
-        JewishCalendar.holidaysOn(LocalDate.of(y, m, d), diaspora)
+    private fun on(
+        y: Int,
+        m: Int,
+        d: Int,
+        diaspora: Boolean = false,
+    ) = JewishCalendar.holidaysOn(LocalDate.of(y, m, d), diaspora)
 
     @Test
     fun `high holidays 5787`() {
@@ -95,11 +97,20 @@ class JewishCalendarTest {
         val saturday = friday.plusDays(1)
         val fridaySunset = SolarCalculator.sunset(friday, lat, lon, zone)!!
         val saturdayTzeit = SolarCalculator.sunset(saturday, lat, lon, zone, SolarCalculator.ZENITH_TZEIT)!!
+
         fun rest(t: Long) = JewishCalendar.isRestPeriodNow(t, zone, lat, lon, candleLightingMinutes = 18)
 
         assertFalse(rest(fridaySunset - 30 * 60_000L))
         assertTrue(rest(fridaySunset - 10 * 60_000L))
-        assertTrue(rest(saturday.atTime(12, 0).atZone(zone).toInstant().toEpochMilli()))
+        assertTrue(
+            rest(
+                saturday
+                    .atTime(12, 0)
+                    .atZone(zone)
+                    .toInstant()
+                    .toEpochMilli(),
+            ),
+        )
         assertTrue(rest(saturdayTzeit - 60_000L))
         assertFalse(rest(saturdayTzeit + 60_000L))
     }
@@ -107,7 +118,13 @@ class JewishCalendarTest {
     @Test
     fun `day info reports candle lighting on Friday and havdalah on Saturday`() {
         val zone = ZoneId.of("Asia/Jerusalem")
-        val noon = { d: LocalDate -> d.atTime(12, 0).atZone(zone).toInstant().toEpochMilli() }
+        val noon = { d: LocalDate ->
+            d
+                .atTime(12, 0)
+                .atZone(zone)
+                .toInstant()
+                .toEpochMilli()
+        }
         val friday = JewishCalendar.dayInfo(noon(LocalDate.of(2026, 10, 16)), zone, 32.0853, 34.7818, Locale.ENGLISH, 18)
         val saturday = JewishCalendar.dayInfo(noon(LocalDate.of(2026, 10, 17)), zone, 32.0853, 34.7818, Locale.ENGLISH, 18)
         assertTrue(friday.candleLighting != null && friday.havdalah == null)

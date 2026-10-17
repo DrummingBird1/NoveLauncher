@@ -2,8 +2,8 @@ package com.ailauncher.app.data
 
 import android.app.Application
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.test.core.app.ApplicationProvider
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.BackupSettings
@@ -44,7 +44,6 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class SettingsRepositoryTest {
-
     @get:Rule val tmp = TemporaryFolder()
 
     private lateinit var dsScope: CoroutineScope
@@ -52,46 +51,53 @@ class SettingsRepositoryTest {
 
     @Before fun setUp() {
         dsScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        val ds: DataStore<Preferences> = PreferenceDataStoreFactory.create(scope = dsScope) {
-            File(tmp.root, "settings_${System.nanoTime()}.preferences_pb")
-        }
+        val ds: DataStore<Preferences> =
+            PreferenceDataStoreFactory.create(scope = dsScope) {
+                File(tmp.root, "settings_${System.nanoTime()}.preferences_pb")
+            }
         repo = SettingsRepository(ApplicationProvider.getApplicationContext(), ds)
     }
 
-    @After fun tearDown() { dsScope.cancel() }
-
-    @Test fun `export then import round-trips non-secret settings`() = runBlocking {
-        repo.saveAppearance(AppearanceSettings(iconSizeDp = 72, gridColumns = 5))
-        repo.saveBackup(BackupSettings(nasAddress = "https://nas.local", nasUsername = "u"))
-        val json = repo.exportAllSettings()
-
-        repo.resetAll()
-        assertEquals("reset should restore the default icon size", 56, repo.appearanceFlow.first().iconSizeDp)
-
-        assertTrue(repo.importAllSettings(json))
-        assertEquals(72, repo.appearanceFlow.first().iconSizeDp)
-        assertEquals(5, repo.appearanceFlow.first().gridColumns)
-        assertEquals("https://nas.local", repo.backupFlow.first().nasAddress)
+    @After fun tearDown() {
+        dsScope.cancel()
     }
 
-    @Test fun `export never contains the NAS password`() = runBlocking {
-        repo.saveBackup(
-            BackupSettings(nasAddress = "https://nas.local", nasUsername = "u", nasPassword = "hunter2")
-        )
-        val json = repo.exportAllSettings()
-        assertFalse("exportAllSettings must blank nasPassword", json.contains("hunter2"))
-    }
+    @Test fun `export then import round-trips non-secret settings`() =
+        runBlocking {
+            repo.saveAppearance(AppearanceSettings(iconSizeDp = 72, gridColumns = 5))
+            repo.saveBackup(BackupSettings(nasAddress = "https://nas.local", nasUsername = "u"))
+            val json = repo.exportAllSettings()
 
-    @Test fun `malformed import returns false and leaves state intact`() = runBlocking {
-        repo.saveAppearance(AppearanceSettings(iconSizeDp = 64))
-        assertFalse(repo.importAllSettings("{ not valid json"))
-        assertEquals(64, repo.appearanceFlow.first().iconSizeDp)
-    }
+            repo.resetAll()
+            assertEquals("reset should restore the default icon size", 56, repo.appearanceFlow.first().iconSizeDp)
 
-    @Test fun `saved backup round-trips its password in the live store`() = runBlocking {
-        // Within the live DataStore (not the portable export) the password must
-        // survive a save/load cycle so the NAS backup can actually authenticate.
-        repo.saveBackup(BackupSettings(nasAddress = "https://nas.local", nasPassword = "hunter2"))
-        assertEquals("hunter2", repo.backupFlow.first().nasPassword)
-    }
+            assertTrue(repo.importAllSettings(json))
+            assertEquals(72, repo.appearanceFlow.first().iconSizeDp)
+            assertEquals(5, repo.appearanceFlow.first().gridColumns)
+            assertEquals("https://nas.local", repo.backupFlow.first().nasAddress)
+        }
+
+    @Test fun `export never contains the NAS password`() =
+        runBlocking {
+            repo.saveBackup(
+                BackupSettings(nasAddress = "https://nas.local", nasUsername = "u", nasPassword = "hunter2"),
+            )
+            val json = repo.exportAllSettings()
+            assertFalse("exportAllSettings must blank nasPassword", json.contains("hunter2"))
+        }
+
+    @Test fun `malformed import returns false and leaves state intact`() =
+        runBlocking {
+            repo.saveAppearance(AppearanceSettings(iconSizeDp = 64))
+            assertFalse(repo.importAllSettings("{ not valid json"))
+            assertEquals(64, repo.appearanceFlow.first().iconSizeDp)
+        }
+
+    @Test fun `saved backup round-trips its password in the live store`() =
+        runBlocking {
+            // Within the live DataStore (not the portable export) the password must
+            // survive a save/load cycle so the NAS backup can actually authenticate.
+            repo.saveBackup(BackupSettings(nasAddress = "https://nas.local", nasPassword = "hunter2"))
+            assertEquals("hunter2", repo.backupFlow.first().nasPassword)
+        }
 }

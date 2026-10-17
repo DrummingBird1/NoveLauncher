@@ -10,7 +10,6 @@ import com.ailauncher.app.domain.models.WallpaperSettings
  * it; this is the logic the new WallpaperLayer draws from. Pure Kotlin.
  */
 object WallpaperRules {
-
     /**
      * The entry to draw, or null for "nothing of ours" (no entries — the theme
      * background shows — or LIVE mode, where the system wallpaper shows through).
@@ -18,25 +17,42 @@ object WallpaperRules {
      * @param hour 0..23, @param dayOfWeek java.util.Calendar.DAY_OF_WEEK (1 = Sunday),
      * @param dayOfYear 1..366 — passed in so tests don't depend on the clock.
      */
-    fun select(settings: WallpaperSettings, pageId: String, hour: Int, dayOfWeek: Int, dayOfYear: Int): WallpaperEntry? {
+    fun select(
+        settings: WallpaperSettings,
+        pageId: String,
+        hour: Int,
+        dayOfWeek: Int,
+        dayOfYear: Int,
+    ): WallpaperEntry? {
         val entries = settings.entries
         if (entries.isEmpty() || settings.mode == WallpaperMode.LIVE) return null
         return when (settings.mode) {
-            WallpaperMode.SINGLE -> entries.first()
-            WallpaperMode.PER_PAGE ->
+            WallpaperMode.SINGLE -> {
+                entries.first()
+            }
+
+            WallpaperMode.PER_PAGE -> {
                 entries.firstOrNull { it.page == pageId } ?: entries.firstOrNull { it.page.isBlank() } ?: entries.first()
+            }
+
             WallpaperMode.HOURLY -> {
-                if (entries.none { it.hour in 0..23 }) entries[hour % entries.size]
-                else {
+                if (entries.none { it.hour in 0..23 }) {
+                    entries[hour % entries.size]
+                } else {
                     // An entry without a start hour counts as 00:00 — what Settings shows for it.
                     val timed = entries.sortedBy { it.hour.coerceIn(0, 23) }
                     // The latest start hour that has passed today; before the first one, the last from yesterday.
                     timed.lastOrNull { it.hour.coerceIn(0, 23) <= hour } ?: timed.last()
                 }
             }
-            WallpaperMode.DAILY ->
+
+            WallpaperMode.DAILY -> {
                 entries.firstOrNull { it.dayOfWeek == dayOfWeek } ?: entries[(dayOfYear - 1).coerceAtLeast(0) % entries.size]
-            WallpaperMode.LIVE -> null
+            }
+
+            WallpaperMode.LIVE -> {
+                null
+            }
         }
     }
 
@@ -55,11 +71,12 @@ object WallpaperRules {
         val lr = 0.2126f * (1 - s)
         val lg = 0.7152f * (1 - s)
         val lb = 0.0722f * (1 - s)
-        val sat = arrayOf(
-            floatArrayOf(lr + s, lg, lb),
-            floatArrayOf(lr, lg + s, lb),
-            floatArrayOf(lr, lg, lb + s)
-        )
+        val sat =
+            arrayOf(
+                floatArrayOf(lr + s, lg, lb),
+                floatArrayOf(lr, lg + s, lb),
+                floatArrayOf(lr, lg, lb + s),
+            )
         // Contrast then brightness: out = (in * c + 128 * (1 - c)) * b, then warmth offsets.
         val scale = c * b
         val offset = 128f * (1 - c) * b

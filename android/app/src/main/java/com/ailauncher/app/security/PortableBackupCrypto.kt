@@ -22,7 +22,6 @@ import javax.crypto.spec.SecretKeySpec
  * attempting decryption first.
  */
 class PortableBackupCrypto {
-
     companion object {
         const val PREFIX = "NVLBK1:"
         private const val TRANSFORMATION = "AES/GCM/NoPadding"
@@ -35,13 +34,19 @@ class PortableBackupCrypto {
         fun isEncrypted(content: String): Boolean = content.startsWith(PREFIX)
     }
 
-    private fun deriveKey(password: String, salt: ByteArray): SecretKeySpec {
+    private fun deriveKey(
+        password: String,
+        salt: ByteArray,
+    ): SecretKeySpec {
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec = PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH_BITS)
         return SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
     }
 
-    fun encrypt(plain: String, password: String): String {
+    fun encrypt(
+        plain: String,
+        password: String,
+    ): String {
         val salt = ByteArray(SALT_LENGTH).also { SecureRandom().nextBytes(it) }
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, deriveKey(password, salt))
@@ -55,7 +60,10 @@ class PortableBackupCrypto {
     }
 
     /** Returns the decrypted plaintext, or null on a wrong password / corrupt envelope. */
-    fun decryptOrNull(envelope: String, password: String): String? {
+    fun decryptOrNull(
+        envelope: String,
+        password: String,
+    ): String? {
         if (!isEncrypted(envelope)) return null
         return try {
             val combined = Base64.getDecoder().decode(envelope.removePrefix(PREFIX))

@@ -30,23 +30,23 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class LauncherDatabaseMigrationTest {
-
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
 
     @get:Rule
-    val helper: MigrationTestHelper = MigrationTestHelper(
-        instrumentation = instrumentation,
-        file = instrumentation.targetContext.getDatabasePath("launcher-migration-test.db"),
-        driver = AndroidSQLiteDriver(),
-        databaseClass = LauncherDatabase::class
-    )
+    val helper: MigrationTestHelper =
+        MigrationTestHelper(
+            instrumentation = instrumentation,
+            file = instrumentation.targetContext.getDatabasePath("launcher-migration-test.db"),
+            driver = AndroidSQLiteDriver(),
+            databaseClass = LauncherDatabase::class,
+        )
 
     @Test
     fun `migrate 1 to 2 preserves existing rows and adds the expected indices`() {
         helper.createDatabase(1).apply {
             execSQL(
                 "INSERT INTO daily_stats (id, date, packageName, screenTimeMs, launches) " +
-                    "VALUES (1, '2026-08-01', 'com.example.app', 60000, 3)"
+                    "VALUES (1, '2026-08-01', 'com.example.app', 60000, 3)",
             )
             execSQL("INSERT INTO hourly_usage (id, packageName, hour, count) VALUES (1, 'com.example.app', 9, 2)")
             close()
@@ -79,7 +79,7 @@ class LauncherDatabaseMigrationTest {
             assertEquals(2, st.getInt(0))
         }
         migrated.execSQL(
-            "INSERT INTO suggestion_feedback (packageName, impressions, taps, updatedAt) VALUES ('com.example.app', 3.0, 1.0, 0)"
+            "INSERT INTO suggestion_feedback (packageName, impressions, taps, updatedAt) VALUES ('com.example.app', 3.0, 1.0, 0)",
         )
         migrated.prepare("SELECT taps FROM suggestion_feedback").use { st ->
             assertTrue(st.step())

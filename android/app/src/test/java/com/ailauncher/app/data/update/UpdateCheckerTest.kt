@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class UpdateCheckerTest {
-
     @Test
     fun `numeric comparison, not string comparison`() {
         assertTrue(UpdateChecker.isNewer("10.0.0", "9.3.0"))

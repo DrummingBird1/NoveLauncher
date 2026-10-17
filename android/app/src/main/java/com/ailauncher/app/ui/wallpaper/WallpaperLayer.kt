@@ -47,7 +47,11 @@ import java.util.Calendar
  * the theme background or lets the system wallpaper through.
  */
 @Composable
-fun WallpaperLayer(settings: WallpaperSettings, pageId: String, dimmed: Boolean) {
+fun WallpaperLayer(
+    settings: WallpaperSettings,
+    pageId: String,
+    dimmed: Boolean,
+) {
     // HOURLY/DAILY change on their own; re-select once a minute.
     var now by remember { mutableStateOf(Calendar.getInstance()) }
     LaunchedEffect(settings.mode) {
@@ -56,14 +60,16 @@ fun WallpaperLayer(settings: WallpaperSettings, pageId: String, dimmed: Boolean)
             now = Calendar.getInstance()
         }
     }
-    val entry = remember(settings, pageId, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.DAY_OF_YEAR)) {
-        WallpaperRules.select(
-            settings, pageId,
-            hour = now.get(Calendar.HOUR_OF_DAY),
-            dayOfWeek = now.get(Calendar.DAY_OF_WEEK),
-            dayOfYear = now.get(Calendar.DAY_OF_YEAR)
-        )
-    } ?: return
+    val entry =
+        remember(settings, pageId, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.DAY_OF_YEAR)) {
+            WallpaperRules.select(
+                settings,
+                pageId,
+                hour = now.get(Calendar.HOUR_OF_DAY),
+                dayOfWeek = now.get(Calendar.DAY_OF_WEEK),
+                dayOfYear = now.get(Calendar.DAY_OF_YEAR),
+            )
+        } ?: return
 
     val reduceMotion = LocalReduceMotion.current
     val dim by animateFloatAsState(if (dimmed && settings.dimOnScroll) 0.35f else 0f, label = "wallpaperDim")
@@ -75,9 +81,9 @@ fun WallpaperLayer(settings: WallpaperSettings, pageId: String, dimmed: Boolean)
                 Modifier.fillMaxSize().background(
                     Brush.radialGradient(
                         0.55f to Color.Transparent,
-                        1f to Color.Black.copy(alpha = entry.vignette.coerceIn(0f, 1f))
-                    )
-                )
+                        1f to Color.Black.copy(alpha = entry.vignette.coerceIn(0f, 1f)),
+                    ),
+                ),
             )
         }
         if (dim > 0f) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = if (reduceMotion) 0.35f else dim)))
@@ -86,10 +92,14 @@ fun WallpaperLayer(settings: WallpaperSettings, pageId: String, dimmed: Boolean)
 
 /** One wallpaper entry, adjusted. Also used for the thumbnails in Settings → Wallpapers. */
 @Composable
-fun WallpaperImage(entry: WallpaperEntry, modifier: Modifier) {
-    val filter = remember(entry.brightness, entry.contrast, entry.saturation, entry.warmth) {
-        ColorFilter.colorMatrix(ColorMatrix(WallpaperRules.colorMatrix(entry)))
-    }
+fun WallpaperImage(
+    entry: WallpaperEntry,
+    modifier: Modifier,
+) {
+    val filter =
+        remember(entry.brightness, entry.contrast, entry.saturation, entry.warmth) {
+            ColorFilter.colorMatrix(ColorMatrix(WallpaperRules.colorMatrix(entry)))
+        }
     val blurred = if (entry.blur > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) modifier.blur(entry.blur.dp) else modifier
 
     if (entry.isBuiltIn) {

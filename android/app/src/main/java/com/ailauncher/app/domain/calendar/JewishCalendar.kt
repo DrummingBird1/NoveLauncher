@@ -18,7 +18,10 @@ import java.util.Locale
  * [JewishCalendar.holidaysOn]'s `diaspora` is set, plus Israel's national days
  * with their official date-shifting rules.
  */
-enum class JewishHoliday(@StringRes val nameRes: Int, val isYomTov: Boolean = false) {
+enum class JewishHoliday(
+    @StringRes val nameRes: Int,
+    val isYomTov: Boolean = false,
+) {
     ROSH_HASHANA(R.string.holiday_rosh_hashana, true),
     TZOM_GEDALIA(R.string.holiday_tzom_gedalia),
     YOM_KIPPUR(R.string.holiday_yom_kippur, true),
@@ -44,7 +47,7 @@ enum class JewishHoliday(@StringRes val nameRes: Int, val isYomTov: Boolean = fa
     SHAVUOT(R.string.holiday_shavuot, true),
     SHIVA_ASAR_BETAMMUZ(R.string.holiday_17_tammuz),
     TISHA_BAV(R.string.holiday_tisha_bav),
-    TU_BAV(R.string.holiday_tu_bav)
+    TU_BAV(R.string.holiday_tu_bav),
 }
 
 /** Everything the home screen shows for "today", computed in one pass. */
@@ -58,7 +61,7 @@ data class JewishDayInfo(
     /** Set on the last day of a Shabbat/Yom Tov run. Epoch millis. */
     val havdalah: Long?,
     /** Between candle lighting and nightfall of a Shabbat/Yom Tov. */
-    val isRestPeriodNow: Boolean
+    val isRestPeriodNow: Boolean,
 )
 
 /**
@@ -72,16 +75,29 @@ data class JewishDayInfo(
 object JewishCalendar {
     private val UTC: TimeZone = TimeZone.getTimeZone("UTC")
 
-    data class HebrewDate(val year: Int, val month: Int, val day: Int)
+    data class HebrewDate(
+        val year: Int,
+        val month: Int,
+        val day: Int,
+    )
 
     fun hebrewDate(date: LocalDate): HebrewDate {
         val cal = HebrewCalendar(UTC)
         // Noon UTC: the civil (daytime) date, unaffected by the sunset day boundary.
-        cal.timeInMillis = date.atTime(12, 0).atZone(ZoneId.of("UTC")).toInstant().toEpochMilli()
+        cal.timeInMillis =
+            date
+                .atTime(12, 0)
+                .atZone(ZoneId.of("UTC"))
+                .toInstant()
+                .toEpochMilli()
         return HebrewDate(cal.get(HebrewCalendar.YEAR), cal.get(HebrewCalendar.MONTH), cal.get(HebrewCalendar.DAY_OF_MONTH))
     }
 
-    fun toGregorian(year: Int, month: Int, day: Int): LocalDate {
+    fun toGregorian(
+        year: Int,
+        month: Int,
+        day: Int,
+    ): LocalDate {
         val cal = HebrewCalendar(UTC)
         cal.clear()
         cal.set(year, month, day, 12, 0)
@@ -91,14 +107,28 @@ object JewishCalendar {
     fun isLeapYear(year: Int): Boolean = ((7 * year + 1) % 19) < 7
 
     /** Long-form Hebrew date in the given locale ("ט״ו בניסן תשפ״ו" / "15 Nisan 5786"). */
-    fun format(date: LocalDate, locale: Locale): String {
+    fun format(
+        date: LocalDate,
+        locale: Locale,
+    ): String {
         val uLocale = ULocale("${locale.language}@calendar=hebrew")
         val df = DateFormat.getDateInstance(DateFormat.LONG, uLocale)
         df.timeZone = UTC
-        return df.format(java.util.Date(date.atTime(12, 0).atZone(ZoneId.of("UTC")).toInstant().toEpochMilli()))
+        return df.format(
+            java.util.Date(
+                date
+                    .atTime(12, 0)
+                    .atZone(ZoneId.of("UTC"))
+                    .toInstant()
+                    .toEpochMilli(),
+            ),
+        )
     }
 
-    fun holidaysOn(date: LocalDate, diaspora: Boolean = false): List<JewishHoliday> {
+    fun holidaysOn(
+        date: LocalDate,
+        diaspora: Boolean = false,
+    ): List<JewishHoliday> {
         val h = hebrewDate(date)
         val dow = date.dayOfWeek
         val out = mutableListOf<JewishHoliday>()
@@ -116,20 +146,29 @@ object JewishCalendar {
                 if (d == 22) out += JewishHoliday.SHEMINI_ATZERET
                 if ((!diaspora && d == 22) || (diaspora && d == 23)) out += JewishHoliday.SIMCHAT_TORAH
             }
-            HebrewCalendar.TEVET -> if (d == 10) out += JewishHoliday.TENTH_OF_TEVET
-            HebrewCalendar.SHEVAT -> if (d == 15) out += JewishHoliday.TU_BISHVAT
+
+            HebrewCalendar.TEVET -> {
+                if (d == 10) out += JewishHoliday.TENTH_OF_TEVET
+            }
+
+            HebrewCalendar.SHEVAT -> {
+                if (d == 15) out += JewishHoliday.TU_BISHVAT
+            }
+
             HebrewCalendar.ADAR -> {
                 // Ta'anit Esther moves back to Thursday when 13 Adar is Shabbat.
                 if ((d == 13 && dow != DayOfWeek.SATURDAY) || (d == 11 && dow == DayOfWeek.THURSDAY)) out += JewishHoliday.TAANIT_ESTHER
                 if (d == 14) out += JewishHoliday.PURIM
                 if (d == 15) out += JewishHoliday.SHUSHAN_PURIM
             }
+
             HebrewCalendar.NISAN -> {
                 if (d == 15 || (diaspora && d == 16)) out += JewishHoliday.PESACH
                 if (d in (if (diaspora) 17 else 16)..20) out += JewishHoliday.CHOL_HAMOED_PESACH
                 if (d == 21 || (diaspora && d == 22)) out += JewishHoliday.SHVII_SHEL_PESACH
                 if (isYomHaShoah(d, dow)) out += JewishHoliday.YOM_HASHOAH
             }
+
             HebrewCalendar.IYAR -> {
                 val (zikaron, atzmaut) = memorialAndIndependenceDays(h.year)
                 if (date == zikaron) out += JewishHoliday.YOM_HAZIKARON
@@ -137,8 +176,19 @@ object JewishCalendar {
                 if (d == 18) out += JewishHoliday.LAG_BAOMER
                 if (d == 28) out += JewishHoliday.YOM_YERUSHALAYIM
             }
-            HebrewCalendar.SIVAN -> if (d == 6 || (diaspora && d == 7)) out += JewishHoliday.SHAVUOT
-            HebrewCalendar.TAMUZ -> if ((d == 17 && dow != DayOfWeek.SATURDAY) || (d == 18 && dow == DayOfWeek.SUNDAY)) out += JewishHoliday.SHIVA_ASAR_BETAMMUZ
+
+            HebrewCalendar.SIVAN -> {
+                if (d == 6 || (diaspora && d == 7)) out += JewishHoliday.SHAVUOT
+            }
+
+            HebrewCalendar.TAMUZ -> {
+                if ((d == 17 && dow != DayOfWeek.SATURDAY) ||
+                    (d == 18 && dow == DayOfWeek.SUNDAY)
+                ) {
+                    out += JewishHoliday.SHIVA_ASAR_BETAMMUZ
+                }
+            }
+
             HebrewCalendar.AV -> {
                 if ((d == 9 && dow != DayOfWeek.SATURDAY) || (d == 10 && dow == DayOfWeek.SUNDAY)) out += JewishHoliday.TISHA_BAV
                 if (d == 15) out += JewishHoliday.TU_BAV
@@ -152,12 +202,16 @@ object JewishCalendar {
     }
 
     /** 27 Nisan; moved to Thursday if it falls on Friday, to Monday if on Sunday. */
-    private fun isYomHaShoah(day: Int, dow: DayOfWeek): Boolean = when (day) {
-        27 -> dow != DayOfWeek.FRIDAY && dow != DayOfWeek.SUNDAY
-        26 -> dow == DayOfWeek.THURSDAY
-        28 -> dow == DayOfWeek.MONDAY
-        else -> false
-    }
+    private fun isYomHaShoah(
+        day: Int,
+        dow: DayOfWeek,
+    ): Boolean =
+        when (day) {
+            27 -> dow != DayOfWeek.FRIDAY && dow != DayOfWeek.SUNDAY
+            26 -> dow == DayOfWeek.THURSDAY
+            28 -> dow == DayOfWeek.MONDAY
+            else -> false
+        }
 
     /**
      * Yom HaZikaron / Yom HaAtzma'ut, per the Knesset's rules: 5 Iyar on Friday
@@ -166,17 +220,20 @@ object JewishCalendar {
      */
     fun memorialAndIndependenceDays(hebrewYear: Int): Pair<LocalDate, LocalDate> {
         val fifth = toGregorian(hebrewYear, HebrewCalendar.IYAR, 5)
-        val atzmaut = when (fifth.dayOfWeek) {
-            DayOfWeek.FRIDAY -> fifth.minusDays(1)
-            DayOfWeek.SATURDAY -> fifth.minusDays(2)
-            DayOfWeek.MONDAY -> fifth.plusDays(1)
-            else -> fifth
-        }
+        val atzmaut =
+            when (fifth.dayOfWeek) {
+                DayOfWeek.FRIDAY -> fifth.minusDays(1)
+                DayOfWeek.SATURDAY -> fifth.minusDays(2)
+                DayOfWeek.MONDAY -> fifth.plusDays(1)
+                else -> fifth
+            }
         return atzmaut.minusDays(1) to atzmaut
     }
 
-    fun isRestDay(date: LocalDate, diaspora: Boolean = false): Boolean =
-        date.dayOfWeek == DayOfWeek.SATURDAY || holidaysOn(date, diaspora).any { it.isYomTov }
+    fun isRestDay(
+        date: LocalDate,
+        diaspora: Boolean = false,
+    ): Boolean = date.dayOfWeek == DayOfWeek.SATURDAY || holidaysOn(date, diaspora).any { it.isYomTov }
 
     /** Between candle lighting and nightfall of a Shabbat or Yom Tov — the window Shabbat mode covers. */
     fun isRestPeriodNow(
@@ -185,7 +242,7 @@ object JewishCalendar {
         lat: Double,
         lon: Double,
         candleLightingMinutes: Int,
-        diaspora: Boolean = false
+        diaspora: Boolean = false,
     ): Boolean {
         val today = Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalDate()
         return restPeriod(
@@ -194,7 +251,7 @@ object JewishCalendar {
             isRestDay(today.plusDays(1), diaspora),
             SolarCalculator.sunset(today, lat, lon, zone),
             SolarCalculator.sunset(today, lat, lon, zone, SolarCalculator.ZENITH_TZEIT),
-            candleLightingMinutes
+            candleLightingMinutes,
         )
     }
 
@@ -204,12 +261,13 @@ object JewishCalendar {
         restTomorrow: Boolean,
         sunset: Long?,
         tzeit: Long?,
-        candleLightingMinutes: Int
-    ): Boolean = when {
-        restToday && tzeit != null && now < tzeit -> true
-        restTomorrow && sunset != null && now >= sunset - candleLightingMinutes * 60_000L -> true
-        else -> false
-    }
+        candleLightingMinutes: Int,
+    ): Boolean =
+        when {
+            restToday && tzeit != null && now < tzeit -> true
+            restTomorrow && sunset != null && now >= sunset - candleLightingMinutes * 60_000L -> true
+            else -> false
+        }
 
     fun dayInfo(
         nowMillis: Long,
@@ -218,7 +276,7 @@ object JewishCalendar {
         lon: Double,
         locale: Locale,
         candleLightingMinutes: Int,
-        diaspora: Boolean = false
+        diaspora: Boolean = false,
     ): JewishDayInfo {
         val today = Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalDate()
         val tomorrow = today.plusDays(1)
@@ -231,10 +289,12 @@ object JewishCalendar {
 
         val restNow = restPeriod(nowMillis, restToday, restTomorrow, sunset, tzeit, candleLightingMinutes)
 
-        val next = (1..90).asSequence()
-            .map { offset -> offset to holidaysOn(today.plusDays(offset.toLong()), diaspora) }
-            .firstOrNull { it.second.isNotEmpty() }
-            ?.let { (offset, list) -> list.first() to offset }
+        val next =
+            (1..90)
+                .asSequence()
+                .map { offset -> offset to holidaysOn(today.plusDays(offset.toLong()), diaspora) }
+                .firstOrNull { it.second.isNotEmpty() }
+                ?.let { (offset, list) -> list.first() to offset }
 
         return JewishDayInfo(
             hebrewDate = format(today, locale),
@@ -242,7 +302,7 @@ object JewishCalendar {
             nextHoliday = next,
             candleLighting = candle,
             havdalah = havdalah,
-            isRestPeriodNow = restNow
+            isRestPeriodNow = restNow,
         )
     }
 }

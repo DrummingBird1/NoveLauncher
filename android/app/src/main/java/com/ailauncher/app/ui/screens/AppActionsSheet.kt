@@ -55,17 +55,22 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppActionsSheet(target: RankedApp, viewModel: LauncherViewModel, onDismiss: () -> Unit) {
+fun AppActionsSheet(
+    target: RankedApp,
+    viewModel: LauncherViewModel,
+    onDismiss: () -> Unit,
+) {
     val context = LocalContext.current
     val appLauncher = LocalAppLauncher.current
     val app = target.app
 
     val shortcuts by produceState(emptyList<Pair<ShortcutInfo, ImageBitmap?>>(), app.key) {
-        value = withContext(Dispatchers.IO) {
-            appLauncher.shortcutsFor(app).map { s ->
-                s to appLauncher.shortcutIcon(s)?.let { d -> runCatching { d.toBitmap(96, 96).asImageBitmap() }.getOrNull() }
+        value =
+            withContext(Dispatchers.IO) {
+                appLauncher.shortcutsFor(app).map { s ->
+                    s to appLauncher.shortcutIcon(s)?.let { d -> runCatching { d.toBitmap(96, 96).asImageBitmap() }.getOrNull() }
+                }
             }
-        }
     }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -79,13 +84,13 @@ fun AppActionsSheet(target: RankedApp, viewModel: LauncherViewModel, onDismiss: 
             if (shortcuts.isNotEmpty()) {
                 shortcuts.forEach { (shortcut, icon) ->
                     Row(
-                        Modifier.fillMaxWidth()
+                        Modifier
+                            .fillMaxWidth()
                             .clickable {
                                 context.findLauncherActivity()?.launchShortcutWithLockCheck(app, shortcut)
                                 onDismiss()
-                            }
-                            .padding(vertical = 10.dp, horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            }.padding(vertical = 10.dp, horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (icon != null) {
                             Image(icon, null, Modifier.size(24.dp).clip(RoundedCornerShape(6.dp)))
@@ -95,7 +100,7 @@ fun AppActionsSheet(target: RankedApp, viewModel: LauncherViewModel, onDismiss: 
                         Spacer(Modifier.width(16.dp))
                         Text(
                             (shortcut.shortLabel ?: shortcut.longLabel ?: "").toString(),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -103,22 +108,27 @@ fun AppActionsSheet(target: RankedApp, viewModel: LauncherViewModel, onDismiss: 
             }
 
             ActionRow(Icons.Rounded.VisibilityOff, stringResource(R.string.action_hide_app)) {
-                viewModel.hideApp(app.packageName); onDismiss()
+                viewModel.hideApp(app.packageName)
+                onDismiss()
             }
             if (app.profile != AppProfile.PRIVATE) {
                 ActionRow(Icons.Rounded.Shield, stringResource(R.string.action_move_private)) {
-                    viewModel.moveToPrivateFolder(app.packageName); onDismiss()
+                    viewModel.moveToPrivateFolder(app.packageName)
+                    onDismiss()
                 }
             }
             ActionRow(Icons.Rounded.Lock, stringResource(R.string.action_toggle_lock)) {
-                viewModel.toggleAppLock(app.packageName); onDismiss()
+                viewModel.toggleAppLock(app.packageName)
+                onDismiss()
             }
             ActionRow(Icons.Rounded.Info, stringResource(R.string.action_app_info)) {
-                appLauncher.openAppInfo(app); onDismiss()
+                appLauncher.openAppInfo(app)
+                onDismiss()
             }
             if (!app.isSystemApp && app.profile == AppProfile.PERSONAL) {
                 ActionRow(Icons.Rounded.Delete, stringResource(R.string.action_uninstall)) {
-                    appLauncher.requestUninstall(app); onDismiss()
+                    appLauncher.requestUninstall(app)
+                    onDismiss()
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -126,18 +136,23 @@ fun AppActionsSheet(target: RankedApp, viewModel: LauncherViewModel, onDismiss: 
     }
 }
 
-private fun profileLabel(profile: AppProfile): Int? = when (profile) {
-    AppProfile.WORK -> R.string.profile_work_app
-    AppProfile.PRIVATE -> R.string.profile_private_app
-    AppProfile.CLONE -> R.string.profile_clone_app
-    AppProfile.PERSONAL -> null
-}
+private fun profileLabel(profile: AppProfile): Int? =
+    when (profile) {
+        AppProfile.WORK -> R.string.profile_work_app
+        AppProfile.PRIVATE -> R.string.profile_private_app
+        AppProfile.CLONE -> R.string.profile_clone_app
+        AppProfile.PERSONAL -> null
+    }
 
 @Composable
-private fun ActionRow(icon: ImageVector, label: String, onClick: () -> Unit) {
+private fun ActionRow(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp, horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(16.dp))

@@ -4,13 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.StringRes
 import com.ailauncher.app.R
+import com.ailauncher.app.data.location.CoarseLocation
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.ailauncher.app.data.location.CoarseLocation
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.net.HttpURLConnection
@@ -33,88 +32,106 @@ data class WeatherData(
     val weatherCode: Int,
     val windSpeed: Double,
     val isDay: Int,
-    @StringRes val descriptionRes: Int
+    @StringRes val descriptionRes: Int,
 ) {
     val icon: String get() = weatherIconFromCode(weatherCode, isDay == 1)
 
     companion object {
         @StringRes
-        fun descriptionResFromCode(code: Int): Int = when (code) {
-            0 -> R.string.weather_clear
-            1, 2, 3 -> R.string.weather_partly_cloudy
-            45, 48 -> R.string.weather_fog
-            in 51..57 -> R.string.weather_drizzle
-            in 61..67 -> R.string.weather_rain
-            in 71..77, 85, 86 -> R.string.weather_snow
-            in 80..82 -> R.string.weather_showers
-            in 95..99 -> R.string.weather_storm
-            else -> R.string.weather_unknown
-        }
+        fun descriptionResFromCode(code: Int): Int =
+            when (code) {
+                0 -> R.string.weather_clear
+                1, 2, 3 -> R.string.weather_partly_cloudy
+                45, 48 -> R.string.weather_fog
+                in 51..57 -> R.string.weather_drizzle
+                in 61..67 -> R.string.weather_rain
+                in 71..77, 85, 86 -> R.string.weather_snow
+                in 80..82 -> R.string.weather_showers
+                in 95..99 -> R.string.weather_storm
+                else -> R.string.weather_unknown
+            }
 
-        fun weatherIconFromCode(code: Int, isDay: Boolean): String = when (code) {
-            0 -> if (isDay) "☀️" else "🌙"
-            1, 2 -> if (isDay) "⛅" else "☁️"
-            3 -> "☁️"
-            45, 48 -> "🌫️"
-            in 51..57 -> "🌦️"
-            in 61..67 -> "🌧️"
-            in 71..77, 85, 86 -> "❄️"
-            in 80..82 -> "⛈️"
-            in 95..99 -> "⛈️"
-            else -> "🌡️"
-        }
+        fun weatherIconFromCode(
+            code: Int,
+            isDay: Boolean,
+        ): String =
+            when (code) {
+                0 -> if (isDay) "☀️" else "🌙"
+                1, 2 -> if (isDay) "⛅" else "☁️"
+                3 -> "☁️"
+                45, 48 -> "🌫️"
+                in 51..57 -> "🌦️"
+                in 61..67 -> "🌧️"
+                in 71..77, 85, 86 -> "❄️"
+                in 80..82 -> "⛈️"
+                in 95..99 -> "⛈️"
+                else -> "🌡️"
+            }
     }
 }
 
 @Singleton
-class WeatherService @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-    // v9.3: test-only override point (production/Hilt never sets this, so it
-    // always stays the real API) — lets WeatherServiceTest redirect requests to
-    // a MockWebServer instead of the network. Written at most once, before any
-    // fetchWeather() call, so there's no concurrent-mutation concern despite
-    // being a var on a @Singleton.
-    internal var baseUrl: String = "https://api.open-meteo.com"
+class WeatherService
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        // v9.3: test-only override point (production/Hilt never sets this, so it
+        // always stays the real API) — lets WeatherServiceTest redirect requests to
+        // a MockWebServer instead of the network. Written at most once, before any
+        // fetchWeather() call, so there's no concurrent-mutation concern despite
+        // being a var on a @Singleton.
+        internal var baseUrl: String = "https://api.open-meteo.com"
 
-    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
-
-    @SuppressLint("MissingPermission")
-    suspend fun fetchWeather(lat: Double? = null, lon: Double? = null): WeatherData? = withContext(Dispatchers.IO) {
-        val coords = if (lat != null && lon != null) lat to lon else CoarseLocation.lastKnownOrDefault(context)
-
-        try {
-            val urlStr = "$baseUrl/v1/forecast?" +
-                    "latitude=${coords.first}&longitude=${coords.second}" +
-                    "&current=temperature_2m,weather_code,wind_speed_10m,is_day" +
-                    "&timezone=auto"
-
-            val conn = URL(urlStr).openConnection() as HttpURLConnection
-            try {
-                conn.requestMethod = "GET"
-                conn.connectTimeout = 5000
-                conn.readTimeout = 5000
-                if (conn.responseCode !in 200..299) return@withContext null
-
-                val body = conn.inputStream.bufferedReader().use { it.readText() }
-                val root = json.parseToJsonElement(body).jsonObject
-                val current = root["current"]?.jsonObject ?: return@withContext null
-
-                val temp = current["temperature_2m"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: return@withContext null
-                val code = current["weather_code"]?.jsonPrimitive?.content?.toIntOrNull() ?: 0
-                val wind = current["wind_speed_10m"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0
-                val isDay = current["is_day"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1
-
-                WeatherData(
-                    temperature = temp,
-                    weatherCode = code,
-                    windSpeed = wind,
-                    isDay = isDay,
-                    descriptionRes = WeatherData.descriptionResFromCode(code)
-                )
-            } finally {
-                conn.disconnect()
+        private val json =
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
             }
-        } catch (_: Exception) { null }
+
+        @SuppressLint("MissingPermission")
+        suspend fun fetchWeather(
+            lat: Double? = null,
+            lon: Double? = null,
+        ): WeatherData? =
+            withContext(Dispatchers.IO) {
+                val coords = if (lat != null && lon != null) lat to lon else CoarseLocation.lastKnownOrDefault(context)
+
+                try {
+                    val urlStr =
+                        "$baseUrl/v1/forecast?" +
+                            "latitude=${coords.first}&longitude=${coords.second}" +
+                            "&current=temperature_2m,weather_code,wind_speed_10m,is_day" +
+                            "&timezone=auto"
+
+                    val conn = URL(urlStr).openConnection() as HttpURLConnection
+                    try {
+                        conn.requestMethod = "GET"
+                        conn.connectTimeout = 5000
+                        conn.readTimeout = 5000
+                        if (conn.responseCode !in 200..299) return@withContext null
+
+                        val body = conn.inputStream.bufferedReader().use { it.readText() }
+                        val root = json.parseToJsonElement(body).jsonObject
+                        val current = root["current"]?.jsonObject ?: return@withContext null
+
+                        val temp = current["temperature_2m"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: return@withContext null
+                        val code = current["weather_code"]?.jsonPrimitive?.content?.toIntOrNull() ?: 0
+                        val wind = current["wind_speed_10m"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0
+                        val isDay = current["is_day"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1
+
+                        WeatherData(
+                            temperature = temp,
+                            weatherCode = code,
+                            windSpeed = wind,
+                            isDay = isDay,
+                            descriptionRes = WeatherData.descriptionResFromCode(code),
+                        )
+                    } finally {
+                        conn.disconnect()
+                    }
+                } catch (_: Exception) {
+                    null
+                }
+            }
     }
-}

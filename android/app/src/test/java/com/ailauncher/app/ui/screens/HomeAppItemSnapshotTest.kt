@@ -24,26 +24,29 @@ import org.junit.Test
  * after an intentional visual change, `verifyPaparazziDebug` catches accidental ones.
  */
 class HomeAppItemSnapshotTest {
-
     @get:Rule
     val paparazzi = Paparazzi(deviceConfig = DeviceConfig.PIXEL_5)
 
-    private fun rankedApp(label: String, notificationCount: Int = 0) = RankedApp(
-        app = AppInfo(
-            packageName = "com.example.$label",
-            label = label,
-            icon = ColorDrawable(Color.parseColor("#7C7CFF")),
-            category = AppCategory.UTILITIES,
-            isSystemApp = false,
-            installTime = 0L,
-            lastUpdateTime = 0L
-        ),
+    private fun rankedApp(
+        label: String,
+        notificationCount: Int = 0,
+    ) = RankedApp(
+        app =
+            AppInfo(
+                packageName = "com.example.$label",
+                label = label,
+                icon = ColorDrawable(Color.parseColor("#7C7CFF")),
+                category = AppCategory.UTILITIES,
+                isSystemApp = false,
+                installTime = 0L,
+                lastUpdateTime = 0L,
+            ),
         weightScore = 0.5f,
         usageMinutesToday = 0L,
         launchCountToday = 0,
         lastUsedTimestamp = 0L,
         smartFolder = AppCategory.UTILITIES,
-        notificationCount = notificationCount
+        notificationCount = notificationCount,
     )
 
     @Test
@@ -57,7 +60,7 @@ class HomeAppItemSnapshotTest {
                         fontSizeSp = 12,
                         iconShape = IconShape.ROUNDED_SQUARE,
                         font = LauncherFont.SYSTEM_DEFAULT,
-                        onClick = {}
+                        onClick = {},
                     )
                 }
             }
@@ -75,7 +78,7 @@ class HomeAppItemSnapshotTest {
                         fontSizeSp = 12,
                         iconShape = IconShape.CIRCLE,
                         font = LauncherFont.SYSTEM_DEFAULT,
-                        onClick = {}
+                        onClick = {},
                     )
                 }
             }

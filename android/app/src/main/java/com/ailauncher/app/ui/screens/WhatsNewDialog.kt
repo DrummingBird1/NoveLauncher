@@ -37,6 +37,6 @@ fun WhatsNewDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok)) }
-        }
+        },
     )
 }

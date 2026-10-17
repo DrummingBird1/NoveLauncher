@@ -22,7 +22,9 @@ object CoarseLocation {
     fun lastKnown(context: Context): Pair<Double, Double>? {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
-        ) return null
+        ) {
+            return null
+        }
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
         val providers = listOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER, LocationManager.PASSIVE_PROVIDER)
         for (p in providers) {
@@ -31,11 +33,11 @@ object CoarseLocation {
                 return loc.latitude to loc.longitude
             } catch (_: SecurityException) {
                 return null
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
         return null
     }
 
-    fun lastKnownOrDefault(context: Context): Pair<Double, Double> =
-        lastKnown(context) ?: (DEFAULT_LAT to DEFAULT_LON)
+    fun lastKnownOrDefault(context: Context): Pair<Double, Double> = lastKnown(context) ?: (DEFAULT_LAT to DEFAULT_LON)
 }

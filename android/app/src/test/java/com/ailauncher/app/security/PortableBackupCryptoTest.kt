@@ -7,7 +7,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PortableBackupCryptoTest {
-
     private val crypto = PortableBackupCrypto()
 
     @Test fun `round-trips plaintext through the same password`() {

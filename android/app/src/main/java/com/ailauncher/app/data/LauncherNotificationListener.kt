@@ -23,7 +23,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class LauncherNotificationListener : NotificationListenerService() {
-
     @Inject lateinit var notificationDao: NotificationDao
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -47,11 +46,13 @@ class LauncherNotificationListener : NotificationListenerService() {
         scope.launch {
             val existing = notificationDao.get(pkg)
             if (existing == null) {
-                notificationDao.upsert(NotificationEntity(
-                    packageName = pkg,
-                    unreadCount = 1,
-                    lastNotificationTime = System.currentTimeMillis()
-                ))
+                notificationDao.upsert(
+                    NotificationEntity(
+                        packageName = pkg,
+                        unreadCount = 1,
+                        lastNotificationTime = System.currentTimeMillis(),
+                    ),
+                )
             } else {
                 notificationDao.incrementUnread(pkg, System.currentTimeMillis())
             }
@@ -75,7 +76,12 @@ class LauncherNotificationListener : NotificationListenerService() {
     private fun reconcileActive() {
         scope.launch {
             try {
-                val active = try { activeNotifications } catch (_: Exception) { return@launch }
+                val active =
+                    try {
+                        activeNotifications
+                    } catch (_: Exception) {
+                        return@launch
+                    }
                 val counts = mutableMapOf<String, Int>()
                 for (sbn in active) {
                     if (sbn.isOngoing) continue
@@ -84,7 +90,8 @@ class LauncherNotificationListener : NotificationListenerService() {
                 }
                 val now = System.currentTimeMillis()
                 // Zero out anything currently tracked that no longer has notifications.
-                notificationDao.getAppsWithUnread()
+                notificationDao
+                    .getAppsWithUnread()
                     .filter { it !in counts }
                     .forEach { notificationDao.markOpened(it, now) }
                 // Update counts for currently active.
@@ -95,11 +102,12 @@ class LauncherNotificationListener : NotificationListenerService() {
                             packageName = pkg,
                             unreadCount = count,
                             lastNotificationTime = existing?.lastNotificationTime ?: now,
-                            lastOpenedTime = existing?.lastOpenedTime ?: 0L
-                        )
+                            lastOpenedTime = existing?.lastOpenedTime ?: 0L,
+                        ),
                     )
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -108,7 +116,10 @@ class LauncherNotificationListener : NotificationListenerService() {
      * Resets the unread count for that package.
      */
     companion object {
-        suspend fun markAppOpened(dao: NotificationDao, packageName: String) {
+        suspend fun markAppOpened(
+            dao: NotificationDao,
+            packageName: String,
+        ) {
             dao.markOpened(packageName, System.currentTimeMillis())
         }
     }

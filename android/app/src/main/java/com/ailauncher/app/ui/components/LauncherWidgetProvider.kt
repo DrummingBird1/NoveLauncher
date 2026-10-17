@@ -9,16 +9,18 @@ import android.content.Context
  * This enables third-party widgets to be placed on our launcher.
  */
 class LauncherWidgetProvider : AppWidgetProvider() {
-
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        appWidgetIds: IntArray,
     ) {
         // Widget updates handled by the host (LauncherActivity)
     }
 
-    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+    override fun onDeleted(
+        context: Context,
+        appWidgetIds: IntArray,
+    ) {
         super.onDeleted(context, appWidgetIds)
     }
 

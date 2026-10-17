@@ -14,13 +14,19 @@ import com.ailauncher.app.domain.models.AppInfo
  * v10: moved out of HomeScreen.kt; the [AppInfo] overload starts the exact
  * activity in the exact profile (work, Private Space) via LauncherApps.
  */
-fun launchApp(context: Context, app: AppInfo) {
+fun launchApp(
+    context: Context,
+    app: AppInfo,
+) {
     val activity = context.findLauncherActivity()
     if (activity != null) activity.launchAppWithLockCheck(app) else launchDirect(context, app.packageName)
 }
 
 /** Personal-profile launch by package name (Personal Zone, news reader app). */
-fun launchApp(context: Context, packageName: String) {
+fun launchApp(
+    context: Context,
+    packageName: String,
+) {
     val activity = context.findLauncherActivity()
     if (activity != null) activity.launchPackageWithLockCheck(packageName) else launchDirect(context, packageName)
 }
@@ -28,7 +34,10 @@ fun launchApp(context: Context, packageName: String) {
 fun Context.findLauncherActivity(): LauncherActivity? =
     generateSequence(this) { (it as? ContextWrapper)?.baseContext }.filterIsInstance<LauncherActivity>().firstOrNull()
 
-private fun launchDirect(context: Context, packageName: String) {
+private fun launchDirect(
+    context: Context,
+    packageName: String,
+) {
     context.packageManager.getLaunchIntentForPackage(packageName)?.let {
         it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(it)

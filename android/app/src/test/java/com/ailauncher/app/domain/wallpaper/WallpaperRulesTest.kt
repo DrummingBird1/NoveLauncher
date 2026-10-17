@@ -10,13 +10,17 @@ import org.junit.Test
 import java.util.Calendar
 
 class WallpaperRulesTest {
-
     private val a = WallpaperEntry(id = "a")
     private val b = WallpaperEntry(id = "b")
     private val c = WallpaperEntry(id = "c")
 
-    private fun pick(settings: WallpaperSettings, page: String = "home", hour: Int = 12, dow: Int = Calendar.MONDAY, doy: Int = 1) =
-        WallpaperRules.select(settings, page, hour, dow, doy)?.id
+    private fun pick(
+        settings: WallpaperSettings,
+        page: String = "home",
+        hour: Int = 12,
+        dow: Int = Calendar.MONDAY,
+        doy: Int = 1,
+    ) = WallpaperRules.select(settings, page, hour, dow, doy)?.id
 
     @Test
     fun `nothing to draw without entries or in live mode`() {
@@ -72,12 +76,29 @@ class WallpaperRulesTest {
 
     @Test
     fun `default adjustments produce the identity color matrix`() {
-        val identity = floatArrayOf(
-            1f, 0f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f, 0f,
-            0f, 0f, 1f, 0f, 0f,
-            0f, 0f, 0f, 1f, 0f
-        )
+        val identity =
+            floatArrayOf(
+                1f,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                1f,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                1f,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                1f,
+                0f,
+            )
         assertArrayEquals(identity, WallpaperRules.colorMatrix(WallpaperEntry()), 0.0001f)
     }
 

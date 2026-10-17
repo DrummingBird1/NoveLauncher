@@ -24,11 +24,16 @@ import java.util.Locale
 class BackupManager(
     private val context: Context,
     private val settingsRepo: SettingsRepository,
-    private val drive: DriveClient = DriveClient()
+    private val drive: DriveClient = DriveClient(),
 ) {
     sealed class BackupResult {
-        data class Success(val path: String) : BackupResult()
-        data class Error(val message: String) : BackupResult()
+        data class Success(
+            val path: String,
+        ) : BackupResult()
+
+        data class Error(
+            val message: String,
+        ) : BackupResult()
     }
 
     /**
@@ -39,38 +44,65 @@ class BackupManager(
         val displayName: String,
         val timestamp: Long,
         internal val file: File? = null,
-        internal val uri: Uri? = null
+        internal val uri: Uri? = null,
     )
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
 
     /** [password] blank = plain-JSON export (default); non-blank = AES-256-GCM
      *  envelope only that password can open (see PortableBackupCrypto). */
-    suspend fun backup(destination: BackupDestination, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
-        try {
-            val jsonData = if (password.isNotBlank()) settingsRepo.exportAllSettingsEncrypted(password) else settingsRepo.exportAllSettings()
-            val fileName = "novelauncher_backup_${dateFormat.format(Date())}.json"
-            val backupSettings = settingsRepo.backupFlow.first()
-            when (destination) {
-                BackupDestination.LOCAL -> backupToLocal(fileName, jsonData).also {
-                    if (it is BackupResult.Success) pruneLocalBackups(backupSettings.maxLocalBackupsToKeep)
+    suspend fun backup(
+        destination: BackupDestination,
+        password: String = "",
+    ): BackupResult =
+        withContext(Dispatchers.IO) {
+            try {
+                val jsonData =
+                    if (password.isNotBlank()) {
+                        settingsRepo.exportAllSettingsEncrypted(
+                            password,
+                        )
+                    } else {
+                        settingsRepo.exportAllSettings()
+                    }
+                val fileName = "novelauncher_backup_${dateFormat.format(Date())}.json"
+                val backupSettings = settingsRepo.backupFlow.first()
+                when (destination) {
+                    BackupDestination.LOCAL -> {
+                        backupToLocal(fileName, jsonData).also {
+                            if (it is BackupResult.Success) pruneLocalBackups(backupSettings.maxLocalBackupsToKeep)
+                        }
+                    }
+
+                    BackupDestination.GOOGLE_DRIVE -> {
+                        backupToGoogleDrive(fileName, jsonData)
+                    }
+
+                    // OneDrive: graph.microsoft.com path-upload requires a Microsoft OAuth flow
+                    // we haven't wired up yet. Returns a clear error rather than silently
+                    // failing on whatever happens to be in the legacy oauth_token slot.
+                    BackupDestination.ONEDRIVE -> {
+                        BackupResult.Error(
+                            context.getString(R.string.backup_error_onedrive),
+                        )
+                    }
+
+                    // Box: upload.box.com/api/2.0/files/content requires a multipart upload
+                    // with a parent_id and a Box OAuth flow. Disabled until properly implemented.
+                    BackupDestination.BOX -> {
+                        BackupResult.Error(
+                            context.getString(R.string.backup_error_box),
+                        )
+                    }
+
+                    BackupDestination.NAS -> {
+                        backupToNas(fileName, jsonData, backupSettings)
+                    }
                 }
-                BackupDestination.GOOGLE_DRIVE -> backupToGoogleDrive(fileName, jsonData)
-                // OneDrive: graph.microsoft.com path-upload requires a Microsoft OAuth flow
-                // we haven't wired up yet. Returns a clear error rather than silently
-                // failing on whatever happens to be in the legacy oauth_token slot.
-                BackupDestination.ONEDRIVE -> BackupResult.Error(
-                    context.getString(R.string.backup_error_onedrive)
-                )
-                // Box: upload.box.com/api/2.0/files/content requires a multipart upload
-                // with a parent_id and a Box OAuth flow. Disabled until properly implemented.
-                BackupDestination.BOX -> BackupResult.Error(
-                    context.getString(R.string.backup_error_box)
-                )
-                BackupDestination.NAS -> backupToNas(fileName, jsonData, backupSettings)
+            } catch (e: Exception) {
+                BackupResult.Error(e.message ?: "Unknown error")
             }
-        } catch (e: Exception) { BackupResult.Error(e.message ?: "Unknown error") }
-    }
+        }
 
     /** Deletes the oldest local backups beyond [keep] (0 = unlimited, no-op).
      *  Only LOCAL is pruned — Drive/NAS pruning would need a list+delete API
@@ -85,46 +117,80 @@ class BackupManager(
                     old.uri != null -> context.contentResolver.delete(old.uri, null, null)
                     old.file != null -> old.file.delete()
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
     /** [password] is only used if the file turns out to be a [PortableBackupCrypto]
      *  envelope — a plain-JSON backup restores fine with an empty password. */
-    suspend fun restoreFromLocal(backup: BackupFile, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
-        try {
-            val text = when {
-                backup.uri != null -> context.contentResolver.openInputStream(backup.uri)
-                    ?.bufferedReader()?.use { it.readText() }
-                    ?: return@withContext BackupResult.Error("Could not open backup")
-                backup.file != null -> {
-                    if (!backup.file.exists()) return@withContext BackupResult.Error("File not found")
-                    backup.file.readText()
-                }
-                else -> return@withContext BackupResult.Error("Invalid backup reference")
+    suspend fun restoreFromLocal(
+        backup: BackupFile,
+        password: String = "",
+    ): BackupResult =
+        withContext(Dispatchers.IO) {
+            try {
+                val text =
+                    when {
+                        backup.uri != null -> {
+                            context.contentResolver
+                                .openInputStream(backup.uri)
+                                ?.bufferedReader()
+                                ?.use { it.readText() }
+                                ?: return@withContext BackupResult.Error("Could not open backup")
+                        }
+
+                        backup.file != null -> {
+                            if (!backup.file.exists()) return@withContext BackupResult.Error("File not found")
+                            backup.file.readText()
+                        }
+
+                        else -> {
+                            return@withContext BackupResult.Error("Invalid backup reference")
+                        }
+                    }
+                val success = settingsRepo.importAllSettingsEncrypted(text, password)
+                if (success) BackupResult.Success(backup.displayName) else BackupResult.Error("Invalid format")
+            } catch (e: Exception) {
+                BackupResult.Error(e.message ?: "Restore failed")
             }
-            val success = settingsRepo.importAllSettingsEncrypted(text, password)
-            if (success) BackupResult.Success(backup.displayName) else BackupResult.Error("Invalid format")
-        } catch (e: Exception) { BackupResult.Error(e.message ?: "Restore failed") }
-    }
+        }
 
-    suspend fun restoreFromJson(json: String, password: String = ""): BackupResult = withContext(Dispatchers.IO) {
-        if (settingsRepo.importAllSettingsEncrypted(json, password)) BackupResult.Success("OK") else BackupResult.Error("Invalid format")
-    }
+    suspend fun restoreFromJson(
+        json: String,
+        password: String = "",
+    ): BackupResult =
+        withContext(Dispatchers.IO) {
+            if (settingsRepo.importAllSettingsEncrypted(
+                    json,
+                    password,
+                )
+            ) {
+                BackupResult.Success("OK")
+            } else {
+                BackupResult.Error("Invalid format")
+            }
+        }
 
-    private fun backupToLocal(fileName: String, data: String): BackupResult {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    private fun backupToLocal(
+        fileName: String,
+        data: String,
+    ): BackupResult =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             backupToMediaStore(fileName, data)
         } else {
             backupToLegacyDownloads(fileName, data)
         }
-    }
 
     @Suppress("DEPRECATION")
-    private fun backupToLegacyDownloads(fileName: String, data: String): BackupResult {
+    private fun backupToLegacyDownloads(
+        fileName: String,
+        data: String,
+    ): BackupResult {
         val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "NoveLauncher")
         if (!dir.exists()) dir.mkdirs()
-        val file = File(dir, fileName); file.writeText(data)
+        val file = File(dir, fileName)
+        file.writeText(data)
         return BackupResult.Success(file.absolutePath)
     }
 
@@ -140,16 +206,21 @@ class BackupManager(
      * error and (with abortOnError) fails the build.
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun backupToMediaStore(fileName: String, data: String): BackupResult {
-        val values = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-            put(MediaStore.Downloads.MIME_TYPE, "application/json")
-            put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/NoveLauncher")
-            put(MediaStore.Downloads.IS_PENDING, 1)
-        }
+    private fun backupToMediaStore(
+        fileName: String,
+        data: String,
+    ): BackupResult {
+        val values =
+            ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, "application/json")
+                put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/NoveLauncher")
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
         val resolver = context.contentResolver
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-            ?: return BackupResult.Error("Could not create file in Downloads")
+        val uri =
+            resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                ?: return BackupResult.Error("Could not create file in Downloads")
         return try {
             resolver.openOutputStream(uri)?.use { it.write(data.toByteArray()) }
                 ?: return BackupResult.Error("Could not open output stream")
@@ -158,7 +229,10 @@ class BackupManager(
             resolver.update(uri, values, null, null)
             BackupResult.Success("Downloads/NoveLauncher/$fileName")
         } catch (e: Exception) {
-            try { resolver.delete(uri, null, null) } catch (_: Exception) {}
+            try {
+                resolver.delete(uri, null, null)
+            } catch (_: Exception) {
+            }
             BackupResult.Error("Local backup: ${e.message}")
         }
     }
@@ -170,7 +244,10 @@ class BackupManager(
      * tokens are short-lived and AuthorizationClient caches/refreshes them itself.
      * The file goes into the app's "NoveLauncher" folder under its real name.
      */
-    private fun backupToGoogleDrive(fileName: String, data: String): BackupResult =
+    private fun backupToGoogleDrive(
+        fileName: String,
+        data: String,
+    ): BackupResult =
         withDriveToken({ BackupResult.Error(it) }) { token ->
             val folderId = drive.findOrCreateFolder(token)
             val file = drive.upload(token, fileName, data, folderId)
@@ -179,20 +256,27 @@ class BackupManager(
 
     /** Result of a Drive call made outside [backup] (listing / downloading for restore). */
     sealed class DriveResult<out T> {
-        data class Success<T>(val value: T) : DriveResult<T>()
-        data class Error(val message: String) : DriveResult<Nothing>()
+        data class Success<T>(
+            val value: T,
+        ) : DriveResult<T>()
+
+        data class Error(
+            val message: String,
+        ) : DriveResult<Nothing>()
     }
 
     /** The app's backups in Google Drive, newest first. */
-    suspend fun listDriveBackups(): DriveResult<List<DriveClient.DriveFile>> = withContext(Dispatchers.IO) {
-        withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.listBackups(token)) }
-    }
+    suspend fun listDriveBackups(): DriveResult<List<DriveClient.DriveFile>> =
+        withContext(Dispatchers.IO) {
+            withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.listBackups(token)) }
+        }
 
     /** Raw content of a Drive backup — plain JSON or a PortableBackupCrypto
      *  envelope — to hand to [restoreFromJson]. */
-    suspend fun downloadDriveBackup(file: DriveClient.DriveFile): DriveResult<String> = withContext(Dispatchers.IO) {
-        withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.download(token, file.id)) }
-    }
+    suspend fun downloadDriveBackup(file: DriveClient.DriveFile): DriveResult<String> =
+        withContext(Dispatchers.IO) {
+            withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.download(token, file.id)) }
+        }
 
     /**
      * Runs [block] with a fresh Drive access token. No token (never connected, or
@@ -200,18 +284,26 @@ class BackupManager(
      * cache so the next attempt re-fetches) and any other failure become [onError]
      * with a message for the UI.
      */
-    private inline fun <T> withDriveToken(onError: (String) -> T, block: (token: String) -> T): T {
-        val token = DriveAuth.accessTokenBlocking(context)
-            ?: return onError(context.getString(R.string.backup_error_not_connected))
+    private inline fun <T> withDriveToken(
+        onError: (String) -> T,
+        block: (token: String) -> T,
+    ): T {
+        val token =
+            DriveAuth.accessTokenBlocking(context)
+                ?: return onError(context.getString(R.string.backup_error_not_connected))
         return try {
             block(token)
         } catch (e: DriveClient.HttpException) {
             if (e.code == 401) {
                 try {
                     DriveAuth.client(context).clearToken(
-                        com.google.android.gms.auth.api.identity.ClearTokenRequest.builder().setToken(token).build()
+                        com.google.android.gms.auth.api.identity.ClearTokenRequest
+                            .builder()
+                            .setToken(token)
+                            .build(),
                     )
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
                 onError(context.getString(R.string.backup_error_token_expired))
             } else {
                 onError("Google Drive error: ${e.message}")
@@ -239,16 +331,24 @@ class BackupManager(
         return "Basic " + android.util.Base64.encodeToString(creds.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
     }
 
-    private fun putNasFile(fileUrl: String, data: String, backup: com.ailauncher.app.domain.models.BackupSettings): Int {
+    private fun putNasFile(
+        fileUrl: String,
+        data: String,
+        backup: com.ailauncher.app.domain.models.BackupSettings,
+    ): Int {
         val conn = URL(fileUrl).openConnection() as HttpURLConnection
         return try {
             conn.requestMethod = "PUT"
             conn.setRequestProperty("Content-Type", "application/json")
             nasAuthHeader(backup)?.let { conn.setRequestProperty("Authorization", it) }
-            conn.doOutput = true; conn.connectTimeout = 10000; conn.readTimeout = 10000
+            conn.doOutput = true
+            conn.connectTimeout = 10000
+            conn.readTimeout = 10000
             OutputStreamWriter(conn.outputStream).use { it.write(data) }
             conn.responseCode
-        } finally { conn.disconnect() }
+        } finally {
+            conn.disconnect()
+        }
     }
 
     /**
@@ -260,7 +360,10 @@ class BackupManager(
      * blocked on a given Android version, we silently no-op and the caller's
      * retried PUT just fails with the same error as before this existed.
      */
-    private fun tryCreateNasDirectory(dirUrl: String, backup: com.ailauncher.app.domain.models.BackupSettings) {
+    private fun tryCreateNasDirectory(
+        dirUrl: String,
+        backup: com.ailauncher.app.domain.models.BackupSettings,
+    ) {
         val conn = URL(dirUrl).openConnection() as HttpURLConnection
         try {
             try {
@@ -271,15 +374,22 @@ class BackupManager(
                 methodField.set(conn, "MKCOL")
             }
             nasAuthHeader(backup)?.let { conn.setRequestProperty("Authorization", it) }
-            conn.connectTimeout = 10000; conn.readTimeout = 10000
+            conn.connectTimeout = 10000
+            conn.readTimeout = 10000
             conn.responseCode // triggers the request; response otherwise unused
         } catch (_: Exception) {
             // Nothing more to do — the retried PUT below will surface whatever
             // the real problem is if this genuinely didn't fix it.
-        } finally { conn.disconnect() }
+        } finally {
+            conn.disconnect()
+        }
     }
 
-    private fun backupToNas(fileName: String, data: String, backup: com.ailauncher.app.domain.models.BackupSettings): BackupResult {
+    private fun backupToNas(
+        fileName: String,
+        data: String,
+        backup: com.ailauncher.app.domain.models.BackupSettings,
+    ): BackupResult {
         val addr = backup.nasAddress.trim()
         if (addr.isEmpty()) return BackupResult.Error(context.getString(R.string.backup_error_nas_not_configured))
         if (!addr.startsWith("https://", ignoreCase = true)) {
@@ -294,25 +404,28 @@ class BackupManager(
                 tryCreateNasDirectory(dirUrl, backup)
                 code = putNasFile(fileUrl, data, backup)
             }
-            if (code in 200..299) BackupResult.Success("NAS: $addr")
-            else BackupResult.Error(context.getString(R.string.backup_error_nas_http_code, code))
+            if (code in 200..299) {
+                BackupResult.Success("NAS: $addr")
+            } else {
+                BackupResult.Error(context.getString(R.string.backup_error_nas_http_code, code))
+            }
         } catch (e: Exception) {
             BackupResult.Error(context.getString(R.string.backup_error_nas_io, e.message ?: ""))
         }
     }
 
-    fun listLocalBackups(): List<BackupFile> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    fun listLocalBackups(): List<BackupFile> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             listMediaStoreBackups()
         } else {
             listLegacyBackups()
         }
-    }
 
     @Suppress("DEPRECATION")
     private fun listLegacyBackups(): List<BackupFile> {
         val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "NoveLauncher")
-        return dir.listFiles { f -> f.extension == "json" }
+        return dir
+            .listFiles { f -> f.extension == "json" }
             ?.sortedByDescending { it.lastModified() }
             ?.map { BackupFile(it.name, it.lastModified(), file = it) }
             ?: emptyList()
@@ -321,32 +434,40 @@ class BackupManager(
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun listMediaStoreBackups(): List<BackupFile> {
         val results = mutableListOf<BackupFile>()
-        val projection = arrayOf(
-            MediaStore.Downloads._ID,
-            MediaStore.Downloads.DISPLAY_NAME,
-            MediaStore.Downloads.DATE_MODIFIED
-        )
+        val projection =
+            arrayOf(
+                MediaStore.Downloads._ID,
+                MediaStore.Downloads.DISPLAY_NAME,
+                MediaStore.Downloads.DATE_MODIFIED,
+            )
         val selection = "${MediaStore.Downloads.RELATIVE_PATH} LIKE ? AND ${MediaStore.Downloads.MIME_TYPE} = ?"
         val args = arrayOf("${Environment.DIRECTORY_DOWNLOADS}/NoveLauncher/%", "application/json")
         try {
-            context.contentResolver.query(
-                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                projection, selection, args,
-                "${MediaStore.Downloads.DATE_MODIFIED} DESC"
-            )?.use { cursor ->
-                val idCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
-                val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME)
-                val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DATE_MODIFIED)
-                while (cursor.moveToNext()) {
-                    val id = cursor.getLong(idCol)
-                    val name = cursor.getString(nameCol)
-                    val date = cursor.getLong(dateCol) * 1000L
-                    val uri = MediaStore.Downloads.EXTERNAL_CONTENT_URI.buildUpon()
-                        .appendPath(id.toString()).build()
-                    results.add(BackupFile(name, date, uri = uri))
+            context.contentResolver
+                .query(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    projection,
+                    selection,
+                    args,
+                    "${MediaStore.Downloads.DATE_MODIFIED} DESC",
+                )?.use { cursor ->
+                    val idCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
+                    val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME)
+                    val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DATE_MODIFIED)
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(idCol)
+                        val name = cursor.getString(nameCol)
+                        val date = cursor.getLong(dateCol) * 1000L
+                        val uri =
+                            MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                                .buildUpon()
+                                .appendPath(id.toString())
+                                .build()
+                        results.add(BackupFile(name, date, uri = uri))
+                    }
                 }
-            }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         return results
     }
 

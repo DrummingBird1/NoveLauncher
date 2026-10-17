@@ -2,30 +2,56 @@ package com.ailauncher.app.ui.theme
 
 import android.app.Activity
 import android.content.ContextWrapper
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import android.graphics.Typeface
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontFamily
-import com.ailauncher.app.domain.models.*
+import androidx.core.view.WindowCompat
+import com.ailauncher.app.domain.models.AppearanceSettings
+import com.ailauncher.app.domain.models.LauncherFont
+import com.ailauncher.app.domain.models.ThemeMode
+import com.ailauncher.app.domain.models.ThemePreset
 
-fun parseHexColor(hex: String, fallback: Long = 0xFF7C7CFF): Color {
-    return try { Color(android.graphics.Color.parseColor(hex)) } catch (_: Exception) { Color(fallback) }
-}
+fun parseHexColor(
+    hex: String,
+    fallback: Long = 0xFF7C7CFF,
+): Color =
+    try {
+        Color(android.graphics.Color.parseColor(hex))
+    } catch (_: Exception) {
+        Color(fallback)
+    }
 
-fun launcherFontFamily(font: LauncherFont): FontFamily {
-    return when (font) {
-        LauncherFont.SYSTEM_DEFAULT -> FontFamily.Default
-        LauncherFont.MONOSPACE -> FontFamily.Monospace
-        LauncherFont.SERIF -> FontFamily.Serif
-        LauncherFont.CURSIVE -> FontFamily.Cursive
+fun launcherFontFamily(font: LauncherFont): FontFamily =
+    when (font) {
+        LauncherFont.SYSTEM_DEFAULT -> {
+            FontFamily.Default
+        }
+
+        LauncherFont.MONOSPACE -> {
+            FontFamily.Monospace
+        }
+
+        LauncherFont.SERIF -> {
+            FontFamily.Serif
+        }
+
+        LauncherFont.CURSIVE -> {
+            FontFamily.Cursive
+        }
+
         else -> {
             try {
                 FontFamily(Typeface.create(font.fontFamily, Typeface.NORMAL))
@@ -34,31 +60,33 @@ fun launcherFontFamily(font: LauncherFont): FontFamily {
             }
         }
     }
-}
 
 @Composable
 fun AILauncherTheme(
     appearance: AppearanceSettings = AppearanceSettings(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val isDark = when (appearance.themeMode) {
-        ThemeMode.DARK -> true
-        ThemeMode.LIGHT -> false
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-    }
+    val isDark =
+        when (appearance.themeMode) {
+            ThemeMode.DARK -> true
+            ThemeMode.LIGHT -> false
+            ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        }
 
     // Material You: pulled from the system wallpaper on API 31+. Only makes sense
     // when the user isn't already asking for a specific custom palette, and only
     // where the platform actually provides it.
-    val canUseDynamicColor = appearance.useDynamicColor && !appearance.useCustomColors &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val canUseDynamicColor =
+        appearance.useDynamicColor && !appearance.useCustomColors &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-    val colorScheme = if (canUseDynamicColor) {
-        val context = LocalContext.current
-        if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-    } else {
-        buildPresetColorScheme(appearance, isDark)
-    }
+    val colorScheme =
+        if (canUseDynamicColor) {
+            val context = LocalContext.current
+            if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        } else {
+            buildPresetColorScheme(appearance, isDark)
+        }
 
     // v10: status/navigation bar icons follow the *theme's* background, not the
     // system's light/dark setting. enableEdgeToEdge() alone picks icon colour from
@@ -68,8 +96,11 @@ fun AILauncherTheme(
     if (!view.isInEditMode) {
         val lightBackground = colorScheme.background.luminance() > 0.5f
         SideEffect {
-            val window = generateSequence(view.context) { (it as? ContextWrapper)?.baseContext }
-                .filterIsInstance<Activity>().firstOrNull()?.window ?: return@SideEffect
+            val window =
+                generateSequence(view.context) { (it as? ContextWrapper)?.baseContext }
+                    .filterIsInstance<Activity>()
+                    .firstOrNull()
+                    ?.window ?: return@SideEffect
             WindowCompat.getInsetsController(window, view).apply {
                 isAppearanceLightStatusBars = lightBackground
                 isAppearanceLightNavigationBars = lightBackground
@@ -80,7 +111,10 @@ fun AILauncherTheme(
     MaterialTheme(colorScheme = colorScheme, content = content)
 }
 
-private fun buildPresetColorScheme(appearance: AppearanceSettings, isDark: Boolean): ColorScheme {
+private fun buildPresetColorScheme(
+    appearance: AppearanceSettings,
+    isDark: Boolean,
+): ColorScheme {
     val preset = ThemePreset.findById(appearance.themePresetId)
 
     val primary: Color
@@ -125,7 +159,7 @@ private fun buildPresetColorScheme(appearance: AppearanceSettings, isDark: Boole
             surfaceVariant = surface.copy(alpha = 0.85f),
             onBackground = onBackground,
             onSurface = onSurface,
-            onSurfaceVariant = onSurface.copy(alpha = 0.6f)
+            onSurfaceVariant = onSurface.copy(alpha = 0.6f),
         )
     } else {
         lightColorScheme(
@@ -136,7 +170,7 @@ private fun buildPresetColorScheme(appearance: AppearanceSettings, isDark: Boole
             surfaceVariant = Color(0xFFEEEEF5),
             onBackground = onBackground,
             onSurface = onSurface,
-            onSurfaceVariant = onSurface.copy(alpha = 0.6f)
+            onSurfaceVariant = onSurface.copy(alpha = 0.6f),
         )
     }
 }

@@ -59,112 +59,133 @@ import javax.inject.Singleton
  *       LauncherViewModel.refresh().
  */
 @Singleton
-class IconCache @Inject constructor(@ApplicationContext context: Context) {
+class IconCache
+    @Inject
+    constructor(
+        @ApplicationContext context: Context,
+    ) {
+        private val maxBytes: Int =
+            run {
+                val memoryClassMb =
+                    (context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+                        ?.memoryClass ?: DEFAULT_MEMORY_CLASS_MB
+                ((memoryClassMb * 1024 * 1024) / MEMORY_CLASS_FRACTION).coerceIn(MIN_BYTES, MAX_BYTES_CAP)
+            }
 
-    private val maxBytes: Int = run {
-        val memoryClassMb = (context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
-            ?.memoryClass ?: DEFAULT_MEMORY_CLASS_MB
-        ((memoryClassMb * 1024 * 1024) / MEMORY_CLASS_FRACTION).coerceIn(MIN_BYTES, MAX_BYTES_CAP)
-    }
-
-    // Size in *bytes*; bitmap.allocationByteCount feeds sizeOf below.
-    private val cache = object : LruCache<String, ImageBitmap>(maxBytes) {
-        override fun sizeOf(key: String, value: ImageBitmap): Int {
-            // ImageBitmap.asAndroidBitmap is the cheap path; allocationByteCount
-            // is the actual RAM footprint (height × rowBytes).
-            return runCatching { value.asAndroidBitmap().allocationByteCount }.getOrDefault(1)
-        }
-    }
-
-    private val diskCacheDir = File(context.cacheDir, "icon_cache")
-
-    // internal + var so a Robolectric test can swap in a scope backed by a
-    // TestDispatcher and deterministically await the async disk write instead
-    // of racing a real background thread.
-    internal var ioScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    /**
-     * Returns the cached ImageBitmap for [key], or computes it via [loader] and
-     * stores it. [loader] runs synchronously — pass a cheap drawable→bitmap
-     * conversion. If [loader] returns null the cache is not populated.
-     */
-    fun getOrLoad(key: String, loader: () -> Drawable?): ImageBitmap? {
-        cache.get(key)?.let { return it }
-        val drawable = loader() ?: return null
-        val bitmap = runCatching { drawable.toBitmap(ICON_PX, ICON_PX).asImageBitmap() }
-            .getOrNull() ?: return null
-        cache.put(key, bitmap)
-        persistToDiskAsync(key, bitmap)
-        return bitmap
-    }
-
-    /**
-     * Warms the in-memory cache from disk for any of [keys] not already
-     * resident. Must be called from a coroutine (suspend), never from a
-     * Composable body — see class kdoc. A miss or decode failure for a given
-     * key is silently skipped; [getOrLoad] falls back to its normal loader
-     * path on the next real render regardless.
-     */
-    suspend fun preloadFromDisk(keys: List<String>) = withContext(Dispatchers.IO) {
-        if (!diskCacheDir.isDirectory) return@withContext
-        for (key in keys) {
-            if (cache.get(key) != null) continue
-            val file = diskFile(key)
-            if (!file.isFile) continue
-            val bitmap = runCatching { BitmapFactory.decodeFile(file.absolutePath)?.asImageBitmap() }
-                .getOrNull() ?: continue
-            cache.put(key, bitmap)
-        }
-    }
-
-    private fun persistToDiskAsync(key: String, bitmap: ImageBitmap) {
-        ioScope.launch {
-            runCatching {
-                if (!diskCacheDir.isDirectory) diskCacheDir.mkdirs()
-                FileOutputStream(diskFile(key)).use { out ->
-                    bitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, out)
+        // Size in *bytes*; bitmap.allocationByteCount feeds sizeOf below.
+        private val cache =
+            object : LruCache<String, ImageBitmap>(maxBytes) {
+                override fun sizeOf(
+                    key: String,
+                    value: ImageBitmap,
+                ): Int {
+                    // ImageBitmap.asAndroidBitmap is the cheap path; allocationByteCount
+                    // is the actual RAM footprint (height × rowBytes).
+                    return runCatching { value.asAndroidBitmap().allocationByteCount }.getOrDefault(1)
                 }
-            }.onFailure { Timber.w(it, "Icon disk-cache write failed for %s", key) }
+            }
+
+        private val diskCacheDir = File(context.cacheDir, "icon_cache")
+
+        // internal + var so a Robolectric test can swap in a scope backed by a
+        // TestDispatcher and deterministically await the async disk write instead
+        // of racing a real background thread.
+        internal var ioScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+        /**
+         * Returns the cached ImageBitmap for [key], or computes it via [loader] and
+         * stores it. [loader] runs synchronously — pass a cheap drawable→bitmap
+         * conversion. If [loader] returns null the cache is not populated.
+         */
+        fun getOrLoad(
+            key: String,
+            loader: () -> Drawable?,
+        ): ImageBitmap? {
+            cache.get(key)?.let { return it }
+            val drawable = loader() ?: return null
+            val bitmap =
+                runCatching { drawable.toBitmap(ICON_PX, ICON_PX).asImageBitmap() }
+                    .getOrNull() ?: return null
+            cache.put(key, bitmap)
+            persistToDiskAsync(key, bitmap)
+            return bitmap
         }
-    }
 
-    // v10: keys are AppInfo.key ("pkg/activity#userSerial"). The file name
-    // keeps the package as a prefix (package names are filesystem-safe) so
-    // [invalidatePackage] can find every entry of one app on disk; the hash
-    // makes it unique per activity/profile without sanitizing "/" and "#".
-    private fun diskFile(key: String): File =
-        File(diskCacheDir, "${key.substringBefore('/')}_${key.hashCode()}.png")
+        /**
+         * Warms the in-memory cache from disk for any of [keys] not already
+         * resident. Must be called from a coroutine (suspend), never from a
+         * Composable body — see class kdoc. A miss or decode failure for a given
+         * key is silently skipped; [getOrLoad] falls back to its normal loader
+         * path on the next real render regardless.
+         */
+        suspend fun preloadFromDisk(keys: List<String>) =
+            withContext(Dispatchers.IO) {
+                if (!diskCacheDir.isDirectory) return@withContext
+                for (key in keys) {
+                    if (cache.get(key) != null) continue
+                    val file = diskFile(key)
+                    if (!file.isFile) continue
+                    val bitmap =
+                        runCatching { BitmapFactory.decodeFile(file.absolutePath)?.asImageBitmap() }
+                            .getOrNull() ?: continue
+                    cache.put(key, bitmap)
+                }
+            }
 
-    /** Drop everything. Call after an icon-pack swap or theme change that affects icons. */
-    fun invalidateAll() {
-        cache.evictAll()
-        ioScope.launch { runCatching { diskCacheDir.listFiles()?.forEach { it.delete() } } }
-    }
-
-    /** Drop one cached entry. */
-    fun invalidate(key: String) {
-        cache.remove(key)
-        ioScope.launch { runCatching { diskFile(key).delete() } }
-    }
-
-    /**
-     * v10: drop every entry belonging to [packageName] — all of its launcher
-     * activities, in every profile — e.g. after an app update.
-     */
-    fun invalidatePackage(packageName: String) {
-        cache.snapshot().keys.filter { it.substringBefore('/') == packageName }.forEach { cache.remove(it) }
-        ioScope.launch {
-            runCatching {
-                diskCacheDir.listFiles { f -> f.name.startsWith("${packageName}_") }?.forEach { it.delete() }
+        private fun persistToDiskAsync(
+            key: String,
+            bitmap: ImageBitmap,
+        ) {
+            ioScope.launch {
+                runCatching {
+                    if (!diskCacheDir.isDirectory) diskCacheDir.mkdirs()
+                    FileOutputStream(diskFile(key)).use { out ->
+                        bitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+                }.onFailure { Timber.w(it, "Icon disk-cache write failed for %s", key) }
             }
         }
-    }
 
-    companion object {
-        private const val MEMORY_CLASS_FRACTION = 8
-        private const val DEFAULT_MEMORY_CLASS_MB = 64  // conservative fallback if ActivityManager is unavailable
-        private const val MIN_BYTES = 4 * 1024 * 1024
-        private const val MAX_BYTES_CAP = 32 * 1024 * 1024
-        private const val ICON_PX = 128
+        // v10: keys are AppInfo.key ("pkg/activity#userSerial"). The file name
+        // keeps the package as a prefix (package names are filesystem-safe) so
+        // [invalidatePackage] can find every entry of one app on disk; the hash
+        // makes it unique per activity/profile without sanitizing "/" and "#".
+        private fun diskFile(key: String): File = File(diskCacheDir, "${key.substringBefore('/')}_${key.hashCode()}.png")
+
+        /** Drop everything. Call after an icon-pack swap or theme change that affects icons. */
+        fun invalidateAll() {
+            cache.evictAll()
+            ioScope.launch { runCatching { diskCacheDir.listFiles()?.forEach { it.delete() } } }
+        }
+
+        /** Drop one cached entry. */
+        fun invalidate(key: String) {
+            cache.remove(key)
+            ioScope.launch { runCatching { diskFile(key).delete() } }
+        }
+
+        /**
+         * v10: drop every entry belonging to [packageName] — all of its launcher
+         * activities, in every profile — e.g. after an app update.
+         */
+        fun invalidatePackage(packageName: String) {
+            cache
+                .snapshot()
+                .keys
+                .filter { it.substringBefore('/') == packageName }
+                .forEach { cache.remove(it) }
+            ioScope.launch {
+                runCatching {
+                    diskCacheDir.listFiles { f -> f.name.startsWith("${packageName}_") }?.forEach { it.delete() }
+                }
+            }
+        }
+
+        companion object {
+            private const val MEMORY_CLASS_FRACTION = 8
+            private const val DEFAULT_MEMORY_CLASS_MB = 64 // conservative fallback if ActivityManager is unavailable
+            private const val MIN_BYTES = 4 * 1024 * 1024
+            private const val MAX_BYTES_CAP = 32 * 1024 * 1024
+            private const val ICON_PX = 128
+        }
     }
-}

@@ -10,13 +10,15 @@ import kotlinx.serialization.Serializable
  * (haptic feedback, etc.).
  */
 
-@Serializable enum class LockMethod(@StringRes val displayNameRes: Int) {
+@Serializable enum class LockMethod(
+    @StringRes val displayNameRes: Int,
+) {
     NONE(R.string.lock_method_none),
     PIN(R.string.lock_method_pin),
     PASSWORD(R.string.lock_method_password),
     PATTERN(R.string.lock_method_pattern),
     FINGERPRINT(R.string.lock_method_fingerprint),
-    FACE(R.string.lock_method_face)
+    FACE(R.string.lock_method_face),
 }
 
 @Serializable data class SecuritySettings(
@@ -34,26 +36,30 @@ import kotlinx.serialization.Serializable
     val launcherLockPin: String = "",
     val launcherLockPassword: String = "",
     val personalZoneLockMethod: LockMethod = LockMethod.PIN,
-    val personalZonePin: String = ""
+    val personalZonePin: String = "",
 )
 
 @Serializable data class HiddenAppsSettings(
     val hiddenPackages: Set<String> = emptySet(),
     val privateFolderPackages: Set<String> = emptySet(),
-    val privateFolderLocked: Boolean = true
+    val privateFolderLocked: Boolean = true,
 )
 
 // v5: Gesture settings with UI
 @Serializable data class SmartControlSettings(
-    val voiceControlEnabled: Boolean = false, val gesturesEnabled: Boolean = true,
-    val doubleTapToSleep: Boolean = false, val swipeDownNotifications: Boolean = true,
-    val swipeUpAppDrawer: Boolean = true, val pinchToOverview: Boolean = false,
-    val shakeToSearch: Boolean = false, val smartScreenOff: Boolean = false,
+    val voiceControlEnabled: Boolean = false,
+    val gesturesEnabled: Boolean = true,
+    val doubleTapToSleep: Boolean = false,
+    val swipeDownNotifications: Boolean = true,
+    val swipeUpAppDrawer: Boolean = true,
+    val pinchToOverview: Boolean = false,
+    val shakeToSearch: Boolean = false,
+    val smartScreenOff: Boolean = false,
     val hapticFeedback: Boolean = true,
     val longPressAction: String = "menu", // menu, hide, lock, info
     val homeButtonDoubleTap: String = "none", // none, search, recent, camera
     val reduceMotion: Boolean = false,
     // v10: opt-in. Asks GitHub's public API for the latest release at most once a
     // day; the only data sent is the request itself (IP + User-Agent).
-    val checkForUpdates: Boolean = false
+    val checkForUpdates: Boolean = false,
 )

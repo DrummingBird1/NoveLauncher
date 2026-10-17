@@ -39,9 +39,10 @@ import java.util.Date
 fun JewishCalendarSection(
     appearance: AppearanceSettings,
     service: JewishCalendarService,
-    onUpdate: (AppearanceSettings) -> Unit
+    onUpdate: (AppearanceSettings) -> Unit,
 ) {
     val s = appearance.jewishCalendar
+
     fun update(n: JewishCalendarSettings) = onUpdate(appearance.copy(jewishCalendar = n))
     val context = LocalContext.current
     val preview by produceState<JewishDayInfo?>(null, s) { value = withContext(Dispatchers.Default) { service.dayInfo(s) } }
@@ -52,25 +53,45 @@ fun JewishCalendarSection(
             Card(
                 Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text(stringResource(R.string.jc_preview_title), fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                     preview?.let { day ->
                         Text(day.hebrewDate, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                         if (day.holidaysToday.isNotEmpty()) {
-                            Text(day.holidaysToday.joinToString(" · ") { context.getString(it.nameRes) }, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                day.holidaysToday.joinToString(" · ") { context.getString(it.nameRes) },
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
                         }
                         day.nextHoliday?.let { (h, days) ->
                             val name = context.getString(h.nameRes)
                             Text(
-                                if (days == 1) stringResource(R.string.jc_holiday_tomorrow, name)
-                                else pluralStringResource(R.plurals.jc_holiday_in_days, days, name, days),
-                                fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
+                                if (days == 1) {
+                                    stringResource(R.string.jc_holiday_tomorrow, name)
+                                } else {
+                                    pluralStringResource(R.plurals.jc_holiday_in_days, days, name, days)
+                                },
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        day.candleLighting?.let { Text(stringResource(R.string.jc_candle_lighting, timeFormat.format(Date(it))), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                        day.havdalah?.let { Text(stringResource(R.string.jc_havdalah, timeFormat.format(Date(it))), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                        day.candleLighting?.let {
+                            Text(
+                                stringResource(R.string.jc_candle_lighting, timeFormat.format(Date(it))),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        day.havdalah?.let {
+                            Text(
+                                stringResource(R.string.jc_havdalah, timeFormat.format(Date(it))),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }
@@ -86,7 +107,11 @@ fun JewishCalendarSection(
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(18, 20, 30, 40).forEach { m ->
-                    FilterChip(selected = s.candleLightingMinutes == m, onClick = { update(s.copy(candleLightingMinutes = m)) }, label = { Text("$m") })
+                    FilterChip(
+                        selected = s.candleLightingMinutes == m,
+                        onClick = { update(s.copy(candleLightingMinutes = m)) },
+                        label = { Text("$m") },
+                    )
                 }
             }
         }

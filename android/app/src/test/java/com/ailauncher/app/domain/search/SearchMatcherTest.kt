@@ -5,8 +5,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SearchMatcherTest {
-
-    private fun matches(query: String, label: String) = SearchMatcher.score(query, label) > 0
+    private fun matches(
+        query: String,
+        label: String,
+    ) = SearchMatcher.score(query, label) > 0
 
     @Test
     fun `exact and prefix matches rank above substring matches`() {

@@ -3,12 +3,12 @@ package com.ailauncher.app.ui
 import android.content.Context
 import android.os.ParcelFileDescriptor
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.hasSetTextAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -41,7 +41,6 @@ import javax.inject.Inject
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class LauncherFlowTest {
-
     private val hiltRule = HiltAndroidRule(this)
     private val composeRule = createEmptyComposeRule()
 
@@ -49,6 +48,7 @@ class LauncherFlowTest {
     val rules: RuleChain = RuleChain.outerRule(hiltRule).around(composeRule)
 
     @Inject lateinit var settingsRepo: SettingsRepository
+
     @Inject lateinit var appLockManager: AppLockManager
 
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -90,8 +90,10 @@ class LauncherFlowTest {
     private fun waitForText(text: String) =
         composeRule.waitUntil(TIMEOUT_MS) { composeRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
 
-    private fun waitForLocked(pkg: String, locked: Boolean) =
-        composeRule.waitUntil(TIMEOUT_MS) { runBlocking { appLockManager.isAppLocked(pkg) } == locked }
+    private fun waitForLocked(
+        pkg: String,
+        locked: Boolean,
+    ) = composeRule.waitUntil(TIMEOUT_MS) { runBlocking { appLockManager.isAppLocked(pkg) } == locked }
 
     @Test
     fun homeScreen_showsRecommendedSection() {

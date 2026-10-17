@@ -35,19 +35,22 @@ import kotlin.math.ceil
 class WidgetHostController(
     private val activity: ComponentActivity,
     private val host: () -> AppWidgetHost,
-    private val onWidgetReady: (widgetId: Int, spanY: Int) -> Unit
+    private val onWidgetReady: (widgetId: Int, spanY: Int) -> Unit,
 ) {
     private var pendingId = AppWidgetManager.INVALID_APPWIDGET_ID
 
-    private val picker = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val id = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-            ?.takeIf { it != AppWidgetManager.INVALID_APPWIDGET_ID } ?: pendingId
-        if (result.resultCode != Activity.RESULT_OK || id == AppWidgetManager.INVALID_APPWIDGET_ID) {
-            release(pendingId)
-        } else {
-            configureOrFinish(id)
+    private val picker =
+        activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val id =
+                result.data
+                    ?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+                    ?.takeIf { it != AppWidgetManager.INVALID_APPWIDGET_ID } ?: pendingId
+            if (result.resultCode != Activity.RESULT_OK || id == AppWidgetManager.INVALID_APPWIDGET_ID) {
+                release(pendingId)
+            } else {
+                configureOrFinish(id)
+            }
         }
-    }
 
     fun pick() {
         pendingId = host().allocateAppWidgetId()
@@ -56,7 +59,7 @@ class WidgetHostController(
                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, pendingId)
                 // Some OEM pickers crash without these (empty) custom-widget lists.
                 .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, ArrayList<Parcelable>())
-                .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, ArrayList<Parcelable>())
+                .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, ArrayList<Parcelable>()),
         )
     }
 
@@ -66,8 +69,9 @@ class WidgetHostController(
             release(id)
             return
         }
-        val configOptional = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-            (info.widgetFeatures and AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0
+        val configOptional =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                (info.widgetFeatures and AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0
         if (info.configure != null && !configOptional) {
             pendingId = id
             try {
@@ -82,7 +86,10 @@ class WidgetHostController(
     }
 
     /** Forward from Activity.onActivityResult. Returns true if the result was ours. */
-    fun onActivityResult(requestCode: Int, resultCode: Int): Boolean {
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+    ): Boolean {
         if (requestCode != REQUEST_CONFIGURE) return false
         val id = pendingId
         val info = AppWidgetManager.getInstance(activity).getAppWidgetInfo(id)
@@ -97,7 +104,10 @@ class WidgetHostController(
             ?: AppWidgetManager.INVALID_APPWIDGET_ID
     }
 
-    private fun finish(id: Int, info: AppWidgetProviderInfo) {
+    private fun finish(
+        id: Int,
+        info: AppWidgetProviderInfo,
+    ) {
         pendingId = AppWidgetManager.INVALID_APPWIDGET_ID
         val minHeightDp = info.minHeight / activity.resources.displayMetrics.density
         onWidgetReady(id, ceil(minHeightDp / ROW_HEIGHT_DP).toInt().coerceIn(1, 4))
@@ -105,7 +115,11 @@ class WidgetHostController(
 
     private fun release(id: Int) {
         if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            try { host().deleteAppWidgetId(id) } catch (e: Exception) { Timber.w(e, "deleteAppWidgetId failed") }
+            try {
+                host().deleteAppWidgetId(id)
+            } catch (e: Exception) {
+                Timber.w(e, "deleteAppWidgetId failed")
+            }
         }
         pendingId = AppWidgetManager.INVALID_APPWIDGET_ID
     }

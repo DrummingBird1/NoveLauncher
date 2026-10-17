@@ -45,7 +45,10 @@ import com.ailauncher.app.ui.gestures.LockScreenAccessibilityService
  * so the disclosure and consent come at the moment the user opts in.
  */
 @Composable
-fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSettings) -> Unit) {
+fun GesturesSection(
+    settings: SmartControlSettings,
+    onUpdate: (SmartControlSettings) -> Unit,
+) {
     val context = LocalContext.current
     var helperEnabled by remember { mutableStateOf(LockScreenAccessibilityService.isEnabled(context)) }
     var showDisclosure by remember { mutableStateOf(false) }
@@ -59,10 +62,24 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { SectionLabel(stringResource(R.string.settings_gestures)) }
-        item { SwitchSetting(stringResource(R.string.gestures_enabled), settings.gesturesEnabled) { onUpdate(settings.copy(gesturesEnabled = it)) } }
+        item {
+            SwitchSetting(
+                stringResource(R.string.gestures_enabled),
+                settings.gesturesEnabled,
+            ) { onUpdate(settings.copy(gesturesEnabled = it)) }
+        }
         if (settings.gesturesEnabled) {
-            item { SwitchSetting(stringResource(R.string.gesture_swipe_up), settings.swipeUpAppDrawer) { onUpdate(settings.copy(swipeUpAppDrawer = it)) } }
-            item { SwitchSetting(stringResource(R.string.gesture_swipe_down), settings.swipeDownNotifications) { onUpdate(settings.copy(swipeDownNotifications = it)) } }
+            item {
+                SwitchSetting(
+                    stringResource(R.string.gesture_swipe_up),
+                    settings.swipeUpAppDrawer,
+                ) { onUpdate(settings.copy(swipeUpAppDrawer = it)) }
+            }
+            item {
+                SwitchSetting(stringResource(R.string.gesture_swipe_down), settings.swipeDownNotifications) {
+                    onUpdate(settings.copy(swipeDownNotifications = it))
+                }
+            }
             if (LockScreenAccessibilityService.isLockSupported) {
                 item {
                     SwitchSetting(stringResource(R.string.gesture_double_tap_lock), settings.doubleTapToSleep) {
@@ -79,7 +96,7 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
                 Card(
                     Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(stringResource(R.string.gesture_lock_setup_title), color = MaterialTheme.colorScheme.onSurface)
@@ -87,12 +104,20 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
                         Text(
                             stringResource(if (helperEnabled) R.string.gesture_helper_status_on else R.string.gesture_helper_status_off),
                             fontSize = 13.sp,
-                            color = if (helperEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (helperEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(8.dp))
-                        Text(stringResource(R.string.gesture_lock_setup_body), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            stringResource(R.string.gesture_lock_setup_body),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         Spacer(Modifier.height(6.dp))
-                        Text(stringResource(R.string.gesture_restricted_hint), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            stringResource(R.string.gesture_restricted_hint),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         Spacer(Modifier.height(12.dp))
                         Button(onClick = { GestureActions.openAccessibilitySettings(context) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(if (helperEnabled) R.string.gesture_helper_manage else R.string.gesture_lock_setup_open))
@@ -106,7 +131,7 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
     if (showDisclosure) {
         LockGestureSetupDialog(
             onDismiss = { showDisclosure = false },
-            onConsent = { onUpdate(settings.copy(doubleTapToSleep = true)) }
+            onConsent = { onUpdate(settings.copy(doubleTapToSleep = true)) },
         )
     }
 }

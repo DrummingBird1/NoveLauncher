@@ -32,10 +32,17 @@ class DriveClient {
     // metadata API (/drive/v3) and the upload API (/upload/drive/v3) live here.
     internal var baseUrl: String = "https://www.googleapis.com"
 
-    data class DriveFile(val id: String, val name: String, val modifiedTime: Long)
+    data class DriveFile(
+        val id: String,
+        val name: String,
+        val modifiedTime: Long,
+    )
 
     /** A non-2xx response. [code] 401 means Google rejected the access token. */
-    class HttpException(val code: Int, message: String) : IOException("$code $message")
+    class HttpException(
+        val code: Int,
+        message: String,
+    ) : IOException("$code $message")
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -43,18 +50,28 @@ class DriveClient {
     fun findOrCreateFolder(token: String): String {
         val q = "name = '$FOLDER_NAME' and mimeType = '$FOLDER_MIME' and trashed = false"
         val found = request(token, "GET", "/drive/v3/files?q=${enc(q)}&spaces=drive&pageSize=1&fields=${enc("files(id)")}")
-        parseObject(found)["files"]?.jsonArray?.firstOrNull()
-            ?.jsonObject?.get("id")?.jsonPrimitive?.content
+        parseObject(found)["files"]
+            ?.jsonArray
+            ?.firstOrNull()
+            ?.jsonObject
+            ?.get("id")
+            ?.jsonPrimitive
+            ?.content
             ?.let { return it }
 
-        val metadata = buildJsonObject {
-            put("name", FOLDER_NAME)
-            put("mimeType", FOLDER_MIME)
-        }.toString()
-        val created = request(
-            token, "POST", "/drive/v3/files?fields=id",
-            "application/json; charset=UTF-8", metadata.toByteArray(Charsets.UTF_8)
-        )
+        val metadata =
+            buildJsonObject {
+                put("name", FOLDER_NAME)
+                put("mimeType", FOLDER_MIME)
+            }.toString()
+        val created =
+            request(
+                token,
+                "POST",
+                "/drive/v3/files?fields=id",
+                "application/json; charset=UTF-8",
+                metadata.toByteArray(Charsets.UTF_8),
+            )
         return parseObject(created).getValue("id").jsonPrimitive.content
     }
 
@@ -63,37 +80,55 @@ class DriveClient {
      * in one request. The plain `uploadType=media` upload this replaces sends no
      * metadata, so Drive named every backup "Untitled".
      */
-    fun upload(token: String, fileName: String, content: String, folderId: String?): DriveFile {
+    fun upload(
+        token: String,
+        fileName: String,
+        content: String,
+        folderId: String?,
+    ): DriveFile {
         val boundary = "novelauncher-${UUID.randomUUID()}"
-        val response = request(
-            token, "POST", "/upload/drive/v3/files?uploadType=multipart&fields=${enc(FILE_FIELDS)}",
-            "multipart/related; boundary=$boundary",
-            multipartBody(boundary, fileName, content, folderId)
-        )
+        val response =
+            request(
+                token,
+                "POST",
+                "/upload/drive/v3/files?uploadType=multipart&fields=${enc(FILE_FIELDS)}",
+                "multipart/related; boundary=$boundary",
+                multipartBody(boundary, fileName, content, folderId),
+            )
         return parseFile(parseObject(response))
     }
 
     /** The app's backup files, newest first — wherever in Drive the user moved them. */
     fun listBackups(token: String): List<DriveFile> {
         val q = "name contains '$BACKUP_NAME_PREFIX' and mimeType = '$BACKUP_MIME' and trashed = false"
-        val response = request(
-            token, "GET",
-            "/drive/v3/files?q=${enc(q)}&spaces=drive&orderBy=${enc("modifiedTime desc")}" +
-                "&pageSize=$LIST_PAGE_SIZE&fields=${enc("files($FILE_FIELDS)")}"
-        )
+        val response =
+            request(
+                token,
+                "GET",
+                "/drive/v3/files?q=${enc(q)}&spaces=drive&orderBy=${enc("modifiedTime desc")}" +
+                    "&pageSize=$LIST_PAGE_SIZE&fields=${enc("files($FILE_FIELDS)")}",
+            )
         return parseObject(response)["files"]?.jsonArray?.map { parseFile(it.jsonObject) } ?: emptyList()
     }
 
     /** Raw file content: plain JSON or a PortableBackupCrypto envelope. */
-    fun download(token: String, fileId: String): String =
-        request(token, "GET", "/drive/v3/files/${enc(fileId)}?alt=media")
+    fun download(
+        token: String,
+        fileId: String,
+    ): String = request(token, "GET", "/drive/v3/files/${enc(fileId)}?alt=media")
 
-    private fun multipartBody(boundary: String, fileName: String, content: String, folderId: String?): ByteArray {
-        val metadata = buildJsonObject {
-            put("name", fileName)
-            put("mimeType", BACKUP_MIME)
-            if (folderId != null) putJsonArray("parents") { add(folderId) }
-        }
+    private fun multipartBody(
+        boundary: String,
+        fileName: String,
+        content: String,
+        folderId: String?,
+    ): ByteArray {
+        val metadata =
+            buildJsonObject {
+                put("name", fileName)
+                put("mimeType", BACKUP_MIME)
+                if (folderId != null) putJsonArray("parents") { add(folderId) }
+            }
         return buildString {
             append("--").append(boundary).append(CRLF)
             append("Content-Type: application/json; charset=UTF-8").append(CRLF).append(CRLF)
@@ -110,7 +145,7 @@ class DriveClient {
         method: String,
         path: String,
         contentType: String? = null,
-        body: ByteArray? = null
+        body: ByteArray? = null,
     ): String {
         val conn = URL(baseUrl + path).openConnection() as HttpURLConnection
         try {
@@ -134,13 +169,17 @@ class DriveClient {
 
     private fun parseObject(body: String): JsonObject = json.parseToJsonElement(body).jsonObject
 
-    private fun parseFile(o: JsonObject) = DriveFile(
-        id = o.getValue("id").jsonPrimitive.content,
-        name = o["name"]?.jsonPrimitive?.content.orEmpty(),
-        modifiedTime = o["modifiedTime"]?.jsonPrimitive?.content
-            ?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() }
-            ?: 0L
-    )
+    private fun parseFile(o: JsonObject) =
+        DriveFile(
+            id = o.getValue("id").jsonPrimitive.content,
+            name = o["name"]?.jsonPrimitive?.content.orEmpty(),
+            modifiedTime =
+                o["modifiedTime"]
+                    ?.jsonPrimitive
+                    ?.content
+                    ?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() }
+                    ?: 0L,
+        )
 
     // URLEncoder does form encoding (space → '+'); Google reads %20 unambiguously.
     private fun enc(s: String) = URLEncoder.encode(s, "UTF-8").replace("+", "%20")
@@ -148,6 +187,7 @@ class DriveClient {
     companion object {
         const val FOLDER_NAME = "NoveLauncher"
         const val BACKUP_MIME = "application/json"
+
         // Drive's `name contains` matches name prefixes; BackupManager names
         // every backup "novelauncher_backup_<date>.json".
         private const val BACKUP_NAME_PREFIX = "novelauncher_backup"

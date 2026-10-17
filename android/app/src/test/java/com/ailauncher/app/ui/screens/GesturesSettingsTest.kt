@@ -38,17 +38,18 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33])
 class GesturesSettingsTest {
-
     @get:Rule val composeRule = createComposeRule()
 
     private val app = ApplicationProvider.getApplicationContext<Application>()
+
     private fun str(id: Int) = app.getString(id)
 
     private var settings by mutableStateOf(SmartControlSettings(gesturesEnabled = true, doubleTapToSleep = false))
 
-    private fun show() = composeRule.setContent {
-        GesturesSection(settings = settings, onUpdate = { settings = it })
-    }
+    private fun show() =
+        composeRule.setContent {
+            GesturesSection(settings = settings, onUpdate = { settings = it })
+        }
 
     // SwitchSetting rows add no semantics node, so a label can't scope its switch.
     // Order on the page: gestures on/off, swipe up, swipe down, double tap.

@@ -2,7 +2,17 @@ package com.ailauncher.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -12,8 +22,25 @@ import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +71,7 @@ fun SecuritySection(
     security: SecuritySettings,
     appLockManager: AppLockManager,
     settingsRepo: SettingsRepository,
-    onNavigate: (SettingsPage) -> Unit
+    onNavigate: (SettingsPage) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var showPinDialog by remember { mutableStateOf(false) }
@@ -60,7 +87,11 @@ fun SecuritySection(
         item { SectionLabel(stringResource(R.string.settings_app_lock_list)) }
         item {
             val methodName = stringResource(security.appLockMethod.displayNameRes)
-            Text(stringResource(R.string.security_method_label, methodName), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                stringResource(R.string.security_method_label, methodName),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
         items(LockMethod.entries.toList()) { method ->
@@ -68,20 +99,44 @@ fun SecuritySection(
                 Modifier.fillMaxWidth().clickable {
                     scope.launch {
                         when (method) {
-                            LockMethod.NONE -> settingsRepo.saveSecurity(security.copy(appLockMethod = LockMethod.NONE))
-                            LockMethod.PIN -> { pinTarget = "app"; showPinDialog = true }
-                            LockMethod.PASSWORD -> { pinTarget = "app"; showPasswordDialog = true }
-                            LockMethod.PATTERN -> { showPatternDialog = true }
-                            LockMethod.FINGERPRINT -> appLockManager.setAppLockBiometric(LockMethod.FINGERPRINT)
-                            LockMethod.FACE -> appLockManager.setAppLockBiometric(LockMethod.FACE)
+                            LockMethod.NONE -> {
+                                settingsRepo.saveSecurity(security.copy(appLockMethod = LockMethod.NONE))
+                            }
+
+                            LockMethod.PIN -> {
+                                pinTarget = "app"
+                                showPinDialog = true
+                            }
+
+                            LockMethod.PASSWORD -> {
+                                pinTarget = "app"
+                                showPasswordDialog = true
+                            }
+
+                            LockMethod.PATTERN -> {
+                                showPatternDialog = true
+                            }
+
+                            LockMethod.FINGERPRINT -> {
+                                appLockManager.setAppLockBiometric(LockMethod.FINGERPRINT)
+                            }
+
+                            LockMethod.FACE -> {
+                                appLockManager.setAppLockBiometric(LockMethod.FACE)
+                            }
                         }
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (security.appLockMethod == method) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                    else MaterialTheme.colorScheme.surfaceVariant
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor =
+                            if (security.appLockMethod == method) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                    ),
             ) {
                 Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(selected = security.appLockMethod == method, onClick = null)
@@ -99,14 +154,22 @@ fun SecuritySection(
             Card(
                 Modifier.fillMaxWidth().clickable { onNavigate(SettingsPage.APP_LOCK_LIST) },
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Rounded.Lock, null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text(stringResource(R.string.security_choose_apps), fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                        Text(stringResource(R.string.security_locked_count, security.lockedAppPackages.size), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            stringResource(R.string.security_choose_apps),
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            stringResource(R.string.security_locked_count, security.lockedAppPackages.size),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
@@ -116,7 +179,7 @@ fun SecuritySection(
             Card(
                 Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
             ) {
                 Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
                     Icon(Icons.Rounded.Info, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
@@ -125,7 +188,7 @@ fun SecuritySection(
                         stringResource(R.string.security_isolation_notice),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 16.sp
+                        lineHeight = 16.sp,
                     )
                 }
             }
@@ -136,16 +199,21 @@ fun SecuritySection(
                 Card(
                     Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                 ) {
                     Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
-                        Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Rounded.Warning,
+                            null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(18.dp),
+                        )
                         Spacer(Modifier.width(10.dp))
                         Text(
                             stringResource(R.string.security_root_warning),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onErrorContainer,
-                            lineHeight = 16.sp
+                            lineHeight = 16.sp,
                         )
                     }
                 }
@@ -154,59 +222,102 @@ fun SecuritySection(
 
         item { HorizontalDivider() }
         item { SectionLabel(stringResource(R.string.section_screen_lock)) }
-        item { SwitchSetting(stringResource(R.string.security_layout_lock), security.isLayoutLocked) { scope.launch { settingsRepo.saveSecurity(security.copy(isLayoutLocked = it)) } } }
+        item {
+            SwitchSetting(stringResource(R.string.security_layout_lock), security.isLayoutLocked) {
+                scope.launch { settingsRepo.saveSecurity(security.copy(isLayoutLocked = it)) }
+            }
+        }
 
         item { HorizontalDivider() }
         item { SectionLabel(stringResource(R.string.section_safety_launcher_lock)) }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { pinTarget = "launcher"; showPinDialog = true }) { Text(stringResource(R.string.security_method_pin)) }
-                OutlinedButton(onClick = { pinTarget = "launcher"; showPasswordDialog = true }) { Text(stringResource(R.string.security_method_password)) }
-                OutlinedButton(onClick = { scope.launch { appLockManager.setLauncherLockBiometric(LockMethod.FINGERPRINT) } }) { Text(stringResource(R.string.security_method_biometric)) }
+                OutlinedButton(onClick = {
+                    pinTarget = "launcher"
+                    showPinDialog = true
+                }) { Text(stringResource(R.string.security_method_pin)) }
+                OutlinedButton(onClick = {
+                    pinTarget = "launcher"
+                    showPasswordDialog = true
+                }) { Text(stringResource(R.string.security_method_password)) }
+                OutlinedButton(onClick = {
+                    scope.launch {
+                        appLockManager.setLauncherLockBiometric(LockMethod.FINGERPRINT)
+                    }
+                }) { Text(stringResource(R.string.security_method_biometric)) }
             }
         }
     }
 
-    if (showPinDialog) PinDialog({ showPinDialog = false }) { pin ->
-        scope.launch {
-            if (pinTarget == "app") appLockManager.setAppLockPin(pin) else appLockManager.setLauncherLockPin(pin)
-            showPinDialog = false
-        }
-    }
-    if (showPasswordDialog) PasswordDialog({ showPasswordDialog = false }) { pw ->
-        scope.launch {
-            if (pinTarget == "app") appLockManager.setAppLockPassword(pw) else {
-                settingsRepo.saveSecurity(security.copy(launcherLockMethod = LockMethod.PASSWORD, launcherLockPassword = pw))
+    if (showPinDialog) {
+        PinDialog({ showPinDialog = false }) { pin ->
+            scope.launch {
+                if (pinTarget == "app") appLockManager.setAppLockPin(pin) else appLockManager.setLauncherLockPin(pin)
+                showPinDialog = false
             }
-            showPasswordDialog = false
         }
     }
-    if (showPatternDialog) PatternDialog({ showPatternDialog = false }) { pattern ->
-        scope.launch { appLockManager.setAppLockPattern(pattern); showPatternDialog = false }
+    if (showPasswordDialog) {
+        PasswordDialog({ showPasswordDialog = false }) { pw ->
+            scope.launch {
+                if (pinTarget == "app") {
+                    appLockManager.setAppLockPassword(pw)
+                } else {
+                    settingsRepo.saveSecurity(security.copy(launcherLockMethod = LockMethod.PASSWORD, launcherLockPassword = pw))
+                }
+                showPasswordDialog = false
+            }
+        }
+    }
+    if (showPatternDialog) {
+        PatternDialog({ showPatternDialog = false }) { pattern ->
+            scope.launch {
+                appLockManager.setAppLockPattern(pattern)
+                showPatternDialog = false
+            }
+        }
     }
 }
 
 @Composable
-fun AppLockListSection(security: SecuritySettings, appLockManager: AppLockManager) {
+fun AppLockListSection(
+    security: SecuritySettings,
+    appLockManager: AppLockManager,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val apps = remember {
-        val pm = context.packageManager
-        val intent = android.content.Intent(android.content.Intent.ACTION_MAIN).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) }
-        pm.queryIntentActivities(intent, 0).mapNotNull { ri ->
-            val pkg = ri.activityInfo?.packageName ?: return@mapNotNull null
-            if (pkg == context.packageName) return@mapNotNull null
-            pkg to ri.loadLabel(pm).toString()
-        }.sortedBy { it.second }
-    }
+    val apps =
+        remember {
+            val pm = context.packageManager
+            val intent =
+                android.content
+                    .Intent(
+                        android.content.Intent.ACTION_MAIN,
+                    ).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) }
+            pm
+                .queryIntentActivities(intent, 0)
+                .mapNotNull { ri ->
+                    val pkg = ri.activityInfo?.packageName ?: return@mapNotNull null
+                    if (pkg == context.packageName) return@mapNotNull null
+                    pkg to ri.loadLabel(pm).toString()
+                }.sortedBy { it.second }
+        }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         item { SectionLabel(stringResource(R.string.security_choose_apps_to_lock)) }
         items(apps) { (pkg, label) ->
             val isLocked = pkg in security.lockedAppPackages
             Row(
-                Modifier.fillMaxWidth().clickable { scope.launch { appLockManager.toggleAppLock(pkg) } }.padding(vertical = 8.dp, horizontal = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        scope.launch {
+                            appLockManager.toggleAppLock(
+                                pkg,
+                            )
+                        }
+                    }.padding(vertical = 8.dp, horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(checked = isLocked, onCheckedChange = { scope.launch { appLockManager.toggleAppLock(pkg) } })
                 Spacer(Modifier.width(8.dp))
@@ -224,7 +335,10 @@ fun AppLockListSection(security: SecuritySettings, appLockManager: AppLockManage
 }
 
 @Composable
-fun PinDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+fun PinDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
     var pin by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
     var step by remember { mutableIntStateOf(1) }
@@ -236,33 +350,47 @@ fun PinDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
         title = { Text(stringResource(if (step == 1) R.string.dialog_set_pin else R.string.dialog_confirm_pin)) },
         text = {
             Column {
-                error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp); Spacer(Modifier.height(8.dp)) }
+                error?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
                 OutlinedTextField(
                     value = if (step == 1) pin else confirm,
                     onValueChange = { if (step == 1) pin = it else confirm = it },
                     label = { Text(stringResource(R.string.pin_input_label)) },
                     visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = {
                 if (step == 1) {
-                    if (pin.length in 4..6 && pin.all { it.isDigit() }) { step = 2; error = null }
-                    else error = invalidLengthText
+                    if (pin.length in 4..6 && pin.all { it.isDigit() }) {
+                        step = 2
+                        error = null
+                    } else {
+                        error = invalidLengthText
+                    }
                 } else {
-                    if (confirm == pin) onConfirm(pin)
-                    else { error = mismatchText; confirm = "" }
+                    if (confirm == pin) {
+                        onConfirm(pin)
+                    } else {
+                        error = mismatchText
+                        confirm = ""
+                    }
                 }
             }) { Text(stringResource(R.string.action_ok)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
 
 @Composable
-fun PasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+fun PasswordDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
     var pw by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
     var step by remember { mutableIntStateOf(1) }
@@ -274,28 +402,39 @@ fun PasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
         title = { Text(stringResource(if (step == 1) R.string.dialog_set_password else R.string.dialog_confirm_password)) },
         text = {
             Column {
-                error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp); Spacer(Modifier.height(8.dp)) }
+                error?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
                 OutlinedTextField(
                     value = if (step == 1) pw else confirm,
                     onValueChange = { if (step == 1) pw = it else confirm = it },
                     label = { Text(stringResource(R.string.password_input_label)) },
                     visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = {
                 if (step == 1) {
-                    if (pw.length >= 4) { step = 2; error = null }
-                    else error = invalidLengthText
+                    if (pw.length >= 4) {
+                        step = 2
+                        error = null
+                    } else {
+                        error = invalidLengthText
+                    }
                 } else {
-                    if (confirm == pw) onConfirm(pw)
-                    else { error = mismatchText; confirm = "" }
+                    if (confirm == pw) {
+                        onConfirm(pw)
+                    } else {
+                        error = mismatchText
+                        confirm = ""
+                    }
                 }
             }) { Text(stringResource(R.string.action_ok)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
 
@@ -303,7 +442,7 @@ fun PasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
 fun PatternDialog(
     onDismiss: () -> Unit,
     title: String = stringResource(R.string.dialog_set_pattern),
-    onConfirm: (List<Int>) -> Unit
+    onConfirm: (List<Int>) -> Unit,
 ) {
     var pattern by remember { mutableStateOf(listOf<Int>()) }
     AlertDialog(
@@ -321,18 +460,25 @@ fun PatternDialog(
                                 val isSelected = idx in pattern
                                 val order = pattern.indexOf(idx)
                                 Box(
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape)
-                                        .background(
-                                            if (isSelected) MaterialTheme.colorScheme.primary
-                                            else MaterialTheme.colorScheme.surfaceVariant
-                                        )
-                                        .clickable {
-                                            pattern = if (isSelected) pattern.filter { it != idx }
-                                            else pattern + idx
-                                        },
-                                    contentAlignment = Alignment.Center
+                                    modifier =
+                                        Modifier
+                                            .size(48.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (isSelected) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    MaterialTheme.colorScheme.surfaceVariant
+                                                },
+                                            ).clickable {
+                                                pattern =
+                                                    if (isSelected) {
+                                                        pattern.filter { it != idx }
+                                                    } else {
+                                                        pattern + idx
+                                                    }
+                                            },
+                                    contentAlignment = Alignment.Center,
                                 ) {
                                     if (isSelected) {
                                         Text("${order + 1}", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
@@ -351,6 +497,6 @@ fun PatternDialog(
                 Text(stringResource(R.string.action_ok))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

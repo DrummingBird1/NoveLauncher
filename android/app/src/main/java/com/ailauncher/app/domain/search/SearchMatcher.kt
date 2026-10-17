@@ -18,8 +18,11 @@ import kotlin.math.min
  * Returns 0 for no match; higher is better. Pure Kotlin — unit-tested on the JVM.
  */
 object SearchMatcher {
-
-    fun score(query: String, label: String, packageName: String = ""): Int {
+    fun score(
+        query: String,
+        label: String,
+        packageName: String = "",
+    ): Int {
         val q = normalize(query)
         if (q.isEmpty()) return 0
         val l = normalize(label)
@@ -34,7 +37,9 @@ object SearchMatcher {
         val qCompact = q.replace(" ", "")
         if (qCompact.length >= 2 && words.size >= 2 &&
             words.joinToString("") { it.take(1) }.startsWith(qCompact)
-        ) return 65
+        ) {
+            return 65
+        }
 
         val qKey = phoneticKey(q)
         if (qKey.length >= 2) {
@@ -60,10 +65,20 @@ object SearchMatcher {
         val sb = StringBuilder(decomposed.length)
         for (c in decomposed) {
             when {
-                Character.getType(c) == Character.NON_SPACING_MARK.toInt() -> {} // accents + niqqud
-                c in HEBREW_FINALS -> sb.append(HEBREW_FINALS.getValue(c))
-                c.isLetterOrDigit() -> sb.append(c)
-                else -> sb.append(' ')
+                Character.getType(c) == Character.NON_SPACING_MARK.toInt() -> {}
+
+                // accents + niqqud
+                c in HEBREW_FINALS -> {
+                    sb.append(HEBREW_FINALS.getValue(c))
+                }
+
+                c.isLetterOrDigit() -> {
+                    sb.append(c)
+                }
+
+                else -> {
+                    sb.append(' ')
+                }
             }
         }
         return sb.toString().trim().replace(Regex(" +"), " ")
@@ -79,6 +94,7 @@ object SearchMatcher {
      */
     fun phoneticKey(s: String): String {
         val out = StringBuilder()
+
         fun add(cls: Char) {
             if (out.isEmpty() || out.last() != cls) out.append(cls)
         }
@@ -90,61 +106,201 @@ object SearchMatcher {
             when (c) {
                 // ── Latin ──
                 'a', 'e', 'i', 'o', 'u', 'y' -> {}
-                'w' -> { add('B'); if (next == 'h') i++ }
-                'b', 'v' -> add('B')
-                'p' -> { add('P'); if (next == 'h') i++ }
-                'f' -> add('P')
-                'c' -> when (next) {
-                    'h' -> { add('K'); i++ }
-                    'e', 'i', 'y' -> add('S')
-                    'k' -> { add('K'); i++ }
-                    else -> add('K')
+
+                'w' -> {
+                    add('B')
+                    if (next == 'h') i++
                 }
-                'k', 'q' -> add('K')
-                'x' -> { add('K'); add('S') }
-                'g', 'j' -> add('G')
-                'd' -> add('D')
-                't' -> when (next) {
-                    'z' -> { add('T'); add('S'); i++ } // "tz" is how צ is usually romanized
-                    'h' -> { add('T'); i++ }
-                    else -> add('T')
+
+                'b', 'v' -> {
+                    add('B')
                 }
-                's' -> { add('S'); if (next == 'h') i++ }
-                'z' -> add('Z')
-                'l' -> add('L')
-                'm' -> add('M')
-                'n' -> add('N')
-                'r' -> add('R')
-                'h' -> add('H')
+
+                'p' -> {
+                    add('P')
+                    if (next == 'h') i++
+                }
+
+                'f' -> {
+                    add('P')
+                }
+
+                'c' -> {
+                    when (next) {
+                        'h' -> {
+                            add('K')
+                            i++
+                        }
+
+                        'e', 'i', 'y' -> {
+                            add('S')
+                        }
+
+                        'k' -> {
+                            add('K')
+                            i++
+                        }
+
+                        else -> {
+                            add('K')
+                        }
+                    }
+                }
+
+                'k', 'q' -> {
+                    add('K')
+                }
+
+                'x' -> {
+                    add('K')
+                    add('S')
+                }
+
+                'g', 'j' -> {
+                    add('G')
+                }
+
+                'd' -> {
+                    add('D')
+                }
+
+                't' -> {
+                    when (next) {
+                        'z' -> {
+                            add('T')
+                            add('S')
+                            i++
+                        }
+
+                        // "tz" is how צ is usually romanized
+                        'h' -> {
+                            add('T')
+                            i++
+                        }
+
+                        else -> {
+                            add('T')
+                        }
+                    }
+                }
+
+                's' -> {
+                    add('S')
+                    if (next == 'h') i++
+                }
+
+                'z' -> {
+                    add('Z')
+                }
+
+                'l' -> {
+                    add('L')
+                }
+
+                'm' -> {
+                    add('M')
+                }
+
+                'n' -> {
+                    add('N')
+                }
+
+                'r' -> {
+                    add('R')
+                }
+
+                'h' -> {
+                    add('H')
+                }
+
                 // ── Hebrew ──
                 'א', 'ע', 'י' -> {}
-                'ב' -> add('B')
+
+                'ב' -> {
+                    add('B')
+                }
+
                 'ו' -> {
                     // וו is a consonant (w/v); a single ו inside a word is a vowel (o/u);
                     // a word-initial single ו is "v".
                     val prev = n.getOrNull(i - 1)
                     when {
-                        next == 'ו' -> { add('B'); i++ }
-                        prev == null || prev == ' ' -> add('B')
+                        next == 'ו' -> {
+                            add('B')
+                            i++
+                        }
+
+                        prev == null || prev == ' ' -> {
+                            add('B')
+                        }
+
                         else -> {}
                     }
                 }
-                'ג' -> add('G')
-                'ד' -> add('D')
-                'ה' -> if (next != null && next != ' ') add('H') // final ה is a vowel
-                'ז' -> add('Z')
-                'ח' -> add('H')
-                'ט', 'ת' -> add('T')
-                'כ', 'ק' -> add('K')
-                'ל' -> add('L')
-                'מ' -> add('M')
-                'נ' -> add('N')
-                'ס', 'ש' -> add('S')
-                'פ' -> add('P')
-                'צ' -> { add('T'); add('S') }
-                'ר' -> add('R')
+
+                'ג' -> {
+                    add('G')
+                }
+
+                'ד' -> {
+                    add('D')
+                }
+
+                'ה' -> {
+                    if (next != null && next != ' ') add('H')
+                }
+
+                // final ה is a vowel
+                'ז' -> {
+                    add('Z')
+                }
+
+                'ח' -> {
+                    add('H')
+                }
+
+                'ט', 'ת' -> {
+                    add('T')
+                }
+
+                'כ', 'ק' -> {
+                    add('K')
+                }
+
+                'ל' -> {
+                    add('L')
+                }
+
+                'מ' -> {
+                    add('M')
+                }
+
+                'נ' -> {
+                    add('N')
+                }
+
+                'ס', 'ש' -> {
+                    add('S')
+                }
+
+                'פ' -> {
+                    add('P')
+                }
+
+                'צ' -> {
+                    add('T')
+                    add('S')
+                }
+
+                'ר' -> {
+                    add('R')
+                }
+
                 ' ' -> {}
-                else -> if (c.isDigit()) add(c)
+
+                else -> {
+                    if (c.isDigit()) add(c)
+                }
             }
             i++
         }
@@ -152,7 +308,10 @@ object SearchMatcher {
     }
 
     /** Edit distance between [q] and the best-matching prefix of [word] (typo tolerance while typing). */
-    internal fun prefixDistance(q: String, word: String): Int {
+    internal fun prefixDistance(
+        q: String,
+        word: String,
+    ): Int {
         val maxLen = min(word.length, q.length + 2)
         var best = Int.MAX_VALUE
         for (len in maxOf(1, q.length - 2)..maxLen) {
@@ -161,15 +320,20 @@ object SearchMatcher {
         return best
     }
 
-    internal fun damerauLevenshtein(a: String, b: String): Int {
+    internal fun damerauLevenshtein(
+        a: String,
+        b: String,
+    ): Int {
         val d = Array(a.length + 1) { IntArray(b.length + 1) }
         for (i in 0..a.length) d[i][0] = i
         for (j in 0..b.length) d[0][j] = j
-        for (i in 1..a.length) for (j in 1..b.length) {
-            val cost = if (a[i - 1] == b[j - 1]) 0 else 1
-            d[i][j] = minOf(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)
-            if (i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1]) {
-                d[i][j] = min(d[i][j], d[i - 2][j - 2] + 1)
+        for (i in 1..a.length) {
+            for (j in 1..b.length) {
+                val cost = if (a[i - 1] == b[j - 1]) 0 else 1
+                d[i][j] = minOf(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)
+                if (i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1]) {
+                    d[i][j] = min(d[i][j], d[i - 2][j - 2] + 1)
+                }
             }
         }
         return d[a.length][b.length]

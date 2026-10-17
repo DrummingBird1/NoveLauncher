@@ -21,7 +21,6 @@ import java.time.Instant
  * DriveClient never touches Context or DriveAuth.
  */
 class DriveClientTest {
-
     private lateinit var server: MockWebServer
     private lateinit var client: DriveClient
 
@@ -41,8 +40,8 @@ class DriveClientTest {
     fun `upload sends name, type and folder as multipart metadata`() {
         server.enqueue(
             MockResponse().setBody(
-                """{"id": "f1", "name": "novelauncher_backup_2026-10-17_09-00-00.json", "modifiedTime": "2026-10-17T09:00:01.250Z"}"""
-            )
+                """{"id": "f1", "name": "novelauncher_backup_2026-10-17_09-00-00.json", "modifiedTime": "2026-10-17T09:00:01.250Z"}""",
+            ),
         )
         val content = """{"appearance":{"themeName":"עברית"}}"""
 
@@ -135,8 +134,8 @@ class DriveClientTest {
                     {"id": "b1", "name": "novelauncher_backup_2026-10-01_21-30-00.json", "modifiedTime": "2026-10-01T21:30:02.000Z"}
                   ]
                 }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
 
         val files = client.listBackups("tok")
@@ -148,7 +147,12 @@ class DriveClientTest {
         assertTrue(q, q.contains("name contains 'novelauncher_backup'"))
         assertTrue(q, q.contains("mimeType = 'application/json'"))
         assertTrue(q, q.contains("trashed = false"))
-        assertTrue(req.requestUrl?.queryParameter("fields").orEmpty().contains("modifiedTime"))
+        assertTrue(
+            req.requestUrl
+                ?.queryParameter("fields")
+                .orEmpty()
+                .contains("modifiedTime"),
+        )
 
         assertEquals(listOf("b2", "b1"), files.map { it.id })
         assertEquals("novelauncher_backup_2026-10-17_09-00-00.json", files[0].name)
@@ -189,9 +193,13 @@ class DriveClientTest {
     }
 
     /** Splits a multipart body into (headers, body) pairs, per RFC 2046 with CRLF line breaks. */
-    private fun multipartParts(body: String, boundary: String): List<Pair<String, String>> {
+    private fun multipartParts(
+        body: String,
+        boundary: String,
+    ): List<Pair<String, String>> {
         assertTrue("body must end with the close delimiter", body.trimEnd().endsWith("--$boundary--"))
-        return body.substringBefore("\r\n--$boundary--")
+        return body
+            .substringBefore("\r\n--$boundary--")
             .split("--$boundary\r\n")
             .filter { it.isNotEmpty() }
             .map { part ->

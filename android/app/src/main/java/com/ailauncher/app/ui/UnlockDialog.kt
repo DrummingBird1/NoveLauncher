@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 data class PendingUnlock(
     val packageName: String,
     val method: LockMethod,
-    val onUnlocked: () -> Unit
+    val onUnlocked: () -> Unit,
 )
 
 /**
@@ -48,7 +48,11 @@ data class PendingUnlock(
  * the recents thumbnail.
  */
 @Composable
-fun UnlockDialog(pending: PendingUnlock, appLockManager: AppLockManager, onDismiss: () -> Unit) {
+fun UnlockDialog(
+    pending: PendingUnlock,
+    appLockManager: AppLockManager,
+    onDismiss: () -> Unit,
+) {
     var input by remember(pending) { mutableStateOf("") }
     var error by remember(pending) { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
@@ -72,8 +76,9 @@ fun UnlockDialog(pending: PendingUnlock, appLockManager: AppLockManager, onDismi
     if (pending.method == LockMethod.PATTERN) {
         PatternDialog(onDismiss = onDismiss, title = stringResource(R.string.auth_required_title)) { drawn ->
             scope.launch {
-                if (appLockManager.verifyPattern(drawn)) succeed()
-                else {
+                if (appLockManager.verifyPattern(drawn)) {
+                    succeed()
+                } else {
                     Toast.makeText(context, wrongText, Toast.LENGTH_SHORT).show()
                     onDismiss()
                 }
@@ -89,18 +94,24 @@ fun UnlockDialog(pending: PendingUnlock, appLockManager: AppLockManager, onDismi
             Column {
                 Text(
                     stringResource(
-                        if (pending.method == LockMethod.PIN) R.string.auth_app_locked_with_pin
-                        else R.string.auth_app_locked_with_password
+                        if (pending.method == LockMethod.PIN) {
+                            R.string.auth_app_locked_with_pin
+                        } else {
+                            R.string.auth_app_locked_with_password
+                        },
                     ),
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
                 )
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = input,
-                    onValueChange = { input = it; error = null },
+                    onValueChange = {
+                        input = it
+                        error = null
+                    },
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
-                    isError = error != null
+                    isError = error != null,
                 )
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
             }
@@ -108,18 +119,21 @@ fun UnlockDialog(pending: PendingUnlock, appLockManager: AppLockManager, onDismi
         confirmButton = {
             TextButton(onClick = {
                 scope.launch {
-                    val ok = when (pending.method) {
-                        LockMethod.PIN -> appLockManager.verifyPin(input)
-                        LockMethod.PASSWORD -> appLockManager.verifyPassword(input)
-                        else -> false
-                    }
-                    if (ok) succeed() else {
+                    val ok =
+                        when (pending.method) {
+                            LockMethod.PIN -> appLockManager.verifyPin(input)
+                            LockMethod.PASSWORD -> appLockManager.verifyPassword(input)
+                            else -> false
+                        }
+                    if (ok) {
+                        succeed()
+                    } else {
                         error = wrongText
                         input = ""
                     }
                 }
             }) { Text(stringResource(R.string.action_ok)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

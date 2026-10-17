@@ -27,13 +27,30 @@ object SolarCalculator {
     const val ZENITH_TZEIT = 98.5
 
     /** Epoch millis of sunset (or the given zenith crossing in the evening), null in polar day/night. */
-    fun sunset(date: LocalDate, lat: Double, lon: Double, zone: ZoneId, zenith: Double = ZENITH_OFFICIAL): Long? =
-        event(date, lat, lon, zone, zenith, rising = false)
+    fun sunset(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        zone: ZoneId,
+        zenith: Double = ZENITH_OFFICIAL,
+    ): Long? = event(date, lat, lon, zone, zenith, rising = false)
 
-    fun sunrise(date: LocalDate, lat: Double, lon: Double, zone: ZoneId, zenith: Double = ZENITH_OFFICIAL): Long? =
-        event(date, lat, lon, zone, zenith, rising = true)
+    fun sunrise(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        zone: ZoneId,
+        zenith: Double = ZENITH_OFFICIAL,
+    ): Long? = event(date, lat, lon, zone, zenith, rising = true)
 
-    private fun event(date: LocalDate, lat: Double, lon: Double, zone: ZoneId, zenith: Double, rising: Boolean): Long? {
+    private fun event(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        zone: ZoneId,
+        zenith: Double,
+        rising: Boolean,
+    ): Long? {
         val n = date.dayOfYear
         val lngHour = lon / 15.0
         val t = n + ((if (rising) 6.0 else 18.0) - lngHour) / 24.0
@@ -61,8 +78,12 @@ object SolarCalculator {
     }
 
     private const val DAY_MS = 86_400_000L
+
     private fun norm360(x: Double) = ((x % 360.0) + 360.0) % 360.0
+
     private fun sinD(d: Double) = sin(Math.toRadians(d))
+
     private fun cosD(d: Double) = cos(Math.toRadians(d))
+
     private fun tanD(d: Double) = tan(Math.toRadians(d))
 }

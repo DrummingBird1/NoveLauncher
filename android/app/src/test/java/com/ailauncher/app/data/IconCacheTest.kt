@@ -30,55 +30,68 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class IconCacheTest {
-
     private fun newCache(): IconCache {
         val context = ApplicationProvider.getApplicationContext<Application>()
         return IconCache(context).apply { ioScope = CoroutineScope(UnconfinedTestDispatcher()) }
     }
 
-    private fun testDrawable() = BitmapDrawable(
-        ApplicationProvider.getApplicationContext<Application>().resources,
-        Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888)
-    )
+    private fun testDrawable() =
+        BitmapDrawable(
+            ApplicationProvider.getApplicationContext<Application>().resources,
+            Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888),
+        )
 
     @Test
-    fun `preloadFromDisk restores an icon written by a prior instance's getOrLoad`() = runTest {
-        newCache().getOrLoad("com.example.app") { testDrawable() }
+    fun `preloadFromDisk restores an icon written by a prior instance's getOrLoad`() =
+        runTest {
+            newCache().getOrLoad("com.example.app") { testDrawable() }
 
-        // Simulate a process restart: a fresh instance, same on-disk cache dir.
-        val restarted = newCache()
-        restarted.preloadFromDisk(listOf("com.example.app"))
+            // Simulate a process restart: a fresh instance, same on-disk cache dir.
+            val restarted = newCache()
+            restarted.preloadFromDisk(listOf("com.example.app"))
 
-        var loaderCalled = false
-        val result = restarted.getOrLoad("com.example.app") { loaderCalled = true; testDrawable() }
+            var loaderCalled = false
+            val result =
+                restarted.getOrLoad("com.example.app") {
+                    loaderCalled = true
+                    testDrawable()
+                }
 
-        assertNotNull(result)
-        assertFalse("preload should have warmed the memory cache; loader must not run", loaderCalled)
-    }
-
-    @Test
-    fun `preloadFromDisk is a no-op for a key nothing was ever written for`() = runTest {
-        val cache = newCache()
-        cache.preloadFromDisk(listOf("com.never.written"))
-
-        var loaderCalled = false
-        cache.getOrLoad("com.never.written") { loaderCalled = true; testDrawable() }
-
-        assertTrue("loader should still run — disk had nothing to warm from", loaderCalled)
-    }
+            assertNotNull(result)
+            assertFalse("preload should have warmed the memory cache; loader must not run", loaderCalled)
+        }
 
     @Test
-    fun `invalidate deletes the disk file so a later preload finds nothing`() = runTest {
-        val first = newCache()
-        first.getOrLoad("com.example.app") { testDrawable() }
-        first.invalidate("com.example.app")
+    fun `preloadFromDisk is a no-op for a key nothing was ever written for`() =
+        runTest {
+            val cache = newCache()
+            cache.preloadFromDisk(listOf("com.never.written"))
 
-        val restarted = newCache()
-        restarted.preloadFromDisk(listOf("com.example.app"))
+            var loaderCalled = false
+            cache.getOrLoad("com.never.written") {
+                loaderCalled = true
+                testDrawable()
+            }
 
-        var loaderCalled = false
-        restarted.getOrLoad("com.example.app") { loaderCalled = true; testDrawable() }
+            assertTrue("loader should still run — disk had nothing to warm from", loaderCalled)
+        }
 
-        assertTrue("invalidate should have removed the disk file too", loaderCalled)
-    }
+    @Test
+    fun `invalidate deletes the disk file so a later preload finds nothing`() =
+        runTest {
+            val first = newCache()
+            first.getOrLoad("com.example.app") { testDrawable() }
+            first.invalidate("com.example.app")
+
+            val restarted = newCache()
+            restarted.preloadFromDisk(listOf("com.example.app"))
+
+            var loaderCalled = false
+            restarted.getOrLoad("com.example.app") {
+                loaderCalled = true
+                testDrawable()
+            }
+
+            assertTrue("invalidate should have removed the disk file too", loaderCalled)
+        }
 }

@@ -16,15 +16,18 @@ import java.util.Calendar
  * computeFeatureScore's body is swapped for a TFLite model (see class kdoc).
  */
 class AppPredictionEngineTest {
-
     private lateinit var engine: AppPredictionEngine
 
     @Before fun setUp() {
         engine = AppPredictionEngine(mockk(relaxed = true), mockk<UsageDao>(relaxed = true))
     }
 
-    private fun usage(pkg: String, lastUsed: Long, launches: Int, foregroundMs: Long = 0) =
-        UsageCacheEntity(packageName = pkg, totalTimeInForeground = foregroundMs, lastTimeUsed = lastUsed, launchCount = launches)
+    private fun usage(
+        pkg: String,
+        lastUsed: Long,
+        launches: Int,
+        foregroundMs: Long = 0,
+    ) = UsageCacheEntity(packageName = pkg, totalTimeInForeground = foregroundMs, lastTimeUsed = lastUsed, launchCount = launches)
 
     @Test fun `recency score decays with hours since last use`() {
         val now = System.currentTimeMillis()

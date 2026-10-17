@@ -13,8 +13,13 @@ import androidx.sqlite.execSQL
  * hands over a SQLiteConnection (→ migrate(SQLiteConnection)). Overriding only
  * one of them makes the other path throw NotImplementedError.
  */
-private class SqlMigration(from: Int, to: Int, private val statements: List<String>) : Migration(from, to) {
+private class SqlMigration(
+    from: Int,
+    to: Int,
+    private val statements: List<String>,
+) : Migration(from, to) {
     override fun migrate(db: SupportSQLiteDatabase) = statements.forEach(db::execSQL)
+
     override fun migrate(connection: SQLiteConnection) = statements.forEach { connection.execSQL(it) }
 }
 
@@ -30,14 +35,16 @@ private class SqlMigration(from: Int, to: Int, private val statements: List<Stri
  * that's what Room's schema validator compares the live SQLite schema against
  * on next open, and a mismatch throws IllegalStateException at runtime.
  */
-val MIGRATION_1_2: Migration = SqlMigration(
-    1, 2,
-    listOf(
-        "CREATE INDEX IF NOT EXISTS `index_daily_stats_date` ON `daily_stats` (`date`)",
-        "CREATE INDEX IF NOT EXISTS `index_daily_stats_packageName` ON `daily_stats` (`packageName`)",
-        "CREATE INDEX IF NOT EXISTS `index_hourly_usage_packageName` ON `hourly_usage` (`packageName`)"
+val MIGRATION_1_2: Migration =
+    SqlMigration(
+        1,
+        2,
+        listOf(
+            "CREATE INDEX IF NOT EXISTS `index_daily_stats_date` ON `daily_stats` (`date`)",
+            "CREATE INDEX IF NOT EXISTS `index_daily_stats_packageName` ON `daily_stats` (`packageName`)",
+            "CREATE INDEX IF NOT EXISTS `index_hourly_usage_packageName` ON `hourly_usage` (`packageName`)",
+        ),
     )
-)
 
 /**
  * v10: suggestion_feedback — impressions vs. taps per app in "Recommended now",
@@ -45,11 +52,13 @@ val MIGRATION_1_2: Migration = SqlMigration(
  * Purely additive. The CREATE statement must match Room's generated schema
  * exactly (schemas/…/3.json); LauncherDatabaseMigrationTest validates it.
  */
-val MIGRATION_2_3: Migration = SqlMigration(
-    2, 3,
-    listOf(
-        "CREATE TABLE IF NOT EXISTS `suggestion_feedback` (`packageName` TEXT NOT NULL, " +
-            "`impressions` REAL NOT NULL, `taps` REAL NOT NULL, `updatedAt` INTEGER NOT NULL, " +
-            "PRIMARY KEY(`packageName`))"
+val MIGRATION_2_3: Migration =
+    SqlMigration(
+        2,
+        3,
+        listOf(
+            "CREATE TABLE IF NOT EXISTS `suggestion_feedback` (`packageName` TEXT NOT NULL, " +
+                "`impressions` REAL NOT NULL, `taps` REAL NOT NULL, `updatedAt` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`packageName`))",
+        ),
     )
-)

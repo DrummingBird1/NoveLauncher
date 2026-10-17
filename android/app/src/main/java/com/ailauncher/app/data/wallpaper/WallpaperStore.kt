@@ -23,32 +23,37 @@ import kotlin.math.max
  * file isn't part of the export); WallpaperLayer then just draws nothing.
  */
 object WallpaperStore {
-
     private fun dir(context: Context) = File(context.filesDir, "wallpapers").apply { mkdirs() }
 
     /** Copies + downscales [source]; returns the stored file's path, or null on failure. */
-    suspend fun import(context: Context, source: Uri, id: String): String? = withContext(Dispatchers.IO) {
-        try {
-            val metrics = context.resources.displayMetrics
-            val target = max(metrics.widthPixels, metrics.heightPixels).coerceAtLeast(1080)
-            val bitmap = decodeScaled(context, source, target) ?: return@withContext null
-            val file = File(dir(context), "$id.jpg")
-            file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
-            bitmap.recycle()
-            file.absolutePath
-        } catch (e: Exception) {
-            Timber.w(e, "Wallpaper import failed")
-            null
+    suspend fun import(
+        context: Context,
+        source: Uri,
+        id: String,
+    ): String? =
+        withContext(Dispatchers.IO) {
+            try {
+                val metrics = context.resources.displayMetrics
+                val target = max(metrics.widthPixels, metrics.heightPixels).coerceAtLeast(1080)
+                val bitmap = decodeScaled(context, source, target) ?: return@withContext null
+                val file = File(dir(context), "$id.jpg")
+                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+                bitmap.recycle()
+                file.absolutePath
+            } catch (e: Exception) {
+                Timber.w(e, "Wallpaper import failed")
+                null
+            }
         }
-    }
 
     /** Loads a stored wallpaper for drawing. Call off the main thread. */
-    fun load(path: String): Bitmap? = try {
-        if (File(path).isFile) BitmapFactory.decodeFile(path) else null
-    } catch (e: Exception) {
-        Timber.w(e, "Wallpaper load failed")
-        null
-    }
+    fun load(path: String): Bitmap? =
+        try {
+            if (File(path).isFile) BitmapFactory.decodeFile(path) else null
+        } catch (e: Exception) {
+            Timber.w(e, "Wallpaper load failed")
+            null
+        }
 
     fun delete(path: String) {
         if (path.isBlank()) return
@@ -57,7 +62,11 @@ object WallpaperStore {
         if (file.parentFile?.name == "wallpapers") file.delete()
     }
 
-    private fun decodeScaled(context: Context, uri: Uri, maxSide: Int): Bitmap? {
+    private fun decodeScaled(
+        context: Context,
+        uri: Uri,
+        maxSide: Int,
+    ): Bitmap? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val src = ImageDecoder.createSource(context.contentResolver, uri)
             return ImageDecoder.decodeBitmap(src) { decoder, info, _ ->

@@ -14,16 +14,23 @@ import java.io.File
  * depends on the check being unbeatable.
  */
 object RootDetection {
-    private val suPaths = listOf(
-        "/system/app/Superuser.apk", "/sbin/su", "/system/bin/su", "/system/xbin/su",
-        "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
-        "/system/bin/failsafe/su", "/data/local/su", "/su/bin/su"
-    )
+    private val suPaths =
+        listOf(
+            "/system/app/Superuser.apk",
+            "/sbin/su",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su",
+            "/su/bin/su",
+        )
 
     fun isLikelyRooted(): Boolean = hasSuBinary() || hasTestKeysBuildTag()
 
-    private fun hasSuBinary(): Boolean =
-        suPaths.any { runCatching { File(it).exists() }.getOrDefault(false) }
+    private fun hasSuBinary(): Boolean = suPaths.any { runCatching { File(it).exists() }.getOrDefault(false) }
 
     private fun hasTestKeysBuildTag(): Boolean = Build.TAGS?.contains("test-keys") == true
 }

@@ -27,11 +27,12 @@ val releaseKeystorePath = System.getenv("RELEASE_KEYSTORE_PATH")
 val releaseKeystorePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
 val releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
 val releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
-val hasReleaseSigning = !releaseKeystorePath.isNullOrBlank() &&
-    !releaseKeystorePassword.isNullOrBlank() &&
-    !releaseKeyAlias.isNullOrBlank() &&
-    !releaseKeyPassword.isNullOrBlank() &&
-    file(releaseKeystorePath).exists()
+val hasReleaseSigning =
+    !releaseKeystorePath.isNullOrBlank() &&
+        !releaseKeystorePassword.isNullOrBlank() &&
+        !releaseKeyAlias.isNullOrBlank() &&
+        !releaseKeyPassword.isNullOrBlank() &&
+        file(releaseKeystorePath).exists()
 
 // v9.3: same opt-in-via-env-var pattern as release signing above. Empty by
 // default — AILauncherApp.initSentry() no-ops when BuildConfig.SENTRY_DSN is
@@ -111,7 +112,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true; buildConfig = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     // v9: lint is advisory, not a build gate. The codebase has correctly-guarded
     // API-29 calls (e.g. MediaStore.Downloads behind SDK_INT >= Q) that lint's
@@ -287,7 +291,7 @@ jacoco {
 // rather than catching new violations. CI runs `ktlintCheck` with
 // continue-on-error, same policy as `lint`.
 ktlint {
-    version.set("1.3.1")
+    version.set("1.8.0")
 }
 
 // v9: coverage report for testDebugUnitTest, uploaded as a CI artifact. Not a
@@ -303,17 +307,31 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         html.required.set(true)
     }
 
-    val fileFilter = listOf(
-        "**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*",
-        "**/*Test*.*", "android/**/*.*",
-        "**/*_Hilt*.*", "**/Hilt_*.*", "**/*_Factory.*", "**/*_MembersInjector.*",
-        "**/*Module_*Factory.*", "**/dagger/**/*.*", "**/*_ComponentTreeDeps.*",
-        "**/hilt_aggregated_deps/**", "**/*\$serializer.*", "**/ComposableSingletons\$*.*"
-    )
+    val fileFilter =
+        listOf(
+            "**/R.class",
+            "**/R\$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*Test*.*",
+            "android/**/*.*",
+            "**/*_Hilt*.*",
+            "**/Hilt_*.*",
+            "**/*_Factory.*",
+            "**/*_MembersInjector.*",
+            "**/*Module_*Factory.*",
+            "**/dagger/**/*.*",
+            "**/*_ComponentTreeDeps.*",
+            "**/hilt_aggregated_deps/**",
+            "**/*\$serializer.*",
+            "**/ComposableSingletons\$*.*",
+        )
     // v10: AGP 9's built-in Kotlin writes classes here, not KGP's old
     // tmp/kotlin-classes/debug — pointing at the old path silently reports 0%.
-    val kotlinClasses = fileTree("${layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") { exclude(fileFilter) }
-    val javaClasses = fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") { exclude(fileFilter) }
+    val kotlinClasses =
+        fileTree("${layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") { exclude(fileFilter) }
+    val javaClasses =
+        fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") { exclude(fileFilter) }
 
     sourceDirectories.setFrom(files("$projectDir/src/main/java", "$projectDir/src/main/kotlin"))
     classDirectories.setFrom(files(kotlinClasses, javaClasses))

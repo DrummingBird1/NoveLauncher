@@ -17,14 +17,13 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppBindsModule {
-
     @Binds
     abstract fun bindSettingsRepository(
-        impl: com.ailauncher.app.data.SettingsRepository
+        impl: com.ailauncher.app.data.SettingsRepository,
     ): com.ailauncher.app.domain.repository.SettingsRepository
 
     @Binds
     abstract fun bindInstalledAppsRepository(
-        impl: com.ailauncher.app.data.InstalledAppsRepository
+        impl: com.ailauncher.app.data.InstalledAppsRepository,
     ): com.ailauncher.app.domain.repository.InstalledAppsRepository
 }

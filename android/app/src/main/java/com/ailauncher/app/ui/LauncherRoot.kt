@@ -70,7 +70,10 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
+fun LauncherRoot(
+    viewModel: LauncherViewModel,
+    activity: LauncherActivity,
+) {
     val pages by viewModel.pagesSettings.collectAsState()
     val newsSettings by viewModel.newsSettings.collectAsState()
     val appearance by viewModel.appearance.collectAsState()
@@ -87,24 +90,39 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
     val config = LocalConfiguration.current
     val adaptiveDisplay by viewModel.adaptiveDisplay.collectAsState()
 
-    val effectiveColumns = when {
-        !adaptiveDisplay.autoDetect -> when (adaptiveDisplay.forcedType) {
-            ScreenType.TABLET -> adaptiveDisplay.tabletColumns
-            ScreenType.FOLDABLE -> adaptiveDisplay.foldableColumns
-            ScreenType.LANDSCAPE -> adaptiveDisplay.landscapeColumns
-            ScreenType.PHONE -> appearance.gridColumns
+    val effectiveColumns =
+        when {
+            !adaptiveDisplay.autoDetect -> {
+                when (adaptiveDisplay.forcedType) {
+                    ScreenType.TABLET -> adaptiveDisplay.tabletColumns
+                    ScreenType.FOLDABLE -> adaptiveDisplay.foldableColumns
+                    ScreenType.LANDSCAPE -> adaptiveDisplay.landscapeColumns
+                    ScreenType.PHONE -> appearance.gridColumns
+                }
+            }
+
+            config.screenWidthDp >= 840 -> {
+                adaptiveDisplay.tabletColumns
+            }
+
+            config.screenWidthDp >= 600 -> {
+                adaptiveDisplay.foldableColumns
+            }
+
+            else -> {
+                appearance.gridColumns
+            }
         }
-        config.screenWidthDp >= 840 -> adaptiveDisplay.tabletColumns
-        config.screenWidthDp >= 600 -> adaptiveDisplay.foldableColumns
-        else -> appearance.gridColumns
-    }
 
     // v10: LIVE mode shows the system (live) wallpaper through the window, which
     // is transparent from the start (Theme.AILauncher.Home in themes.xml).
     val showSystemWallpaper = appearance.wallpaper.mode == WallpaperMode.LIVE
     DisposableEffect(showSystemWallpaper) {
-        if (showSystemWallpaper) activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
-        else activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
+        if (showSystemWallpaper) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
+        } else {
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
+        }
         onDispose { }
     }
 
@@ -125,14 +143,22 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
     LaunchedEffect(homeRequest) {
         if (homeRequest == null) return@LaunchedEffect
         showGlobalSearch = false
-        if (homeRequest.animate && !reduceMotion) pagerState.animateScrollToPage(defaultIndex)
-        else pagerState.scrollToPage(defaultIndex)
+        if (homeRequest.animate && !reduceMotion) {
+            pagerState.animateScrollToPage(defaultIndex)
+        } else {
+            pagerState.scrollToPage(defaultIndex)
+        }
     }
 
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage < enabledPages.size) viewModel.navigateToPage(enabledPages[pagerState.currentPage])
     }
-    LaunchedEffect(showNavBar) { if (showNavBar) { kotlinx.coroutines.delay(3000); showNavBar = false } }
+    LaunchedEffect(showNavBar) {
+        if (showNavBar) {
+            kotlinx.coroutines.delay(3000)
+            showNavBar = false
+        }
+    }
 
     val gestures = smartControl.gesturesEnabled
     val currentPageId = enabledPages.getOrNull(pagerState.currentPage)?.id ?: "home"
@@ -141,40 +167,68 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
         WallpaperLayer(appearance.wallpaper, pageId = currentPageId, dimmed = currentPageId != "home")
 
         Column(
-            Modifier.fillMaxSize()
+            Modifier
+                .fillMaxSize()
                 .pointerInput(Unit) {
                     detectVerticalDragGestures { _, dragAmount ->
                         if (dragAmount < -30) showNavBar = true
                         if (dragAmount > 30) showNavBar = false
                     }
-                }
+                },
         ) {
             HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { pageIndex ->
                 val page = enabledPages.getOrNull(pageIndex)
                 when (page?.id) {
-                    "home" -> HomeScreen(
-                        viewModel = viewModel,
-                        gridColumns = effectiveColumns,
-                        onSwipeUp = if (gestures && smartControl.swipeUpAppDrawer) {
-                            {
-                                // v8: Swipe-up from Home jumps to the Apps page if enabled.
-                                val appsIdx = enabledPages.indexOfFirst { it.id == "apps" }
-                                if (appsIdx >= 0) scope.launch { pagerState.animateScrollToPage(appsIdx) }
-                            }
-                        } else null,
-                        onSwipeDown = if (gestures && smartControl.swipeDownNotifications) {
-                            { GestureActions.expandNotifications(context) }
-                        } else null,
-                        onDoubleTap = if (gestures && smartControl.doubleTapToSleep) {
-                            { if (!GestureActions.lockScreen()) showLockSetup = true }
-                        } else null,
-                        onOpenSearch = { showGlobalSearch = true }
-                    )
-                    "apps" -> AppsScreen(viewModel = viewModel, gridColumns = effectiveColumns)
-                    "news" -> NewsScreen(newsSettings = newsSettings)
-                    "personal" -> PersonalZoneScreen(viewModel = viewModel)
-                    else -> Box(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
-                        Text(page?.localizedName(context) ?: "", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+                    "home" -> {
+                        HomeScreen(
+                            viewModel = viewModel,
+                            gridColumns = effectiveColumns,
+                            onSwipeUp =
+                                if (gestures && smartControl.swipeUpAppDrawer) {
+                                    {
+                                        // v8: Swipe-up from Home jumps to the Apps page if enabled.
+                                        val appsIdx = enabledPages.indexOfFirst { it.id == "apps" }
+                                        if (appsIdx >= 0) scope.launch { pagerState.animateScrollToPage(appsIdx) }
+                                    }
+                                } else {
+                                    null
+                                },
+                            onSwipeDown =
+                                if (gestures && smartControl.swipeDownNotifications) {
+                                    { GestureActions.expandNotifications(context) }
+                                } else {
+                                    null
+                                },
+                            onDoubleTap =
+                                if (gestures && smartControl.doubleTapToSleep) {
+                                    { if (!GestureActions.lockScreen()) showLockSetup = true }
+                                } else {
+                                    null
+                                },
+                            onOpenSearch = { showGlobalSearch = true },
+                        )
+                    }
+
+                    "apps" -> {
+                        AppsScreen(viewModel = viewModel, gridColumns = effectiveColumns)
+                    }
+
+                    "news" -> {
+                        NewsScreen(newsSettings = newsSettings)
+                    }
+
+                    "personal" -> {
+                        PersonalZoneScreen(viewModel = viewModel)
+                    }
+
+                    else -> {
+                        Box(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+                            Text(
+                                page?.localizedName(context) ?: "",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
                     }
                 }
             }
@@ -182,9 +236,13 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
             AnimatedVisibility(
                 visible = showNavBar && enabledPages.size > 1,
                 enter = if (reduceMotion) EnterTransition.None else slideInVertically { it },
-                exit = if (reduceMotion) ExitTransition.None else slideOutVertically { it }
+                exit = if (reduceMotion) ExitTransition.None else slideOutVertically { it },
             ) {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp, modifier = Modifier.navigationBarsPadding()) {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 0.dp,
+                    modifier = Modifier.navigationBarsPadding(),
+                ) {
                     enabledPages.forEachIndexed { index, page ->
                         val pageName = page.localizedName(context)
                         NavigationBarItem(
@@ -199,14 +257,15 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
                                         "shield" -> Icons.Rounded.Shield
                                         else -> Icons.Rounded.Tab
                                     },
-                                    pageName
+                                    pageName,
                                 )
                             },
                             label = { Text(pageName, fontSize = 11.sp, fontFamily = launcherFontFamily(appearance.pageFont)) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            colors =
+                                NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ),
                         )
                     }
                 }
@@ -229,7 +288,10 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
  * only for "Open accessibility settings"; Cancel and outside taps just dismiss.
  */
 @Composable
-fun LockGestureSetupDialog(onDismiss: () -> Unit, onConsent: () -> Unit = {}) {
+fun LockGestureSetupDialog(
+    onDismiss: () -> Unit,
+    onConsent: () -> Unit = {},
+) {
     val context = LocalContext.current
     val supported = LockScreenAccessibilityService.isLockSupported
     AlertDialog(
@@ -247,6 +309,6 @@ fun LockGestureSetupDialog(onDismiss: () -> Unit, onConsent: () -> Unit = {}) {
                 }) { Text(stringResource(R.string.gesture_lock_setup_open)) }
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

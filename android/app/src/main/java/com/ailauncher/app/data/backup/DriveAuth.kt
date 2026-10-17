@@ -40,13 +40,15 @@ import java.util.concurrent.TimeUnit
 object DriveAuth {
     private const val PREFS = "cloud_auth"
     private const val KEY_EMAIL = "account_email"
-    private val SCOPES = listOf(
-        Scope("https://www.googleapis.com/auth/drive.file"),
-        Scope("email")
-    )
+    private val SCOPES =
+        listOf(
+            Scope("https://www.googleapis.com/auth/drive.file"),
+            Scope("email"),
+        )
 
     fun request(context: Context): AuthorizationRequest =
-        AuthorizationRequest.Builder()
+        AuthorizationRequest
+            .Builder()
             .setRequestedScopes(SCOPES)
             .apply { connectedEmail(context)?.let { setAccount(Account(it, "com.google")) } }
             .build()
@@ -54,13 +56,22 @@ object DriveAuth {
     fun client(context: Context) = Identity.getAuthorizationClient(context)
 
     /** Unwraps the consent screen's result Intent. Throws ApiException on failure. */
-    fun resultFromIntent(context: Context, data: android.content.Intent?): AuthorizationResult =
-        client(context).getAuthorizationResultFromIntent(data)
+    fun resultFromIntent(
+        context: Context,
+        data: android.content.Intent?,
+    ): AuthorizationResult = client(context).getAuthorizationResultFromIntent(data)
 
     /** Persists the connected account after a successful authorization. */
-    fun onAuthorized(context: Context, result: AuthorizationResult): String {
+    fun onAuthorized(
+        context: Context,
+        result: AuthorizationResult,
+    ): String {
         val email = result.toGoogleSignInAccount()?.email ?: "Google Drive"
-        prefs(context).edit().putString(KEY_EMAIL, email).remove("oauth_token").apply()
+        prefs(context)
+            .edit()
+            .putString(KEY_EMAIL, email)
+            .remove("oauth_token")
+            .apply()
         return email
     }
 
@@ -84,14 +95,19 @@ object DriveAuth {
     /** Revokes the grant with Google (best effort) and forgets the account locally. */
     fun disconnect(context: Context) {
         val email = connectedEmail(context)
-        prefs(context).edit().remove(KEY_EMAIL).remove("oauth_token").apply()
+        prefs(context)
+            .edit()
+            .remove(KEY_EMAIL)
+            .remove("oauth_token")
+            .apply()
         if (email == null) return
         try {
             client(context).revokeAccess(
-                RevokeAccessRequest.builder()
+                RevokeAccessRequest
+                    .builder()
                     .setAccount(Account(email, "com.google"))
                     .setScopes(SCOPES)
-                    .build()
+                    .build(),
             )
         } catch (e: Exception) {
             Timber.w(e, "Drive revokeAccess failed")

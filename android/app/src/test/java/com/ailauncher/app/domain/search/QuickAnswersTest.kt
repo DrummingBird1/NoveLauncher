@@ -5,8 +5,8 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class QuickAnswersTest {
-
     private fun calc(expr: String) = QuickAnswers.calculate(expr)?.copyValue
+
     private fun convert(q: String) = QuickAnswers.convertUnits(q)?.copyValue
 
     @Test

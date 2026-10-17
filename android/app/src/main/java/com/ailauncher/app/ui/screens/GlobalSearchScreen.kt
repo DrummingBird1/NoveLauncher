@@ -14,7 +14,18 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -22,9 +33,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,37 +91,43 @@ data class SearchResult(
     val subtitle: String = "",
     val icon: ImageVector,
     val bitmap: ImageBitmap? = null,
-    val action: () -> Unit
+    val action: () -> Unit,
 )
 
-enum class ResultType(@StringRes val displayNameRes: Int) {
+enum class ResultType(
+    @StringRes val displayNameRes: Int,
+) {
     APP(R.string.search_type_app),
     CONTACT(R.string.search_type_contact),
     SETTING(R.string.search_type_setting),
-    WEB(R.string.search_type_web)
+    WEB(R.string.search_type_web),
 }
 
-private val SEARCHABLE_SETTINGS_PAGES = listOf(
-    SettingsPage.APPEARANCE to R.string.settings_appearance,
-    SettingsPage.THEMES to R.string.settings_themes,
-    SettingsPage.FONTS to R.string.settings_fonts,
-    SettingsPage.ICON_SHAPES to R.string.settings_icon_shapes,
-    SettingsPage.CLOCK to R.string.settings_clock,
-    SettingsPage.PAGES to R.string.settings_pages,
-    SettingsPage.BACKUP to R.string.settings_backup,
-    SettingsPage.SECURITY to R.string.settings_security,
-    SettingsPage.NEWS_SOURCES to R.string.settings_news_sources,
-    SettingsPage.HIDDEN_APPS to R.string.settings_hidden_apps,
-    SettingsPage.WALLPAPER to R.string.settings_wallpapers,
-    SettingsPage.GESTURES to R.string.settings_gestures,
-    SettingsPage.JEWISH_CALENDAR to R.string.settings_jewish_calendar,
-    SettingsPage.ABOUT to R.string.settings_about,
-    SettingsPage.STATISTICS to R.string.settings_statistics,
-    SettingsPage.ICON_PACKS to R.string.settings_icon_packs
-)
+private val SEARCHABLE_SETTINGS_PAGES =
+    listOf(
+        SettingsPage.APPEARANCE to R.string.settings_appearance,
+        SettingsPage.THEMES to R.string.settings_themes,
+        SettingsPage.FONTS to R.string.settings_fonts,
+        SettingsPage.ICON_SHAPES to R.string.settings_icon_shapes,
+        SettingsPage.CLOCK to R.string.settings_clock,
+        SettingsPage.PAGES to R.string.settings_pages,
+        SettingsPage.BACKUP to R.string.settings_backup,
+        SettingsPage.SECURITY to R.string.settings_security,
+        SettingsPage.NEWS_SOURCES to R.string.settings_news_sources,
+        SettingsPage.HIDDEN_APPS to R.string.settings_hidden_apps,
+        SettingsPage.WALLPAPER to R.string.settings_wallpapers,
+        SettingsPage.GESTURES to R.string.settings_gestures,
+        SettingsPage.JEWISH_CALENDAR to R.string.settings_jewish_calendar,
+        SettingsPage.ABOUT to R.string.settings_about,
+        SettingsPage.STATISTICS to R.string.settings_statistics,
+        SettingsPage.ICON_PACKS to R.string.settings_icon_packs,
+    )
 
 @Composable
-fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
+fun GlobalSearchScreen(
+    viewModel: LauncherViewModel,
+    onDismiss: () -> Unit,
+) {
     val context = LocalContext.current
     val iconCache = LocalIconCache.current
     var query by remember { mutableStateOf("") }
@@ -117,34 +149,44 @@ fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
         delay(120) // let fast typing settle before querying contacts
         answer = withContext(Dispatchers.Default) { QuickAnswers.answer(query) }
 
-        val apps = viewModel.searchApps(query, limit = 6).map { ranked ->
-            val app = ranked.app
-            SearchResult(
-                ResultType.APP, app.label, "", Icons.Rounded.Apps,
-                bitmap = app.icon?.let { d -> iconCache.getOrLoad(app.key) { d } }
-            ) { launchApp(context, app) } // routed through the app-lock check
-        }
+        val apps =
+            viewModel.searchApps(query, limit = 6).map { ranked ->
+                val app = ranked.app
+                SearchResult(
+                    ResultType.APP,
+                    app.label,
+                    "",
+                    Icons.Rounded.Apps,
+                    bitmap = app.icon?.let { d -> iconCache.getOrLoad(app.key) { d } },
+                ) { launchApp(context, app) } // routed through the app-lock check
+            }
 
         val contacts = withContext(Dispatchers.IO) { searchContacts(context, query) }
 
-        val settingsMatches = SEARCHABLE_SETTINGS_PAGES.mapNotNull { (page, labelRes) ->
-            val label = context.getString(labelRes)
-            if (SearchMatcher.score(query, label) >= 58) {
-                SearchResult(ResultType.SETTING, label, "", Icons.Rounded.Settings) {
-                    context.startActivity(Intent(context, SettingsActivity::class.java).apply {
-                        putExtra(SettingsActivity.EXTRA_SHORTCUT_PAGE, page.name)
-                    })
+        val settingsMatches =
+            SEARCHABLE_SETTINGS_PAGES.mapNotNull { (page, labelRes) ->
+                val label = context.getString(labelRes)
+                if (SearchMatcher.score(query, label) >= 58) {
+                    SearchResult(ResultType.SETTING, label, "", Icons.Rounded.Settings) {
+                        context.startActivity(
+                            Intent(context, SettingsActivity::class.java).apply {
+                                putExtra(SettingsActivity.EXTRA_SHORTCUT_PAGE, page.name)
+                            },
+                        )
+                    }
+                } else {
+                    null
                 }
-            } else null
-        }
+            }
 
         val local = apps + contacts + settingsMatches
         hasLocalMatches = local.isNotEmpty() || answer != null
 
         // Web search fallback — always offered, even when nothing local matched.
-        results = local + SearchResult(ResultType.WEB, context.getString(R.string.search_google_for, query), "", Icons.Rounded.Search) {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=${Uri.encode(query)}")))
-        }
+        results = local +
+            SearchResult(ResultType.WEB, context.getString(R.string.search_google_for, query), "", Icons.Rounded.Search) {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=${Uri.encode(query)}")))
+            }
     }
 
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background.copy(alpha = 0.97f)).clickable(onClick = onDismiss)) {
@@ -152,13 +194,27 @@ fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onDismiss) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.action_close)) }
                 Spacer(Modifier.width(8.dp))
-                Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 20.dp, vertical = 16.dp)) {
-                    if (query.isEmpty()) Text(stringResource(R.string.search_all_hint), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(28.dp),
+                        ).background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                ) {
+                    if (query.isEmpty()) {
+                        Text(
+                            stringResource(R.string.search_all_hint),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 16.sp,
+                        )
+                    }
                     BasicTextField(
-                        value = query, onValueChange = { query = it },
+                        value = query,
+                        onValueChange = { query = it },
                         textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     )
                 }
             }
@@ -171,13 +227,24 @@ fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
                         Card(
                             Modifier.fillMaxWidth().clickable { copyToClipboard(context, a.copyValue) },
                             shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                         ) {
                             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Rounded.Calculate, null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(Modifier.width(12.dp))
-                                Text(a.display, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
-                                Icon(Icons.Rounded.ContentCopy, stringResource(R.string.search_copy_result), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                                Text(
+                                    a.display,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Icon(
+                                    Icons.Rounded.ContentCopy,
+                                    stringResource(R.string.search_copy_result),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp),
+                                )
                             }
                         }
                     }
@@ -188,28 +255,53 @@ fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
                             stringResource(R.string.search_no_local_matches),
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp),
                         )
                     }
                 }
                 results.groupBy { it.type }.toSortedMap(compareBy { it.ordinal }).forEach { (type, items) ->
                     item {
-                        Text(stringResource(type.displayNameRes), fontSize = 12.sp, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 8.dp))
+                        Text(
+                            stringResource(type.displayNameRes),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                        )
                     }
                     items(items) { result ->
-                        Card(Modifier.fillMaxWidth().clickable { result.action(); onDismiss() }, shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                        Card(
+                            Modifier.fillMaxWidth().clickable {
+                                result.action()
+                                onDismiss()
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        ) {
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                 if (result.bitmap != null) {
                                     Image(result.bitmap, null, Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)))
                                 } else {
-                                    Box(Modifier.size(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) {
+                                    Box(
+                                        Modifier
+                                            .size(
+                                                36.dp,
+                                            ).clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
                                         Icon(result.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                                     }
                                 }
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(result.title, color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
-                                    if (result.subtitle.isNotBlank()) Text(result.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                                    if (result.subtitle.isNotBlank()) {
+                                        Text(
+                                            result.subtitle,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            fontSize = 11.sp,
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -221,34 +313,50 @@ fun GlobalSearchScreen(viewModel: LauncherViewModel, onDismiss: () -> Unit) {
 }
 
 /** Contacts by name (only if READ_CONTACTS is granted — silently skipped otherwise). */
-private fun searchContacts(context: Context, query: String): List<SearchResult> {
+private fun searchContacts(
+    context: Context,
+    query: String,
+): List<SearchResult> {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
         return emptyList()
     }
     return try {
         val resolver: ContentResolver = context.contentResolver
-        val projection = arrayOf(
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.NUMBER
-        )
+        val projection =
+            arrayOf(
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+            )
         val selection = "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} LIKE ?"
         val out = mutableListOf<SearchResult>()
-        resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, arrayOf("%$query%"), null)?.use { cursor ->
-            while (cursor.moveToNext() && out.size < 5) {
-                val name = cursor.getString(0) ?: continue
-                val number = cursor.getString(1) ?: continue
-                out.add(SearchResult(ResultType.CONTACT, name, number, Icons.Rounded.Person) {
-                    context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
-                })
+        resolver
+            .query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection,
+                selection,
+                arrayOf("%$query%"),
+                null,
+            )?.use { cursor ->
+                while (cursor.moveToNext() && out.size < 5) {
+                    val name = cursor.getString(0) ?: continue
+                    val number = cursor.getString(1) ?: continue
+                    out.add(
+                        SearchResult(ResultType.CONTACT, name, number, Icons.Rounded.Person) {
+                            context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
+                        },
+                    )
+                }
             }
-        }
         out
     } catch (_: Exception) {
         emptyList()
     }
 }
 
-private fun copyToClipboard(context: Context, text: String) {
+private fun copyToClipboard(
+    context: Context,
+    text: String,
+) {
     val clipboard = context.getSystemService(ClipboardManager::class.java) ?: return
     clipboard.setPrimaryClip(ClipData.newPlainText("NoveLauncher", text))
     // Android 13+ shows its own clipboard confirmation.

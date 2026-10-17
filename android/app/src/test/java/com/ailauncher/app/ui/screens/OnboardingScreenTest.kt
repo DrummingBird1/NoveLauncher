@@ -24,7 +24,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33])
 class OnboardingScreenTest {
-
     @get:Rule val composeRule = createComposeRule()
 
     @Test fun `skip button completes onboarding without visiting other steps`() {

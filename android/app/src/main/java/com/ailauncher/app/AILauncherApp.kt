@@ -27,8 +27,9 @@ import javax.inject.Inject
  * runs once per process), instead of re-registering on every Activity recreation.
  */
 @HiltAndroidApp
-class AILauncherApp : Application(), Configuration.Provider {
-
+class AILauncherApp :
+    Application(),
+    Configuration.Provider {
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     @Inject lateinit var settingsRepoProvider: dagger.Lazy<com.ailauncher.app.data.SettingsRepository>
@@ -78,8 +79,8 @@ class AILauncherApp : Application(), Configuration.Provider {
             NotificationChannel(
                 BACKUP_CHANNEL_ID,
                 getString(R.string.notification_channel_backup),
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply { description = getString(R.string.notification_channel_backup_desc) }
+                NotificationManager.IMPORTANCE_DEFAULT,
+            ).apply { description = getString(R.string.notification_channel_backup_desc) },
         )
     }
 
@@ -91,20 +92,22 @@ class AILauncherApp : Application(), Configuration.Provider {
      */
     private fun installStrictMode() {
         StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
+            StrictMode.ThreadPolicy
+                .Builder()
                 .detectDiskReads()
                 .detectDiskWrites()
                 .detectNetwork()
                 .penaltyLog()
-                .build()
+                .build(),
         )
         StrictMode.setVmPolicy(
-            StrictMode.VmPolicy.Builder()
+            StrictMode.VmPolicy
+                .Builder()
                 .detectLeakedSqlLiteObjects()
                 .detectLeakedClosableObjects()
                 .detectActivityLeaks()
                 .penaltyLog()
-                .build()
+                .build(),
         )
     }
 
@@ -128,19 +131,23 @@ class AILauncherApp : Application(), Configuration.Provider {
             Timber.e(throwable, "Uncaught exception on ${thread.name}")
             // Record on a fresh background thread with a hard timeout. We never
             // want crash bookkeeping to block the OS from showing the ANR dialog.
-            val recorder = Thread {
-                try {
-                    runBlocking {
-                        withTimeoutOrNull(2_000) {
-                            settingsRepoProvider.get().recordCrash()
+            val recorder =
+                Thread {
+                    try {
+                        runBlocking {
+                            withTimeoutOrNull(2_000) {
+                                settingsRepoProvider.get().recordCrash()
+                            }
                         }
+                    } catch (e: Exception) {
+                        Timber.w(e, "Failed to record crash to settings")
                     }
-                } catch (e: Exception) {
-                    Timber.w(e, "Failed to record crash to settings")
                 }
-            }
             recorder.start()
-            try { recorder.join(2_000) } catch (_: InterruptedException) {}
+            try {
+                recorder.join(2_000)
+            } catch (_: InterruptedException) {
+            }
             previous?.uncaughtException(thread, throwable)
         }
     }
@@ -153,17 +160,26 @@ class AILauncherApp : Application(), Configuration.Provider {
     private fun applyConfiguredLanguage() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val tag = settingsRepoProvider.get().appearanceFlow.first().appLanguage
+                val tag =
+                    settingsRepoProvider
+                        .get()
+                        .appearanceFlow
+                        .first()
+                        .appLanguage
                 if (tag.isBlank()) return@launch
                 AppLocales.apply(this@AILauncherApp, tag)
-            } catch (e: Exception) { Timber.w(e, "Could not apply configured language") }
+            } catch (e: Exception) {
+                Timber.w(e, "Could not apply configured language")
+            }
         }
     }
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+        get() =
+            Configuration
+                .Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
 
     companion object {
         const val WIDGET_HOST_ID = 1024

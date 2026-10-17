@@ -12,7 +12,6 @@ import timber.log.Timber
  * swipeUpAppDrawer / gesturesEnabled) but nothing ever read them.
  */
 object GestureActions {
-
     /** Swipe down → notification shade. */
     @SuppressLint("WrongConstant") // "statusbar" isn't a public Context constant
     fun expandNotifications(context: Context) {

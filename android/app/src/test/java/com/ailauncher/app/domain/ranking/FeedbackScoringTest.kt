@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FeedbackScoringTest {
-
     @Test
     fun `no feedback leaves the score unchanged`() {
         assertEquals(0.6f, FeedbackScoring.adjust(0.6f, taps = 0f, impressions = 0f), 0.0001f)

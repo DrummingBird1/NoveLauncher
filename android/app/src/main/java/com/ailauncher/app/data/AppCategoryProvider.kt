@@ -2,13 +2,12 @@ package com.ailauncher.app.data
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Build
+import com.ailauncher.app.data.ml.SuggestionFeedbackRepository
 import com.ailauncher.app.domain.models.AppCategory
 import com.ailauncher.app.domain.models.AppInfo
 import com.ailauncher.app.domain.models.RankedApp
 import com.ailauncher.app.domain.models.UsageSnapshot
-import com.ailauncher.app.data.ml.SuggestionFeedbackRepository
 import com.ailauncher.app.domain.ranking.FeedbackScoring
 import java.util.Calendar
 import kotlin.math.exp
@@ -23,14 +22,16 @@ import kotlin.math.min
  * - Results cached and recomputed only on trigger (new app, time-window change)
  * - All math uses simple floating-point ops (no ML runtime overhead)
  */
-class AppCategoryProvider(private val context: Context) {
-
+class AppCategoryProvider(
+    private val context: Context,
+) {
     // ── Scoring weights ──────────────────────────────────────────────
     companion object {
         private const val WEIGHT_RECENCY = 0.35f
         private const val WEIGHT_FREQUENCY = 0.30f
         private const val WEIGHT_TIME_OF_DAY = 0.25f
         private const val WEIGHT_CATEGORY_BOOST = 0.10f
+
         // v10: situational bonus on top of the four weights above (headphones in
         // → music/video apps). Can push a score over 1 before the final clamp.
         private const val WEIGHT_CONTEXT = 0.10f
@@ -39,35 +40,37 @@ class AppCategoryProvider(private val context: Context) {
         private const val RECENCY_DECAY_HOURS = 4.0
 
         // Known package → category overrides (reliable fallback)
-        private val PACKAGE_OVERRIDES = mapOf(
-            "com.whatsapp" to AppCategory.SOCIAL,
-            "com.instagram.android" to AppCategory.SOCIAL,
-            "com.facebook.katana" to AppCategory.SOCIAL,
-            "com.twitter.android" to AppCategory.SOCIAL,
-            "com.tencent.mm" to AppCategory.SOCIAL,
-            "com.google.android.youtube" to AppCategory.ENTERTAINMENT,
-            "com.spotify.music" to AppCategory.ENTERTAINMENT,
-            "com.netflix.mediaclient" to AppCategory.ENTERTAINMENT,
-            "com.google.android.apps.maps" to AppCategory.UTILITIES,
-            "com.waze" to AppCategory.UTILITIES,
-            "com.google.android.gm" to AppCategory.WORK,
-            "com.microsoft.office.outlook" to AppCategory.WORK,
-            "com.slack" to AppCategory.WORK,
-            "com.google.android.apps.docs" to AppCategory.WORK,
-            "com.amazon.mShop.android.shopping" to AppCategory.SHOPPING,
-            "com.aliexpress" to AppCategory.SHOPPING,
-            "com.zhiliaoapp.musically" to AppCategory.ENTERTAINMENT, // TikTok
-        )
+        private val PACKAGE_OVERRIDES =
+            mapOf(
+                "com.whatsapp" to AppCategory.SOCIAL,
+                "com.instagram.android" to AppCategory.SOCIAL,
+                "com.facebook.katana" to AppCategory.SOCIAL,
+                "com.twitter.android" to AppCategory.SOCIAL,
+                "com.tencent.mm" to AppCategory.SOCIAL,
+                "com.google.android.youtube" to AppCategory.ENTERTAINMENT,
+                "com.spotify.music" to AppCategory.ENTERTAINMENT,
+                "com.netflix.mediaclient" to AppCategory.ENTERTAINMENT,
+                "com.google.android.apps.maps" to AppCategory.UTILITIES,
+                "com.waze" to AppCategory.UTILITIES,
+                "com.google.android.gm" to AppCategory.WORK,
+                "com.microsoft.office.outlook" to AppCategory.WORK,
+                "com.slack" to AppCategory.WORK,
+                "com.google.android.apps.docs" to AppCategory.WORK,
+                "com.amazon.mShop.android.shopping" to AppCategory.SHOPPING,
+                "com.aliexpress" to AppCategory.SHOPPING,
+                "com.zhiliaoapp.musically" to AppCategory.ENTERTAINMENT, // TikTok
+            )
 
         // Time-of-day category affinity matrix
         // Each hour maps to categories that get a boost at that time
-        private val TIME_CATEGORY_AFFINITY: Map<IntRange, Set<AppCategory>> = mapOf(
-            (6..9) to setOf(AppCategory.UTILITIES, AppCategory.HEALTH),           // morning
-            (9..17) to setOf(AppCategory.WORK, AppCategory.EDUCATION),            // work hours
-            (17..21) to setOf(AppCategory.SOCIAL, AppCategory.ENTERTAINMENT),     // evening
-            (21..23) to setOf(AppCategory.ENTERTAINMENT, AppCategory.GAMES),      // night
-            (0..5) to setOf(AppCategory.ENTERTAINMENT, AppCategory.SOCIAL),       // late night
-        )
+        private val TIME_CATEGORY_AFFINITY: Map<IntRange, Set<AppCategory>> =
+            mapOf(
+                (6..9) to setOf(AppCategory.UTILITIES, AppCategory.HEALTH), // morning
+                (9..17) to setOf(AppCategory.WORK, AppCategory.EDUCATION), // work hours
+                (17..21) to setOf(AppCategory.SOCIAL, AppCategory.ENTERTAINMENT), // evening
+                (21..23) to setOf(AppCategory.ENTERTAINMENT, AppCategory.GAMES), // night
+                (0..5) to setOf(AppCategory.ENTERTAINMENT, AppCategory.SOCIAL), // late night
+            )
     }
 
     // ── Classification ───────────────────────────────────────────────
@@ -78,7 +81,10 @@ class AppCategoryProvider(private val context: Context) {
      * 2. Play Store category from ApplicationInfo (Android 8+)
      * 3. Heuristic: system flag → SYSTEM, else UNCATEGORIZED
      */
-    fun categorize(packageName: String, applicationInfo: ApplicationInfo?): AppCategory {
+    fun categorize(
+        packageName: String,
+        applicationInfo: ApplicationInfo?,
+    ): AppCategory {
         // Tier 1: hardcoded overrides for popular apps
         PACKAGE_OVERRIDES[packageName]?.let { return it }
 
@@ -102,9 +108,8 @@ class AppCategoryProvider(private val context: Context) {
     /**
      * Batch-categorize all launchable apps.
      */
-    fun categorizeAll(apps: List<Pair<String, ApplicationInfo?>>): Map<String, AppCategory> {
-        return apps.associate { (pkg, info) -> pkg to categorize(pkg, info) }
-    }
+    fun categorizeAll(apps: List<Pair<String, ApplicationInfo?>>): Map<String, AppCategory> =
+        apps.associate { (pkg, info) -> pkg to categorize(pkg, info) }
 
     // ── Scoring ──────────────────────────────────────────────────────
 
@@ -121,18 +126,19 @@ class AppCategoryProvider(private val context: Context) {
         category: AppCategory,
         isSystemApp: Boolean = false,
         currentTimeMillis: Long = System.currentTimeMillis(),
-        contextBoost: Float = 0f
+        contextBoost: Float = 0f,
     ): Float {
         val recency = computeRecencyScore(snapshot.lastTimeUsed, currentTimeMillis)
         val frequency = computeFrequencyScore(snapshot.launchCount, snapshot.totalTimeInForeground)
         val timeOfDay = computeTimeOfDayScore(snapshot.hourlyDistribution, category)
         val categoryBoost = computeCategoryBoost(category)
 
-        val raw = (WEIGHT_RECENCY * recency) +
-                  (WEIGHT_FREQUENCY * frequency) +
-                  (WEIGHT_TIME_OF_DAY * timeOfDay) +
-                  (WEIGHT_CATEGORY_BOOST * categoryBoost) +
-                  (WEIGHT_CONTEXT * contextBoost)
+        val raw =
+            (WEIGHT_RECENCY * recency) +
+                (WEIGHT_FREQUENCY * frequency) +
+                (WEIGHT_TIME_OF_DAY * timeOfDay) +
+                (WEIGHT_CATEGORY_BOOST * categoryBoost) +
+                (WEIGHT_CONTEXT * contextBoost)
 
         // System apps that the user has never launched (no recency signal) get pushed down.
         // Anything the user has actually used keeps its score.
@@ -143,8 +149,7 @@ class AppCategoryProvider(private val context: Context) {
     /**
      * Rank a full list of apps. Returns sorted descending by score.
      * This is the main entry point called by the UseCase layer.
-     */
-    /**
+     *
      * v10: [deviceContext] adds a situational bonus; [feedback] (decayed taps vs.
      * impressions in "Recommended now", from SuggestionFeedbackRepository) scales
      * the result via FeedbackScoring — see that object for the exact bounds.
@@ -153,28 +158,30 @@ class AppCategoryProvider(private val context: Context) {
         apps: List<AppInfo>,
         snapshots: Map<String, UsageSnapshot>,
         deviceContext: DeviceContext = DeviceContext(),
-        feedback: Map<String, SuggestionFeedbackRepository.Counts> = emptyMap()
+        feedback: Map<String, SuggestionFeedbackRepository.Counts> = emptyMap(),
     ): List<RankedApp> {
         val now = System.currentTimeMillis()
-        return apps.map { app ->
-            val snapshot = snapshots[app.packageName] ?: UsageSnapshot(
-                packageName = app.packageName,
-                totalTimeInForeground = 0,
-                lastTimeUsed = 0,
-                launchCount = 0,
-                hourlyDistribution = emptyMap()
-            )
-            val base = computeWeightScore(snapshot, app.category, app.isSystemApp, now, deviceContext.boostFor(app.category))
-            val score = feedback[app.packageName]?.let { FeedbackScoring.adjust(base, it.taps, it.impressions) } ?: base
-            RankedApp(
-                app = app,
-                weightScore = score,
-                usageMinutesToday = snapshot.totalTimeInForeground / 60_000,
-                launchCountToday = snapshot.launchCount,
-                lastUsedTimestamp = snapshot.lastTimeUsed,
-                smartFolder = app.category
-            )
-        }.sortedByDescending { it.weightScore }
+        return apps
+            .map { app ->
+                val snapshot =
+                    snapshots[app.packageName] ?: UsageSnapshot(
+                        packageName = app.packageName,
+                        totalTimeInForeground = 0,
+                        lastTimeUsed = 0,
+                        launchCount = 0,
+                        hourlyDistribution = emptyMap(),
+                    )
+                val base = computeWeightScore(snapshot, app.category, app.isSystemApp, now, deviceContext.boostFor(app.category))
+                val score = feedback[app.packageName]?.let { FeedbackScoring.adjust(base, it.taps, it.impressions) } ?: base
+                RankedApp(
+                    app = app,
+                    weightScore = score,
+                    usageMinutesToday = snapshot.totalTimeInForeground / 60_000,
+                    launchCountToday = snapshot.launchCount,
+                    lastUsedTimestamp = snapshot.lastTimeUsed,
+                    smartFolder = app.category,
+                )
+            }.sortedByDescending { it.weightScore }
     }
 
     // ── Auto-grouping (Smart Folders) ────────────────────────────────
@@ -183,13 +190,12 @@ class AppCategoryProvider(private val context: Context) {
      * Group ranked apps into smart folders.
      * Filters out folders with fewer than 2 apps.
      */
-    fun autoGroup(rankedApps: List<RankedApp>): List<Pair<AppCategory, List<RankedApp>>> {
-        return rankedApps
+    fun autoGroup(rankedApps: List<RankedApp>): List<Pair<AppCategory, List<RankedApp>>> =
+        rankedApps
             .groupBy { it.smartFolder }
             .filter { (cat, apps) -> cat != AppCategory.SYSTEM && apps.size >= 2 }
             .toList()
             .sortedByDescending { (_, apps) -> apps.maxOf { it.weightScore } }
-    }
 
     // ── Private scoring functions ────────────────────────────────────
 
@@ -197,7 +203,10 @@ class AppCategoryProvider(private val context: Context) {
      * Exponential decay: score drops as time since last use increases.
      * At t=0 → 1.0, at t=RECENCY_DECAY_HOURS → ~0.37, at t=2×decay → ~0.14
      */
-    private fun computeRecencyScore(lastUsed: Long, now: Long): Float {
+    private fun computeRecencyScore(
+        lastUsed: Long,
+        now: Long,
+    ): Float {
         if (lastUsed == 0L) return 0f
         val hoursSinceUse = (now - lastUsed).toDouble() / 3_600_000.0
         return exp(-hoursSinceUse / RECENCY_DECAY_HOURS).toFloat()
@@ -207,7 +216,10 @@ class AppCategoryProvider(private val context: Context) {
      * Frequency score: log-scaled launch count + time weight.
      * Prevents heavy apps from completely dominating.
      */
-    private fun computeFrequencyScore(launchCount: Int, totalForegroundMs: Long): Float {
+    private fun computeFrequencyScore(
+        launchCount: Int,
+        totalForegroundMs: Long,
+    ): Float {
         if (launchCount == 0) return 0f
         val launchScore = min(1.0f, kotlin.math.ln(launchCount.toFloat() + 1) / 4.0f)
         val timeScore = min(1.0f, (totalForegroundMs / 3_600_000f)) // cap at 1hr
@@ -220,27 +232,32 @@ class AppCategoryProvider(private val context: Context) {
      */
     private fun computeTimeOfDayScore(
         hourlyDist: Map<Int, Int>,
-        category: AppCategory
+        category: AppCategory,
     ): Float {
         val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
         // Personal pattern score: did the user use THIS app at this hour?
         val totalLaunches = hourlyDist.values.sum().toFloat()
-        val patternScore = if (totalLaunches > 0) {
-            val nearbyHours = listOf(
-                (currentHour - 1 + 24) % 24,
-                currentHour,
-                (currentHour + 1) % 24
-            )
-            val nearbyLaunches = nearbyHours.sumOf { hourlyDist[it] ?: 0 }
-            min(1f, nearbyLaunches / max(1f, totalLaunches) * 3f)
-        } else 0f
+        val patternScore =
+            if (totalLaunches > 0) {
+                val nearbyHours =
+                    listOf(
+                        (currentHour - 1 + 24) % 24,
+                        currentHour,
+                        (currentHour + 1) % 24,
+                    )
+                val nearbyLaunches = nearbyHours.sumOf { hourlyDist[it] ?: 0 }
+                min(1f, nearbyLaunches / max(1f, totalLaunches) * 3f)
+            } else {
+                0f
+            }
 
         // Category affinity boost for current time window
-        val affinityScore = TIME_CATEGORY_AFFINITY.entries
-            .firstOrNull { (range, _) -> currentHour in range }
-            ?.let { (_, cats) -> if (category in cats) 0.3f else 0f }
-            ?: 0f
+        val affinityScore =
+            TIME_CATEGORY_AFFINITY.entries
+                .firstOrNull { (range, _) -> currentHour in range }
+                ?.let { (_, cats) -> if (category in cats) 0.3f else 0f }
+                ?: 0f
 
         return min(1f, patternScore + affinityScore)
     }
@@ -256,9 +273,15 @@ class AppCategoryProvider(private val context: Context) {
 
         return when {
             !isWeekend && category == AppCategory.WORK -> 0.8f
+
             isWeekend && category in setOf(AppCategory.ENTERTAINMENT, AppCategory.GAMES) -> 0.7f
-            category == AppCategory.SOCIAL -> 0.5f // always somewhat relevant
-            category == AppCategory.SYSTEM -> 0.1f // deprioritize
+
+            category == AppCategory.SOCIAL -> 0.5f
+
+            // always somewhat relevant
+            category == AppCategory.SYSTEM -> 0.1f
+
+            // deprioritize
             else -> 0.3f
         }
     }

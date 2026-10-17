@@ -33,7 +33,6 @@ import org.junit.Test
  * when suppressed, not filtered-at-render).
  */
 class GetRankedAppsUseCaseTest {
-
     private val installedAppsRepo = mockk<InstalledAppsRepository>()
     private val usageStatsRepo = mockk<UsageStatsRepository>()
     private val categoryProvider = mockk<AppCategoryProvider>()
@@ -46,31 +45,41 @@ class GetRankedAppsUseCaseTest {
 
     private lateinit var useCase: GetRankedAppsUseCase
 
-    private val appInfo = AppInfo(
-        packageName = "com.example.app",
-        label = "Example",
-        icon = null,
-        category = AppCategory.UTILITIES,
-        isSystemApp = false,
-        installTime = 0L,
-        lastUpdateTime = 0L
-    )
+    private val appInfo =
+        AppInfo(
+            packageName = "com.example.app",
+            label = "Example",
+            icon = null,
+            category = AppCategory.UTILITIES,
+            isSystemApp = false,
+            installTime = 0L,
+            lastUpdateTime = 0L,
+        )
 
-    private val rankedApp = RankedApp(
-        app = appInfo,
-        weightScore = 0.5f,
-        usageMinutesToday = 0L,
-        launchCountToday = 0,
-        lastUsedTimestamp = 0L,
-        smartFolder = AppCategory.UTILITIES
-    )
+    private val rankedApp =
+        RankedApp(
+            app = appInfo,
+            weightScore = 0.5f,
+            usageMinutesToday = 0L,
+            launchCountToday = 0,
+            lastUsedTimestamp = 0L,
+            smartFolder = AppCategory.UTILITIES,
+        )
 
     @Before
     fun setUp() {
-        useCase = GetRankedAppsUseCase(
-            installedAppsRepo, usageStatsRepo, categoryProvider, notificationDao, predictionEngine, settingsRepo,
-            feedbackRepo, contextSignals, jewishCalendar
-        )
+        useCase =
+            GetRankedAppsUseCase(
+                installedAppsRepo,
+                usageStatsRepo,
+                categoryProvider,
+                notificationDao,
+                predictionEngine,
+                settingsRepo,
+                feedbackRepo,
+                contextSignals,
+                jewishCalendar,
+            )
         every { usageStatsRepo.hasPermission() } returns true
         coEvery { installedAppsRepo.getInstalledApps(any()) } returns listOf(appInfo)
         every { installedAppsRepo.getProfiles() } returns emptyList()
@@ -83,81 +92,89 @@ class GetRankedAppsUseCaseTest {
     }
 
     @Test
-    fun `notification counts are zero when badges are turned off`() = runTest {
-        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = false))
-        coEvery { notificationDao.getAppsWithUnread() } returns listOf("com.example.app")
-        coEvery { notificationDao.get("com.example.app") } returns NotificationEntity("com.example.app", unreadCount = 3)
+    fun `notification counts are zero when badges are turned off`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = false))
+            coEvery { notificationDao.getAppsWithUnread() } returns listOf("com.example.app")
+            coEvery { notificationDao.get("com.example.app") } returns NotificationEntity("com.example.app", unreadCount = 3)
 
-        val result = useCase.execute()
+            val result = useCase.execute()
 
-        assertEquals(0, result.rankedApps.first().notificationCount)
-    }
-
-    @Test
-    fun `notification counts are zero while snoozed`() = runTest {
-        val future = System.currentTimeMillis() + 3_600_000L
-        every { settingsRepo.appearanceFlow } returns
-            flowOf(AppearanceSettings(showNotificationBadges = true, badgeSnoozedUntil = future))
-
-        val result = useCase.execute()
-
-        assertEquals(0, result.rankedApps.first().notificationCount)
-        coVerify(exactly = 0) { notificationDao.getAppsWithUnread() }
-    }
+            assertEquals(0, result.rankedApps.first().notificationCount)
+        }
 
     @Test
-    fun `notification counts pass through when badges are enabled and not snoozed`() = runTest {
-        every { settingsRepo.appearanceFlow } returns
-            flowOf(AppearanceSettings(showNotificationBadges = true, badgeSnoozedUntil = 0L))
-        coEvery { notificationDao.getAppsWithUnread() } returns listOf("com.example.app")
-        coEvery { notificationDao.get("com.example.app") } returns NotificationEntity("com.example.app", unreadCount = 3)
+    fun `notification counts are zero while snoozed`() =
+        runTest {
+            val future = System.currentTimeMillis() + 3_600_000L
+            every { settingsRepo.appearanceFlow } returns
+                flowOf(AppearanceSettings(showNotificationBadges = true, badgeSnoozedUntil = future))
 
-        val result = useCase.execute()
+            val result = useCase.execute()
 
-        assertEquals(3, result.rankedApps.first().notificationCount)
-    }
-
-    @Test
-    fun `usage snapshots are skipped entirely without permission`() = runTest {
-        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings())
-        every { usageStatsRepo.hasPermission() } returns false
-
-        val result = useCase.execute()
-
-        assertEquals(false, result.hasUsagePermission)
-        coVerify(exactly = 0) { usageStatsRepo.getUsageSnapshots() }
-    }
+            assertEquals(0, result.rankedApps.first().notificationCount)
+            coVerify(exactly = 0) { notificationDao.getAppsWithUnread() }
+        }
 
     @Test
-    fun `notification counts are zero while Shabbat mode is active`() = runTest {
-        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = true))
-        every { jewishCalendar.isShabbatModeActive(any(), any()) } returns true
+    fun `notification counts pass through when badges are enabled and not snoozed`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns
+                flowOf(AppearanceSettings(showNotificationBadges = true, badgeSnoozedUntil = 0L))
+            coEvery { notificationDao.getAppsWithUnread() } returns listOf("com.example.app")
+            coEvery { notificationDao.get("com.example.app") } returns NotificationEntity("com.example.app", unreadCount = 3)
 
-        val result = useCase.execute()
+            val result = useCase.execute()
 
-        assertEquals(0, result.rankedApps.first().notificationCount)
-        coVerify(exactly = 0) { notificationDao.getAppsWithUnread() }
-    }
-
-    @Test
-    fun `private space apps are kept out of suggestions and folders`() = runTest {
-        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = false))
-        val privateApp = rankedApp.copy(app = appInfo.copy(packageName = "com.secret", profile = AppProfile.PRIVATE, userSerial = 11))
-        every { categoryProvider.rankApps(any(), any(), any(), any()) } returns listOf(rankedApp, privateApp)
-
-        val result = useCase.execute()
-
-        assertEquals(listOf("com.example.app"), result.rankedApps.map { it.app.packageName })
-        assertEquals(listOf("com.secret"), result.privateSpaceApps.map { it.app.packageName })
-        io.mockk.verify { categoryProvider.autoGroup(listOf(rankedApp)) }
-    }
+            assertEquals(3, result.rankedApps.first().notificationCount)
+        }
 
     @Test
-    fun `the selected icon pack is passed to the app query`() = runTest {
-        every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(iconPackPackage = "com.pack", showNotificationBadges = false))
+    fun `usage snapshots are skipped entirely without permission`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings())
+            every { usageStatsRepo.hasPermission() } returns false
 
-        useCase.execute()
+            val result = useCase.execute()
 
-        coVerify { installedAppsRepo.getInstalledApps("com.pack") }
-    }
+            assertEquals(false, result.hasUsagePermission)
+            coVerify(exactly = 0) { usageStatsRepo.getUsageSnapshots() }
+        }
+
+    @Test
+    fun `notification counts are zero while Shabbat mode is active`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = true))
+            every { jewishCalendar.isShabbatModeActive(any(), any()) } returns true
+
+            val result = useCase.execute()
+
+            assertEquals(0, result.rankedApps.first().notificationCount)
+            coVerify(exactly = 0) { notificationDao.getAppsWithUnread() }
+        }
+
+    @Test
+    fun `private space apps are kept out of suggestions and folders`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns flowOf(AppearanceSettings(showNotificationBadges = false))
+            val privateApp = rankedApp.copy(app = appInfo.copy(packageName = "com.secret", profile = AppProfile.PRIVATE, userSerial = 11))
+            every { categoryProvider.rankApps(any(), any(), any(), any()) } returns listOf(rankedApp, privateApp)
+
+            val result = useCase.execute()
+
+            assertEquals(listOf("com.example.app"), result.rankedApps.map { it.app.packageName })
+            assertEquals(listOf("com.secret"), result.privateSpaceApps.map { it.app.packageName })
+            io.mockk.verify { categoryProvider.autoGroup(listOf(rankedApp)) }
+        }
+
+    @Test
+    fun `the selected icon pack is passed to the app query`() =
+        runTest {
+            every { settingsRepo.appearanceFlow } returns
+                flowOf(AppearanceSettings(iconPackPackage = "com.pack", showNotificationBadges = false))
+
+            useCase.execute()
+
+            coVerify { installedAppsRepo.getInstalledApps("com.pack") }
+        }
 }

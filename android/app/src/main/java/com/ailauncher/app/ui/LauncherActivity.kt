@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.content.ContextCompat
@@ -57,10 +56,12 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class LauncherActivity : FragmentActivity() {
-
     @Inject lateinit var biometricHelper: BiometricHelper
+
     @Inject lateinit var widgetHost: AppWidgetHost
+
     @Inject lateinit var iconCache: IconCache
+
     @Inject lateinit var appLauncher: AppLauncher
 
     /** v10: generalised from "pending app" to any action waiting on a PIN/password/pattern. */
@@ -74,9 +75,10 @@ class LauncherActivity : FragmentActivity() {
     // v9.3: without this, POST_NOTIFICATIONS (API 33+) is never granted, so
     // ScheduledBackupWorker's failure alert silently no-ops forever — see
     // Pitfall #20 in CLAUDE.md. A no-op on API < 33 or once answered.
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { /* Granted or denied — nothing more to do; a denial keeps backup alerts silent. */ }
+    private val notificationPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { /* Granted or denied — nothing more to do; a denial keeps backup alerts silent. */ }
 
     private var viewModel: LauncherViewModel? = null
 
@@ -85,11 +87,15 @@ class LauncherActivity : FragmentActivity() {
     private var usagePermissionRequested = false
 
     // v8: When the screen turns off, drop all cached unlocks so apps re-prompt on next entry.
-    private val screenOffReceiver = object : BroadcastReceiver() {
-        override fun onReceive(c: Context?, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_SCREEN_OFF) viewModel?.appLockManager?.clearUnlockCache()
+    private val screenOffReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                c: Context?,
+                intent: Intent?,
+            ) {
+                if (intent?.action == Intent.ACTION_SCREEN_OFF) viewModel?.appLockManager?.clearUnlockCache()
+            }
         }
-    }
 
     // v8: Re-lock after returning from recents — anything resumed after >30s gone gets cleared.
     private var pausedAt: Long = 0L
@@ -121,28 +127,29 @@ class LauncherActivity : FragmentActivity() {
                 LocalAppWidgetHost provides widgetHost,
                 LocalIconCache provides iconCache,
                 LocalAppLauncher provides appLauncher,
-                LocalReduceMotion provides smartControl.reduceMotion
+                LocalReduceMotion provides smartControl.reduceMotion,
             ) {
                 AILauncherTheme(appearance = appearance) {
-                  // v10: expose Compose testTags as resource ids so UiAutomator (the
-                  // :baselineprofile generator/benchmark) can find elements by id.
-                  androidx.compose.foundation.layout.Box(
-                      androidx.compose.ui.Modifier.semantics { testTagsAsResourceId = true }
-                  ) {
-                    if (!settingsReady) {
-                        // Splash is still showing; draw nothing rather than defaults.
-                    } else if (!onboarding.completed) {
-                        OnboardingScreen(onComplete = { vm.completeOnboarding() })
-                    } else {
-                        LauncherRoot(viewModel = vm, activity = this@LauncherActivity)
-                        pendingUnlock.value?.let { pending ->
-                            UnlockDialog(pending, vm.appLockManager, onDismiss = { pendingUnlock.value = null })
-                        }
-                        if (onboarding.lastSeenVersionCode < BuildConfig.VERSION_CODE) {
-                            WhatsNewDialog(onDismiss = { vm.markWhatsNewSeen(BuildConfig.VERSION_CODE) })
+                    // v10: expose Compose testTags as resource ids so UiAutomator (the
+                    // :baselineprofile generator/benchmark) can find elements by id.
+                    androidx.compose.foundation.layout.Box(
+                        androidx.compose.ui.Modifier
+                            .semantics { testTagsAsResourceId = true },
+                    ) {
+                        if (!settingsReady) {
+                            // Splash is still showing; draw nothing rather than defaults.
+                        } else if (!onboarding.completed) {
+                            OnboardingScreen(onComplete = { vm.completeOnboarding() })
+                        } else {
+                            LauncherRoot(viewModel = vm, activity = this@LauncherActivity)
+                            pendingUnlock.value?.let { pending ->
+                                UnlockDialog(pending, vm.appLockManager, onDismiss = { pendingUnlock.value = null })
+                            }
+                            if (onboarding.lastSeenVersionCode < BuildConfig.VERSION_CODE) {
+                                WhatsNewDialog(onDismiss = { vm.markWhatsNewSeen(BuildConfig.VERSION_CODE) })
+                            }
                         }
                     }
-                  }
                 }
             }
 
@@ -176,7 +183,11 @@ class LauncherActivity : FragmentActivity() {
         if (pausedAt > 0 && System.currentTimeMillis() - pausedAt > RESUME_RELOCK_THRESHOLD_MS) {
             viewModel?.appLockManager?.clearUnlockCache()
         }
-        try { widgetHost.startListening() } catch (e: Exception) { Timber.w(e, "widgetHost.startListening failed") }
+        try {
+            widgetHost.startListening()
+        } catch (e: Exception) {
+            Timber.w(e, "widgetHost.startListening failed")
+        }
         viewModel?.refresh()
         viewModel?.recordHomeImpressions()
     }
@@ -184,7 +195,11 @@ class LauncherActivity : FragmentActivity() {
     override fun onPause() {
         super.onPause()
         pausedAt = System.currentTimeMillis()
-        try { widgetHost.stopListening() } catch (e: Exception) { Timber.w(e, "widgetHost.stopListening failed") }
+        try {
+            widgetHost.stopListening()
+        } catch (e: Exception) {
+            Timber.w(e, "widgetHost.stopListening failed")
+        }
     }
 
     override fun onStart() {
@@ -194,7 +209,10 @@ class LauncherActivity : FragmentActivity() {
 
     override fun onStop() {
         super.onStop()
-        try { unregisterReceiver(screenOffReceiver) } catch (_: IllegalArgumentException) {}
+        try {
+            unregisterReceiver(screenOffReceiver)
+        } catch (_: IllegalArgumentException) {
+        }
     }
 
     /**
@@ -205,8 +223,9 @@ class LauncherActivity : FragmentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (!intent.hasCategory(Intent.CATEGORY_HOME)) return
-        val alreadyOnHome = hasWindowFocus() &&
-            (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) == 0
+        val alreadyOnHome =
+            hasWindowFocus() &&
+                (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) == 0
         homeRequest.value = HomeRequest(animate = alreadyOnHome)
     }
 
@@ -218,7 +237,11 @@ class LauncherActivity : FragmentActivity() {
     /** Widget configuration activities report back here — see WidgetHostController. */
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         if (!widgets.onActivityResult(requestCode, resultCode)) super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -227,17 +250,22 @@ class LauncherActivity : FragmentActivity() {
     // ── Lock-checked entry points ──────────────────────────────────────
 
     /** v10: every app launch from the launcher UI goes through here. */
-    fun launchAppWithLockCheck(app: AppInfo) = withAppUnlocked(app.packageName) {
-        if (!appLauncher.launch(app)) Toast.makeText(this, getString(R.string.toast_app_not_found), Toast.LENGTH_SHORT).show()
-    }
+    fun launchAppWithLockCheck(app: AppInfo) =
+        withAppUnlocked(app.packageName) {
+            if (!appLauncher.launch(app)) Toast.makeText(this, getString(R.string.toast_app_not_found), Toast.LENGTH_SHORT).show()
+        }
 
     /** Personal-profile launch when only a package name is known (Personal Zone, news app). */
-    fun launchPackageWithLockCheck(packageName: String) = withAppUnlocked(packageName) {
-        appLauncher.launchPackage(packageName)
-    }
+    fun launchPackageWithLockCheck(packageName: String) =
+        withAppUnlocked(packageName) {
+            appLauncher.launchPackage(packageName)
+        }
 
     /** v10: app shortcuts honour the app's lock, same as the app itself. */
-    fun launchShortcutWithLockCheck(app: AppInfo, shortcut: ShortcutInfo) = withAppUnlocked(app.packageName) {
+    fun launchShortcutWithLockCheck(
+        app: AppInfo,
+        shortcut: ShortcutInfo,
+    ) = withAppUnlocked(app.packageName) {
         appLauncher.startShortcut(shortcut)
     }
 
@@ -245,7 +273,10 @@ class LauncherActivity : FragmentActivity() {
      * v7 FIX #8: handles all lock paths — no lock → run [action] directly;
      * biometric → BiometricPrompt; PIN/password/pattern → [UnlockDialog].
      */
-    private fun withAppUnlocked(packageName: String, action: () -> Unit) {
+    private fun withAppUnlocked(
+        packageName: String,
+        action: () -> Unit,
+    ) {
         val vm = viewModel ?: return
         lifecycleScope.launch {
             fun proceed() {
@@ -257,19 +288,26 @@ class LauncherActivity : FragmentActivity() {
                 return@launch
             }
             when (val method = vm.appLockManager.getAppLockMethod()) {
-                LockMethod.FINGERPRINT, LockMethod.FACE -> biometricHelper.authenticate(
-                    activity = this@LauncherActivity,
-                    title = getString(R.string.auth_required_title),
-                    subtitle = getString(R.string.auth_required_subtitle),
-                    onSuccess = {
-                        vm.appLockManager.grantBiometricUnlock(packageName)
-                        proceed()
-                    },
-                    onError = { Toast.makeText(this@LauncherActivity, it, Toast.LENGTH_SHORT).show() }
-                )
-                LockMethod.PIN, LockMethod.PASSWORD, LockMethod.PATTERN ->
+                LockMethod.FINGERPRINT, LockMethod.FACE -> {
+                    biometricHelper.authenticate(
+                        activity = this@LauncherActivity,
+                        title = getString(R.string.auth_required_title),
+                        subtitle = getString(R.string.auth_required_subtitle),
+                        onSuccess = {
+                            vm.appLockManager.grantBiometricUnlock(packageName)
+                            proceed()
+                        },
+                        onError = { Toast.makeText(this@LauncherActivity, it, Toast.LENGTH_SHORT).show() },
+                    )
+                }
+
+                LockMethod.PIN, LockMethod.PASSWORD, LockMethod.PATTERN -> {
                     pendingUnlock.value = PendingUnlock(packageName, method) { proceed() }
-                LockMethod.NONE -> proceed()
+                }
+
+                LockMethod.NONE -> {
+                    proceed()
+                }
             }
         }
     }
@@ -277,16 +315,27 @@ class LauncherActivity : FragmentActivity() {
     fun authenticateLauncher(onSuccess: () -> Unit) {
         val vm = viewModel ?: return
         lifecycleScope.launch {
-            if (vm.appLockManager.isLauncherUnlocked()) { onSuccess(); return@launch }
+            if (vm.appLockManager.isLauncherUnlocked()) {
+                onSuccess()
+                return@launch
+            }
             when (vm.appLockManager.getLauncherLockMethod()) {
-                LockMethod.FINGERPRINT, LockMethod.FACE -> biometricHelper.authenticate(
-                    activity = this@LauncherActivity,
-                    title = getString(R.string.launcher_lock_title),
-                    subtitle = getString(R.string.auth_required_subtitle),
-                    onSuccess = { vm.appLockManager.grantLauncherBiometricUnlock(); onSuccess() },
-                    onError = { Toast.makeText(this@LauncherActivity, it, Toast.LENGTH_SHORT).show() }
-                )
-                else -> onSuccess()
+                LockMethod.FINGERPRINT, LockMethod.FACE -> {
+                    biometricHelper.authenticate(
+                        activity = this@LauncherActivity,
+                        title = getString(R.string.launcher_lock_title),
+                        subtitle = getString(R.string.auth_required_subtitle),
+                        onSuccess = {
+                            vm.appLockManager.grantLauncherBiometricUnlock()
+                            onSuccess()
+                        },
+                        onError = { Toast.makeText(this@LauncherActivity, it, Toast.LENGTH_SHORT).show() },
+                    )
+                }
+
+                else -> {
+                    onSuccess()
+                }
             }
         }
     }
@@ -302,4 +351,6 @@ class LauncherActivity : FragmentActivity() {
 }
 
 /** A Home press; a new instance each time, so pressing Home twice still triggers twice. */
-class HomeRequest(val animate: Boolean)
+class HomeRequest(
+    val animate: Boolean,
+)

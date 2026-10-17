@@ -1,6 +1,5 @@
 package com.ailauncher.app.data
 
-import android.content.Context
 import com.ailauncher.app.domain.models.AppCategory
 import com.ailauncher.app.domain.models.AppInfo
 import com.ailauncher.app.domain.models.UsageSnapshot
@@ -16,7 +15,6 @@ import org.junit.Test
  * mocked Context is enough.
  */
 class AppCategoryProviderTest {
-
     private lateinit var provider: AppCategoryProvider
 
     @Before fun setUp() {
@@ -64,49 +62,55 @@ class AppCategoryProviderTest {
     }
 
     @Test fun `rankApps sorts descending by score`() {
-        val apps = listOf(
-            AppInfo("a", "A", null, AppCategory.UTILITIES, false, 0, 0),
-            AppInfo("b", "B", null, AppCategory.UTILITIES, false, 0, 0),
-            AppInfo("c", "C", null, AppCategory.UTILITIES, false, 0, 0)
-        )
+        val apps =
+            listOf(
+                AppInfo("a", "A", null, AppCategory.UTILITIES, false, 0, 0),
+                AppInfo("b", "B", null, AppCategory.UTILITIES, false, 0, 0),
+                AppInfo("c", "C", null, AppCategory.UTILITIES, false, 0, 0),
+            )
         val now = System.currentTimeMillis()
-        val snapshots = mapOf(
-            "a" to UsageSnapshot("a", 30_000, now - 60_000, 5, mapOf(8 to 5)),
-            "b" to UsageSnapshot("b", 30_000, now - (5 * 3600_000L), 1, emptyMap()),
-            "c" to UsageSnapshot("c", 60_000, now - 5000, 20, mapOf(8 to 20))
-        )
+        val snapshots =
+            mapOf(
+                "a" to UsageSnapshot("a", 30_000, now - 60_000, 5, mapOf(8 to 5)),
+                "b" to UsageSnapshot("b", 30_000, now - (5 * 3600_000L), 1, emptyMap()),
+                "c" to UsageSnapshot("c", 60_000, now - 5000, 20, mapOf(8 to 20)),
+            )
         val ranked = provider.rankApps(apps, snapshots)
         assertEquals(3, ranked.size)
         for (i in 0 until ranked.size - 1) {
             assertTrue(
-                "score[$i]=${ranked[i].weightScore} must be >= score[${i+1}]=${ranked[i+1].weightScore}",
-                ranked[i].weightScore >= ranked[i + 1].weightScore
+                "score[$i]=${ranked[i].weightScore} must be >= score[${i + 1}]=${ranked[i + 1].weightScore}",
+                ranked[i].weightScore >= ranked[i + 1].weightScore,
             )
         }
     }
 
     @Test fun `autoGroup omits SYSTEM bucket and singletons`() {
         val now = System.currentTimeMillis()
-        val ranked = listOf(
-            rankedAppOf("a", AppCategory.SOCIAL, 0.8f),
-            rankedAppOf("b", AppCategory.SOCIAL, 0.7f),
-            rankedAppOf("c", AppCategory.WORK, 0.5f),
-            rankedAppOf("d", AppCategory.SYSTEM, 0.9f),
-            rankedAppOf("e", AppCategory.SYSTEM, 0.8f)
-        )
+        val ranked =
+            listOf(
+                rankedAppOf("a", AppCategory.SOCIAL, 0.8f),
+                rankedAppOf("b", AppCategory.SOCIAL, 0.7f),
+                rankedAppOf("c", AppCategory.WORK, 0.5f),
+                rankedAppOf("d", AppCategory.SYSTEM, 0.9f),
+                rankedAppOf("e", AppCategory.SYSTEM, 0.8f),
+            )
         val groups = provider.autoGroup(ranked).toMap()
         assertTrue("SYSTEM category must be filtered out", AppCategory.SYSTEM !in groups)
         assertTrue("singleton WORK group should be filtered", AppCategory.WORK !in groups)
         assertEquals(2, groups[AppCategory.SOCIAL]?.size)
     }
 
-    private fun rankedAppOf(pkg: String, cat: AppCategory, score: Float) =
-        com.ailauncher.app.domain.models.RankedApp(
-            app = AppInfo(pkg, pkg, null, cat, false, 0, 0),
-            weightScore = score,
-            usageMinutesToday = 1,
-            launchCountToday = 1,
-            lastUsedTimestamp = 0,
-            smartFolder = cat
-        )
+    private fun rankedAppOf(
+        pkg: String,
+        cat: AppCategory,
+        score: Float,
+    ) = com.ailauncher.app.domain.models.RankedApp(
+        app = AppInfo(pkg, pkg, null, cat, false, 0, 0),
+        weightScore = score,
+        usageMinutesToday = 1,
+        launchCountToday = 1,
+        lastUsedTimestamp = 0,
+        smartFolder = cat,
+    )
 }

@@ -21,7 +21,10 @@ interface InstalledAppsRepository {
     fun getProfiles(): List<ProfileState>
 
     /** Pause/resume a profile (work) or lock/unlock it (Private Space). False if refused. */
-    fun setQuietMode(userSerial: Long, enabled: Boolean): Boolean
+    fun setQuietMode(
+        userSerial: Long,
+        enabled: Boolean,
+    ): Boolean
 
     /** Emits whenever the app list or a profile's availability changed. */
     val changes: Flow<Unit>

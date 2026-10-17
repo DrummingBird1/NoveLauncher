@@ -1,0 +1,19 @@
+# ktlint reads its configuration from here (and Android Studio honours the same
+# settings). CI runs `./gradlew ktlintCheck` as a blocking step, so anything in
+# this file is the project's enforced Kotlin style.
+# Reference: https://pinterest.github.io/ktlint/latest/rules/configuration-ktlint/
+root = true
+
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+max_line_length = 140
+# ktlint's own default style, pinned here so a future ktlint release can't
+# silently switch it.
+ktlint_code_style = ktlint_official
+# Compose convention: @Composable functions are PascalCase, like types.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# Off by default in ktlint 1.x; on here because nothing else (not the compiler,
+# not lint) reports imports left behind when code moves between files.
+ktlint_standard_no-unused-imports = enabled

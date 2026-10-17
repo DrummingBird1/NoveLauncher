@@ -23,17 +23,26 @@ object FeedbackScoring {
     private const val MAX_LIFT = 1.4f
     private const val STRENGTH = 0.25f
 
-    fun decay(value: Float, elapsedMillis: Long): Float {
+    fun decay(
+        value: Float,
+        elapsedMillis: Long,
+    ): Float {
         if (elapsedMillis <= 0) return value
         val days = elapsedMillis / 86_400_000.0
         return (value * 0.5.pow(days / HALF_LIFE_DAYS)).toFloat()
     }
 
-    fun smoothedCtr(taps: Float, impressions: Float): Float =
-        (taps + PRIOR_CTR * PRIOR_IMPRESSIONS) / (impressions + PRIOR_IMPRESSIONS)
+    fun smoothedCtr(
+        taps: Float,
+        impressions: Float,
+    ): Float = (taps + PRIOR_CTR * PRIOR_IMPRESSIONS) / (impressions + PRIOR_IMPRESSIONS)
 
     /** Multiplies [score] (0..1) by the feedback lift; result stays in 0..1. */
-    fun adjust(score: Float, taps: Float, impressions: Float): Float {
+    fun adjust(
+        score: Float,
+        taps: Float,
+        impressions: Float,
+    ): Float {
         val lift = ((smoothedCtr(taps, impressions) - PRIOR_CTR) / PRIOR_CTR).coerceIn(MIN_LIFT, MAX_LIFT)
         return (score * (1f + STRENGTH * lift)).coerceIn(0f, 1f)
     }

@@ -10,12 +10,18 @@ import java.time.ZoneId
 import kotlin.math.abs
 
 class SolarCalculatorTest {
-
     private val israel = ZoneId.of("Asia/Jerusalem")
 
-    private fun localTime(millis: Long, zone: ZoneId): LocalTime = Instant.ofEpochMilli(millis).atZone(zone).toLocalTime()
+    private fun localTime(
+        millis: Long,
+        zone: ZoneId,
+    ): LocalTime = Instant.ofEpochMilli(millis).atZone(zone).toLocalTime()
 
-    private fun assertNear(expected: LocalTime, actual: LocalTime, toleranceMin: Int = 4) {
+    private fun assertNear(
+        expected: LocalTime,
+        actual: LocalTime,
+        toleranceMin: Int = 4,
+    ) {
         val diff = abs(expected.toSecondOfDay() - actual.toSecondOfDay()) / 60
         assertTrue("expected ~$expected, got $actual", diff <= toleranceMin)
     }

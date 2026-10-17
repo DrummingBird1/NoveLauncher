@@ -42,18 +42,29 @@ interface SettingsRepository {
     val onboardingFlow: Flow<OnboardingState>
 
     suspend fun saveAppearance(s: AppearanceSettings)
+
     suspend fun savePages(s: PagesSettings)
+
     suspend fun saveSecurity(s: SecuritySettings)
+
     suspend fun saveBackup(s: BackupSettings)
+
     suspend fun saveWidgets(w: List<WidgetSlot>)
+
     suspend fun saveNews(s: NewsSettings)
+
     suspend fun saveHiddenApps(s: HiddenAppsSettings)
+
     suspend fun saveSmartControl(s: SmartControlSettings)
+
     suspend fun saveAdaptiveDisplay(s: AdaptiveDisplaySettings)
+
     suspend fun saveRepair(s: RepairSettings)
+
     suspend fun saveOnboarding(s: OnboardingState)
 
     suspend fun exportAllSettings(): String
+
     suspend fun importAllSettings(jsonStr: String): Boolean
 
     /** Same export, wrapped in password-derived AES-256-GCM (see PortableBackupCrypto). */
@@ -64,9 +75,14 @@ interface SettingsRepository {
      * one — [password] is ignored for plain-JSON content. Returns false on a wrong
      * password, a corrupt file, or any of [importAllSettings]'s existing failure modes.
      */
-    suspend fun importAllSettingsEncrypted(content: String, password: String): Boolean
+    suspend fun importAllSettingsEncrypted(
+        content: String,
+        password: String,
+    ): Boolean
 
     suspend fun resetAll()
+
     suspend fun recordCrash()
+
     suspend fun repairApp()
 }

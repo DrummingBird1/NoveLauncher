@@ -52,10 +52,12 @@ class InstalledAppsRepository(
     private val context: Context,
     private val categoryProvider: AppCategoryProvider,
     private val iconCache: IconCache,
-    private val iconPackManager: IconPackManager
+    private val iconPackManager: IconPackManager,
 ) : com.ailauncher.app.domain.repository.InstalledAppsRepository {
-
-    private data class Snapshot(val iconPack: String, val apps: List<AppInfo>)
+    private data class Snapshot(
+        val iconPack: String,
+        val apps: List<AppInfo>,
+    )
 
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
     private val userManager = context.getSystemService(UserManager::class.java)
@@ -73,23 +75,57 @@ class InstalledAppsRepository(
         _changes.tryEmit(Unit)
     }
 
-    private val launcherAppsCallback = object : LauncherApps.Callback() {
-        override fun onPackageRemoved(packageName: String, user: UserHandle) = onSomethingChanged(packageName)
-        override fun onPackageAdded(packageName: String, user: UserHandle) = onSomethingChanged(packageName)
-        override fun onPackageChanged(packageName: String, user: UserHandle) = onSomethingChanged(packageName)
-        override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = onSomethingChanged(null)
-        override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = onSomethingChanged(null)
-        override fun onPackagesSuspended(packageNames: Array<out String>, user: UserHandle) = onSomethingChanged(null)
-        override fun onPackagesUnsuspended(packageNames: Array<out String>, user: UserHandle) = onSomethingChanged(null)
-    }
+    private val launcherAppsCallback =
+        object : LauncherApps.Callback() {
+            override fun onPackageRemoved(
+                packageName: String,
+                user: UserHandle,
+            ) = onSomethingChanged(packageName)
+
+            override fun onPackageAdded(
+                packageName: String,
+                user: UserHandle,
+            ) = onSomethingChanged(packageName)
+
+            override fun onPackageChanged(
+                packageName: String,
+                user: UserHandle,
+            ) = onSomethingChanged(packageName)
+
+            override fun onPackagesAvailable(
+                packageNames: Array<out String>,
+                user: UserHandle,
+                replacing: Boolean,
+            ) = onSomethingChanged(null)
+
+            override fun onPackagesUnavailable(
+                packageNames: Array<out String>,
+                user: UserHandle,
+                replacing: Boolean,
+            ) = onSomethingChanged(null)
+
+            override fun onPackagesSuspended(
+                packageNames: Array<out String>,
+                user: UserHandle,
+            ) = onSomethingChanged(null)
+
+            override fun onPackagesUnsuspended(
+                packageNames: Array<out String>,
+                user: UserHandle,
+            ) = onSomethingChanged(null)
+        }
 
     /** Work profile paused/resumed, Private Space locked/unlocked. */
-    private val profileReceiver = object : BroadcastReceiver() {
-        override fun onReceive(c: Context?, intent: Intent?) {
-            Timber.d("Profile broadcast: %s", intent?.action)
-            onSomethingChanged(null)
+    private val profileReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                c: Context?,
+                intent: Intent?,
+            ) {
+                Timber.d("Profile broadcast: %s", intent?.action)
+                onSomethingChanged(null)
+            }
         }
-    }
 
     init {
         try {
@@ -97,30 +133,35 @@ class InstalledAppsRepository(
         } catch (e: Exception) {
             Timber.w(e, "LauncherApps.registerCallback failed")
         }
-        val filter = IntentFilter().apply {
-            addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
-            addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
-            addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
-            addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
-            addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                addAction(Intent.ACTION_PROFILE_AVAILABLE)
-                addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
-                addAction(Intent.ACTION_PROFILE_ADDED)
-                addAction(Intent.ACTION_PROFILE_REMOVED)
+        val filter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    addAction(Intent.ACTION_PROFILE_AVAILABLE)
+                    addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
+                    addAction(Intent.ACTION_PROFILE_ADDED)
+                    addAction(Intent.ACTION_PROFILE_REMOVED)
+                }
             }
-        }
         try {
             androidx.core.content.ContextCompat.registerReceiver(
-                context, profileReceiver, filter,
-                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+                context,
+                profileReceiver,
+                filter,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED,
             )
         } catch (e: Exception) {
             Timber.w(e, "Could not register profile broadcast receiver")
         }
     }
 
-    override fun invalidate() { cache.set(null) }
+    override fun invalidate() {
+        cache.set(null)
+    }
 
     override suspend fun getInstalledApps(iconPackPackage: String): List<AppInfo> {
         cache.get()?.takeIf { it.iconPack == iconPackPackage }?.let { return it.apps }
@@ -133,20 +174,21 @@ class InstalledAppsRepository(
         }
     }
 
-    override fun getProfiles(): List<ProfileState> = try {
-        launcherApps.profiles
-            .filter { it != Process.myUserHandle() }
-            .map { user ->
-                ProfileState(
-                    profile = profileOf(user),
-                    userSerial = userManager.getSerialNumberForUser(user),
-                    isQuietModeEnabled = userManager.isQuietModeEnabled(user)
-                )
-            }
-    } catch (e: Exception) {
-        Timber.w(e, "getProfiles failed")
-        emptyList()
-    }
+    override fun getProfiles(): List<ProfileState> =
+        try {
+            launcherApps.profiles
+                .filter { it != Process.myUserHandle() }
+                .map { user ->
+                    ProfileState(
+                        profile = profileOf(user),
+                        userSerial = userManager.getSerialNumberForUser(user),
+                        isQuietModeEnabled = userManager.isQuietModeEnabled(user),
+                    )
+                }
+        } catch (e: Exception) {
+            Timber.w(e, "getProfiles failed")
+            emptyList()
+        }
 
     /**
      * Pauses/resumes the work profile or locks/unlocks Private Space. The OS
@@ -154,7 +196,10 @@ class InstalledAppsRepository(
      * default launcher (or a holder of MODIFY_QUIET_MODE) may call this, and
      * only on API 28+. Returns false if the request was refused.
      */
-    override fun setQuietMode(userSerial: Long, enabled: Boolean): Boolean {
+    override fun setQuietMode(
+        userSerial: Long,
+        enabled: Boolean,
+    ): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return false
         val user = userManager.getUserForSerialNumber(userSerial) ?: return false
         return try {
@@ -165,42 +210,57 @@ class InstalledAppsRepository(
         }
     }
 
-    private suspend fun computeFreshList(iconPack: String): List<AppInfo> = withContext(Dispatchers.Default) {
-        val profiles = try { launcherApps.profiles } catch (_: Exception) { listOf(Process.myUserHandle()) }
-        profiles.flatMap { user ->
-            if (user != Process.myUserHandle() && userManager.isQuietModeEnabled(user)) return@flatMap emptyList()
-            val profile = profileOf(user)
-            val serial = userManager.getSerialNumberForUser(user)
-            val activities = try {
-                launcherApps.getActivityList(null, user)
-            } catch (e: Exception) {
-                Timber.w(e, "getActivityList failed for %s", profile)
-                emptyList()
-            }
-            activities.mapNotNull { lai ->
-                val component = lai.componentName
-                if (component.packageName == context.packageName && profile == AppProfile.PERSONAL) return@mapNotNull null
-                toAppInfo(lai, component, profile, serial, iconPack)
+    private suspend fun computeFreshList(iconPack: String): List<AppInfo> =
+        withContext(Dispatchers.Default) {
+            val profiles =
+                try {
+                    launcherApps.profiles
+                } catch (_: Exception) {
+                    listOf(Process.myUserHandle())
+                }
+            profiles.flatMap { user ->
+                if (user != Process.myUserHandle() && userManager.isQuietModeEnabled(user)) return@flatMap emptyList()
+                val profile = profileOf(user)
+                val serial = userManager.getSerialNumberForUser(user)
+                val activities =
+                    try {
+                        launcherApps.getActivityList(null, user)
+                    } catch (e: Exception) {
+                        Timber.w(e, "getActivityList failed for %s", profile)
+                        emptyList()
+                    }
+                activities.mapNotNull { lai ->
+                    val component = lai.componentName
+                    if (component.packageName == context.packageName && profile == AppProfile.PERSONAL) return@mapNotNull null
+                    toAppInfo(lai, component, profile, serial, iconPack)
+                }
             }
         }
-    }
 
     private fun toAppInfo(
         lai: LauncherActivityInfo,
         component: ComponentName,
         profile: AppProfile,
         serial: Long,
-        iconPack: String
+        iconPack: String,
     ): AppInfo {
         val appInfo: ApplicationInfo? = lai.applicationInfo
         val pkg = component.packageName
         // Icon packs (Nova/ADW/Lawnchair appfilter.xml) map a component to a
         // replacement drawable. Profile badges are only drawn on system icons —
         // a work app keeps its badge so it stays distinguishable.
-        val packIcon = if (iconPack.isNotBlank() && profile == AppProfile.PERSONAL) {
-            iconPackManager.getIconForApp(iconPack, "ComponentInfo{${component.packageName}/${component.className}}")
-        } else null
-        val icon = packIcon ?: try { lai.getBadgedIcon(0) } catch (_: Exception) { null }
+        val packIcon =
+            if (iconPack.isNotBlank() && profile == AppProfile.PERSONAL) {
+                iconPackManager.getIconForApp(iconPack, "ComponentInfo{${component.packageName}/${component.className}}")
+            } else {
+                null
+            }
+        val icon =
+            packIcon ?: try {
+                lai.getBadgedIcon(0)
+            } catch (_: Exception) {
+                null
+            }
         return AppInfo(
             packageName = pkg,
             label = lai.label?.toString() ?: pkg,
@@ -208,19 +268,27 @@ class InstalledAppsRepository(
             category = categoryProvider.categorize(pkg, appInfo),
             isSystemApp = appInfo != null && (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
             installTime = lai.firstInstallTime,
-            lastUpdateTime = try {
-                context.packageManager.getPackageInfo(pkg, 0).lastUpdateTime
-            } catch (_: Exception) { 0L },
+            lastUpdateTime =
+                try {
+                    context.packageManager.getPackageInfo(pkg, 0).lastUpdateTime
+                } catch (_: Exception) {
+                    0L
+                },
             activityName = component.className,
             profile = profile,
-            userSerial = serial
+            userSerial = serial,
         )
     }
 
     private fun profileOf(user: UserHandle): AppProfile {
         if (user == Process.myUserHandle()) return AppProfile.PERSONAL
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            val type = try { launcherApps.getLauncherUserInfo(user)?.userType } catch (_: Exception) { null }
+            val type =
+                try {
+                    launcherApps.getLauncherUserInfo(user)?.userType
+                } catch (_: Exception) {
+                    null
+                }
             return when (type) {
                 UserManager.USER_TYPE_PROFILE_PRIVATE -> AppProfile.PRIVATE
                 UserManager.USER_TYPE_PROFILE_CLONE -> AppProfile.CLONE

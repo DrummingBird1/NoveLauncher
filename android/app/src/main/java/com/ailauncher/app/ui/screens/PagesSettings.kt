@@ -1,7 +1,15 @@
 package com.ailauncher.app.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,8 +23,21 @@ import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material.icons.rounded.Tab
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,7 +54,10 @@ import com.ailauncher.app.domain.models.PagesSettings
  * pages, drag-order, disabled built-ins, and the "create new page" dialog.
  */
 @Composable
-fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
+fun PagesSection(
+    pages: PagesSettings,
+    onUpdate: (PagesSettings) -> Unit,
+) {
     var showAddDialog by remember { mutableStateOf(false) }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -44,22 +68,41 @@ fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = when (page.iconName) {
-                            "home" -> Icons.Rounded.Home; "apps" -> Icons.Rounded.Apps
-                            "newspaper" -> Icons.Rounded.Newspaper; else -> Icons.Rounded.Tab
-                        },
+                        imageVector =
+                            when (page.iconName) {
+                                "home" -> Icons.Rounded.Home
+                                "apps" -> Icons.Rounded.Apps
+                                "newspaper" -> Icons.Rounded.Newspaper
+                                else -> Icons.Rounded.Tab
+                            },
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(page.localizedName(LocalContext.current), fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                        if (isDefault) Text(stringResource(R.string.page_default), fontSize = 11.sp, color = MaterialTheme.colorScheme.primary)
-                        if (!page.isBuiltIn) Text(stringResource(R.string.page_custom), fontSize = 11.sp, color = MaterialTheme.colorScheme.secondary)
+                        Text(
+                            page.localizedName(LocalContext.current),
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        if (isDefault) {
+                            Text(
+                                stringResource(R.string.page_default),
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        if (!page.isBuiltIn) {
+                            Text(
+                                stringResource(R.string.page_custom),
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
                     }
                     if (!isDefault) {
                         TextButton(onClick = { onUpdate(pages.copy(defaultPageId = page.id)) }) {
@@ -83,16 +126,20 @@ fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${index + 1}.", Modifier.width(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(page.localizedName(LocalContext.current), Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
-                    if (index > 0) IconButton(onClick = {
-                        val list = pages.enabledPages.toMutableList()
-                        list[index] = list[index - 1].also { list[index - 1] = list[index] }
-                        onUpdate(pages.copy(enabledPages = list))
-                    }) { Icon(Icons.Rounded.KeyboardArrowUp, stringResource(R.string.action_move_up)) }
-                    if (index < pages.enabledPages.lastIndex) IconButton(onClick = {
-                        val list = pages.enabledPages.toMutableList()
-                        list[index] = list[index + 1].also { list[index + 1] = list[index] }
-                        onUpdate(pages.copy(enabledPages = list))
-                    }) { Icon(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.action_move_down)) }
+                    if (index > 0) {
+                        IconButton(onClick = {
+                            val list = pages.enabledPages.toMutableList()
+                            list[index] = list[index - 1].also { list[index - 1] = list[index] }
+                            onUpdate(pages.copy(enabledPages = list))
+                        }) { Icon(Icons.Rounded.KeyboardArrowUp, stringResource(R.string.action_move_up)) }
+                    }
+                    if (index < pages.enabledPages.lastIndex) {
+                        IconButton(onClick = {
+                            val list = pages.enabledPages.toMutableList()
+                            list[index] = list[index + 1].also { list[index + 1] = list[index] }
+                            onUpdate(pages.copy(enabledPages = list))
+                        }) { Icon(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.action_move_down)) }
+                    }
                 }
             }
         }
@@ -102,13 +149,20 @@ fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
             item { SectionLabel(stringResource(R.string.section_disabled_pages)) }
             disabled.forEach { page ->
                 item {
-                    Card(Modifier.fillMaxWidth().clickable {
-                        onUpdate(pages.copy(enabledPages = pages.enabledPages + page))
-                    }, shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                    Card(
+                        Modifier.fillMaxWidth().clickable {
+                            onUpdate(pages.copy(enabledPages = pages.enabledPages + page))
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    ) {
                         Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Rounded.AddCircleOutline, null, tint = MaterialTheme.colorScheme.secondary)
                             Spacer(Modifier.width(12.dp))
-                            Text(stringResource(R.string.action_enable_page, page.localizedName(LocalContext.current)), color = MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                stringResource(R.string.action_enable_page, page.localizedName(LocalContext.current)),
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
                         }
                     }
                 }
@@ -117,7 +171,9 @@ fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
 
         item {
             OutlinedButton(onClick = { showAddDialog = true }, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Rounded.Add, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.action_create_new_page))
+                Icon(Icons.Rounded.Add, null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.action_create_new_page))
             }
         }
     }
@@ -128,22 +184,26 @@ fun PagesSection(pages: PagesSettings, onUpdate: (PagesSettings) -> Unit) {
             onDismissRequest = { showAddDialog = false },
             title = { Text(stringResource(R.string.dialog_new_page_title)) },
             text = {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.dialog_new_page_name_label)) }, singleLine = true)
+                OutlinedTextField(value = name, onValueChange = {
+                    name = it
+                }, label = { Text(stringResource(R.string.dialog_new_page_name_label)) }, singleLine = true)
             },
             confirmButton = {
                 TextButton(onClick = {
                     if (name.isNotBlank()) {
                         val id = "custom_${System.currentTimeMillis()}"
                         val newPage = LauncherPage(id, name, "tab", isBuiltIn = false, isRemovable = true)
-                        onUpdate(pages.copy(
-                            enabledPages = pages.enabledPages + newPage,
-                            customPages = pages.customPages + newPage
-                        ))
+                        onUpdate(
+                            pages.copy(
+                                enabledPages = pages.enabledPages + newPage,
+                                customPages = pages.customPages + newPage,
+                            ),
+                        )
                         showAddDialog = false
                     }
                 }) { Text(stringResource(R.string.action_create)) }
             },
-            dismissButton = { TextButton(onClick = { showAddDialog = false }) { Text(stringResource(R.string.action_cancel)) } }
+            dismissButton = { TextButton(onClick = { showAddDialog = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 }

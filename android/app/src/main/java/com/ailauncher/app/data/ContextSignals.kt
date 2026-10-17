@@ -13,34 +13,42 @@ import javax.inject.Singleton
  * that need no permission. Nothing is stored or sent anywhere.
  */
 data class DeviceContext(
-    val headphonesConnected: Boolean = false
+    val headphonesConnected: Boolean = false,
 ) {
     /** 0..1 boost for a category in this situation. */
-    fun boostFor(category: AppCategory): Float = when {
-        headphonesConnected && category == AppCategory.ENTERTAINMENT -> 1f
-        headphonesConnected && category == AppCategory.SOCIAL -> 0.3f
-        else -> 0f
-    }
+    fun boostFor(category: AppCategory): Float =
+        when {
+            headphonesConnected && category == AppCategory.ENTERTAINMENT -> 1f
+            headphonesConnected && category == AppCategory.SOCIAL -> 0.3f
+            else -> 0f
+        }
 }
 
 @Singleton
-class ContextSignals @Inject constructor(@ApplicationContext private val context: Context) {
+class ContextSignals
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        private val audioManager by lazy { context.getSystemService(AudioManager::class.java) }
 
-    private val audioManager by lazy { context.getSystemService(AudioManager::class.java) }
+        fun current(): DeviceContext = DeviceContext(headphonesConnected = headphonesConnected())
 
-    fun current(): DeviceContext = DeviceContext(headphonesConnected = headphonesConnected())
+        private fun headphonesConnected(): Boolean =
+            try {
+                audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)?.any { it.type in HEADPHONE_TYPES } == true
+            } catch (_: Exception) {
+                false
+            }
 
-    private fun headphonesConnected(): Boolean = try {
-        audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)?.any { it.type in HEADPHONE_TYPES } == true
-    } catch (_: Exception) { false }
-
-    private companion object {
-        val HEADPHONE_TYPES = setOf(
-            AudioDeviceInfo.TYPE_WIRED_HEADSET,
-            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
-            AudioDeviceInfo.TYPE_USB_HEADSET,
-            26 // TYPE_BLE_HEADSET (API 31; literal so it compiles against minSdk 26 checks)
-        )
+        private companion object {
+            val HEADPHONE_TYPES =
+                setOf(
+                    AudioDeviceInfo.TYPE_WIRED_HEADSET,
+                    AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+                    AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+                    AudioDeviceInfo.TYPE_USB_HEADSET,
+                    26, // TYPE_BLE_HEADSET (API 31; literal so it compiles against minSdk 26 checks)
+                )
+        }
     }
-}

@@ -20,7 +20,6 @@ import java.lang.ref.WeakReference
  * — see assets/distribution/PLAY_POLICY_NOTES.md.
  */
 class LockScreenAccessibilityService : AccessibilityService() {
-
     override fun onServiceConnected() {
         instance = WeakReference(this)
     }
@@ -31,6 +30,7 @@ class LockScreenAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
+
     override fun onInterrupt() = Unit
 
     companion object {
@@ -41,16 +41,15 @@ class LockScreenAccessibilityService : AccessibilityService() {
 
         val isConnected: Boolean get() = instance?.get() != null
 
-        fun lockScreen(): Boolean =
-            isLockSupported && instance?.get()?.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN) == true
+        fun lockScreen(): Boolean = isLockSupported && instance?.get()?.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN) == true
 
-        fun openNotifications(): Boolean =
-            instance?.get()?.performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS) == true
+        fun openNotifications(): Boolean = instance?.get()?.performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS) == true
 
         /** Enabled in system settings (it may still be between enable and connect). */
         fun isEnabled(context: Context): Boolean {
-            val enabled = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-                ?: return false
+            val enabled =
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+                    ?: return false
             val me = ComponentName(context, LockScreenAccessibilityService::class.java)
             return enabled.split(':').any { ComponentName.unflattenFromString(it) == me }
         }

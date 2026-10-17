@@ -41,7 +41,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33], application = Application::class)
 class BackupSectionDriveRestoreTest {
-
     @get:Rule val composeRule = createComposeRule()
 
     private val ctx: Context get() = ApplicationProvider.getApplicationContext()
@@ -52,8 +51,11 @@ class BackupSectionDriveRestoreTest {
     @Before
     fun setUp() {
         // DriveAuth.connectedEmail() reads this; non-null = "connected".
-        ctx.getSharedPreferences("cloud_auth", Context.MODE_PRIVATE)
-            .edit().putString("account_email", "someone@example.com").commit()
+        ctx
+            .getSharedPreferences("cloud_auth", Context.MODE_PRIVATE)
+            .edit()
+            .putString("account_email", "someone@example.com")
+            .commit()
         every { backupManager.listLocalBackups() } returns emptyList()
         coEvery { backupManager.listDriveBackups() } returns BackupManager.DriveResult.Success(listOf(driveFile))
         coEvery { backupManager.downloadDriveBackup(driveFile) } returns BackupManager.DriveResult.Success(envelope)
@@ -95,7 +97,7 @@ class BackupSectionDriveRestoreTest {
         coVerify { backupManager.restoreFromJson(envelope, "right-password") }
         assertTrue(
             "dialog should close after a successful restore",
-            composeRule.onAllNodesWithText(ctx.getString(R.string.restore_password_title)).fetchSemanticsNodes().isEmpty()
+            composeRule.onAllNodesWithText(ctx.getString(R.string.restore_password_title)).fetchSemanticsNodes().isEmpty(),
         )
         composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(ctx.getString(R.string.restore_success)))
         composeRule.onNodeWithText(ctx.getString(R.string.restore_success)).assertExists()

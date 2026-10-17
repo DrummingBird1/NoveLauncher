@@ -21,7 +21,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class LockLauncherTileService : TileService() {
-
     @Inject lateinit var appLockManager: AppLockManager
     private val scope = CoroutineScope(Dispatchers.IO)
 
