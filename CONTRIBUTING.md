@@ -11,12 +11,16 @@ cd NoveLauncher/android
 ./gradlew assembleDebug
 ```
 
-Open the **`android/`** folder in Android Studio (Ladybug or newer). The
-repository root is intentionally not a Gradle project — it holds only
-`android/` (the app) and `assets/` (everything else). See
-[ADR-0001](assets/docs/adr/0001-android-assets-repo-split.md) for why.
+Open the **`android/`** folder in Android Studio — a version that supports
+Android Gradle Plugin 9.4. The repository root is intentionally not a Gradle
+project: `android/` is the app, `assets/` holds design sources and
+distribution material, and `docs/` is the published website. See
+[ADR-0001](assets/docs/adr/0001-android-assets-repo-split.md) and
+[ADR-0002](assets/docs/adr/0002-public-repo-docs-folder.md) for why.
 
-Requirements: JDK 17, Android SDK 35.
+Requirements: **JDK 21** to run Gradle (the app itself compiles to Java 17
+bytecode) and the Android SDK platform 37 — Gradle downloads it on first build
+if your SDK licences are accepted.
 
 ## Before you open a pull request
 
