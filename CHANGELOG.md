@@ -50,6 +50,9 @@ All notable changes to NoveLauncher. Versions follow the app's
 - **Google Drive connect / disconnect** in Settings → Backup, showing which
   account is connected. Only the `drive.file` scope (files the app created)
   and `email` are requested.
+- **Restore from Google Drive.** Drive backups now go into a NoveLauncher
+  folder under their real file names, and Settings → Backup → Restore lists
+  them, newest first. Password-protected backups ask for their password.
 - **Optional update check** in Settings → About: off by default; when on, it
   asks GitHub's releases API at most once a day (or when you tap "Check now")
   and links to the release. Nothing is downloaded or installed by the app.

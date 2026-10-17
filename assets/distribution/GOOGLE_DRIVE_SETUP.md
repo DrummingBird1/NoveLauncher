@@ -138,14 +138,19 @@ New clients can take from a few minutes to a few hours to take effect.
    works).
 2. Settings → Backup → **Connect Google Drive** → pick the account → allow.
    The section should then read "Connected as *your address*".
-3. Run a backup with Google Drive as the destination and check that a new
-   file appears in your Drive.
+3. Run a backup with Google Drive as the destination. A file named
+   `novelauncher_backup_<date>.json` should appear in a **NoveLauncher**
+   folder in My Drive (the app creates the folder on the first backup).
+4. Settings → Backup → Restore → **Show backups in Google Drive** lists the
+   app's backups, newest first; tap one to restore it. A password-protected
+   backup is tried with the Encryption password first and otherwise asks for
+   it.
 
-Known limitation (as of v10): the upload sends the backup content without
-file metadata, so Drive names each file **"Untitled"** instead of
-`novelauncher_backup_<date>.json`, and the app can't restore from Drive yet —
-download the file and restore it as a local backup. Fixing this is a code
-change in `BackupManager.backupToGoogleDrive`.
+The restore list only shows files the app created (the `drive.file` scope
+sees nothing else) whose names start with `novelauncher_backup`, wherever in
+Drive they've been moved. A backup renamed in Drive, or one uploaded by hand
+rather than by the app, doesn't show up; download it and restore it as a
+local backup instead.
 
 ## Troubleshooting
 
@@ -156,3 +161,4 @@ change in `BackupManager.backupToGoogleDrive`.
 | Connected, but backups fail with `Google Drive error: 403` | The Google Drive API isn't enabled in the project (step 2) |
 | "Token expired. Try again or reconnect in settings." | The access token was rejected (401); the app clears it, and the next try fetches a new one. If it keeps happening, Disconnect and Connect again |
 | "Not connected to Google Drive" during a scheduled backup | The user revoked access (or never connected); reconnect in Settings → Backup |
+| "No NoveLauncher backups in Google Drive" although Drive has backup files | The files were renamed, or are **"Untitled"** files from a pre-release v10 build (its upload sent no file name). Download one and restore it as a local backup |
