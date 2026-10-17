@@ -164,12 +164,26 @@ footer .base{margin-top:34px;padding-top:22px;border-top:1px solid var(--border)
     <h2 class="sec">Everything, without the tracking</h2>
     <p class="sub">A full-featured launcher whose intelligence never leaves your phone.</p>
     <div class="grid">
-      <div class="card"><span class="ico">🧠</span><h3>Smart ranking</h3>
-        <p>Apps ordered by recency, frequency, time-of-day pattern and category — computed locally, every time.</p></div>
+      <div class="card"><span class="ico">🧠</span><h3>Suggestions that learn</h3>
+        <p>Apps ranked by recency, frequency, time of day and category. "Recommended now" also learns from which suggestions you actually tap — computed locally, every time.</p></div>
       <div class="card"><span class="ico">📁</span><h3>Smart folders</h3>
         <p>Automatic grouping into 11 categories. No manual sorting, no dragging icons around.</p></div>
+      <div class="card"><span class="ico">💼</span><h3>Work profile &amp; Private Space</h3>
+        <p>Work apps with their badge and a pause switch. Android 15's Private Space gets its own lockable section — never mixed into suggestions.</p></div>
+      <div class="card"><span class="ico">⚡</span><h3>App shortcuts</h3>
+        <p>Long-press an app for its own shortcuts — a new message, a saved route — right from the home screen.</p></div>
+      <div class="card"><span class="ico">🔍</span><h3>Smart search</h3>
+        <p>Apps, contacts and settings in one box. Hebrew ↔ English matching, typo tolerance and initials, plus a calculator and unit conversion.</p></div>
+      <div class="card"><span class="ico">🕯️</span><h3>Jewish calendar &amp; Shabbat mode</h3>
+        <p>Hebrew date, holidays, candle-lighting and Havdalah times calculated on the phone. Shabbat mode hides distracting suggestions and badges.</p></div>
+      <div class="card"><span class="ico">🖼️</span><h3>Wallpapers</h3>
+        <p>Your photos or built-in gradients — one for all, per page, by hour, by weekday, or your live wallpaper — with colour and blur controls.</p></div>
+      <div class="card"><span class="ico">👆</span><h3>Gestures</h3>
+        <p>Swipe up for apps, swipe down for notifications, double-tap to turn the screen off.</p></div>
       <div class="card"><span class="ico">🎨</span><h3>Deep theming</h3>
-        <p>12 colour presets, Material You, custom colours, fonts, 12 icon shapes and icon-pack support.</p></div>
+        <p>12 colour presets, Material You, custom colours, 16 fonts and 12 icon shapes.</p></div>
+      <div class="card"><span class="ico">🧷</span><h3>Icon packs</h3>
+        <p>Apply any Nova, ADW or Lawnchair-compatible icon pack. Apps it doesn't cover keep their own icon.</p></div>
       <div class="card"><span class="ico">🔒</span><h3>App lock</h3>
         <p>PIN, password, pattern or biometric lock per app, plus a private folder and hidden apps.</p></div>
       <div class="card"><span class="ico">🌍</span><h3>Seven languages</h3>
@@ -177,11 +191,9 @@ footer .base{margin-top:34px;padding-top:22px;border-top:1px solid var(--border)
       <div class="card"><span class="ico">💾</span><h3>Backups you control</h3>
         <p>Local, your Google Drive or your own NAS — scheduled, and optionally password-encrypted.</p></div>
       <div class="card"><span class="ico">📰</span><h3>News feed</h3>
-        <p>Built-in sources plus any RSS feed you add yourself, cached for offline reading.</p></div>
+        <p>Built-in sources plus any RSS feed you add yourself. The last stories stay readable when you're offline.</p></div>
       <div class="card"><span class="ico">📊</span><h3>Usage statistics</h3>
-        <p>Screen time and per-app usage, stored only on your device — never uploaded.</p></div>
-      <div class="card"><span class="ico">🔍</span><h3>Global search</h3>
-        <p>Find apps, contacts and even settings screens from a single search box.</p></div>
+        <p>Screen time and per-app usage by day, week or month, read from Android on your device — never uploaded.</p></div>
     </div>
   </div>
 </section>
@@ -208,16 +220,17 @@ footer .base{margin-top:34px;padding-top:22px;border-top:1px solid var(--border)
     <div class="privacy">
       <ul>
         <li><strong>Nothing is collected.</strong> No analytics, no telemetry, no crash reporting in shipped builds, no account, no ads.</li>
-        <li><strong>Usage data stays local.</strong> Statistics live in a database on your device and are used only to rank your apps.</li>
-        <li><strong>One network call, and it's optional.</strong> The weather widget sends approximate coordinates to Open-Meteo — only if you grant location permission. Deny it and a default city is used.</li>
-        <li><strong>Your backups are yours.</strong> Local, your own Google Drive, or your own NAS — encrypted with a password only you hold.</li>
+        <li><strong>Usage data stays local.</strong> App usage is read from Android and processed on your device; what suggestions learn stays in a local database.</li>
+        <li><strong>Four features use the network — nothing else does.</strong> Weather asks Open-Meteo for the current conditions, sending approximate coordinates only if you grant location (a default city otherwise). The News page fetches the RSS feeds you enable. Backups go to your own Google Drive or NAS, only if you choose them. And an update check, off by default, asks GitHub at most once a day whether a new release exists.</li>
+        <li><strong>Your backups are yours.</strong> Local, your own Google Drive — where the app can see only the backup files it creates — or your own NAS, optionally encrypted with a password only you hold.</li>
+        <li><strong>Helpers that can't snoop.</strong> Jewish-calendar times are calculated on the phone. The optional gestures accessibility service performs two actions — screen off, open notifications — and cannot read your screen.</li>
         <li><strong>Auditable.</strong> The full source is published so you can verify all of the above yourself.</li>
       </ul>
       <div class="callout">
         <strong>On app lock, honestly:</strong> the app lock, private folder and hidden apps are a
         <em>deterrent, not a sandbox</em>. A locked app is still reachable from recents, notifications,
         another launcher or ADB — true of every third-party launcher. For real isolation, use Android's
-        built-in Work Profile.
+        built-in Work Profile or Private Space (Android 15+) — both supported by NoveLauncher.
       </div>
     </div>
   </div>
