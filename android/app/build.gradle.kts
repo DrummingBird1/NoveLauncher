@@ -161,6 +161,12 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+// v10: write the generated profile to src/main/generated/baselineProfiles/ (the
+// plugin's default is src/release/…), where every build type picks it up.
+baselineProfile {
+    mergeIntoMain = true
+}
+
 dependencies {
     // Compose BOM keeps the Compose libraries on matched versions.
     val composeBom = platform(libs.compose.bom)
