@@ -51,7 +51,7 @@ ui/                            ← Compose screens + ViewModel + Activity entry
   gestures/                    ← v10: GestureActions + LockScreenAccessibilityService (optional helper)
   wallpaper/WallpaperLayer.kt  ← v10: draws the launcher's own wallpaper behind every page
   LauncherViewModel.kt         ← @HiltViewModel, central state via StateFlow
-  screens/                     ← HomeScreen, AppsScreen, NewsScreen, PersonalZoneScreen,
+  screens/                     ← HomeScreen (+ ClockHeader.kt: clock, analog clock, Jewish-calendar lines), AppsScreen, NewsScreen, PersonalZoneScreen,
                                  StatisticsScreen, GlobalSearchScreen, OnboardingScreen,
                                  SettingsActivity.kt (separate Activity, sections split into
                                  AppearanceSettings.kt/BackupSettings.kt/SecuritySettings.kt/etc.)
@@ -125,7 +125,7 @@ AILauncherApp.kt               ← @HiltAndroidApp + WorkManager Configuration.P
 - **RTL-aware layout**: `android:supportsRtl="true"` in manifest, locale-sensitive padding via Compose.
 - **Activity is `singleTask` + `category.HOME`** — this is a real home-screen launcher, not a regular app.
 - **Hilt everywhere**, including `SettingsActivity` (`@AndroidEntryPoint` + `@Inject` since v8) and `LauncherActivity`. Repositories have domain-layer interfaces in `domain/repository/` (impls in `data/`), though `AppModule` still provides the concrete classes — bind the interface if you want to fake it in tests.
-- **`SettingsActivity` is split** (v9): the Activity + `SettingsPage` enum + `SettingsRoot` Scaffold live in `SettingsActivity.kt`; each section is its own file (`AppearanceSettings.kt`, `PagesSettings.kt`, `SecuritySettings.kt`, `BackupSettings.kt`, `MiscSettings.kt`, shared widgets in `SettingsComponents.kt`). Same for `Models.kt` → 5 domain files.
+- **`SettingsActivity` is split** (v9): the Activity + `SettingsPage` enum + `SettingsRoot` Scaffold live in `SettingsActivity.kt`; each section is its own file (`AppearanceSettings.kt`, `PagesSettings.kt`, `SecuritySettings.kt`, `BackupSettings.kt`, `WallpaperSettings.kt`, `AboutSettings.kt`, `IconPackSettings.kt`, `MiscSettings.kt` (hidden apps + news sources), shared widgets in `SettingsComponents.kt`). Same for `Models.kt` → 5 domain files.
 - **`AppWidgetHost`** is provided by Hilt and reaches Composables via `LocalAppWidgetHost`; `IconCache` via `LocalIconCache`. The old `AILauncherApp.instance` static was removed in v8 — don't reintroduce static singletons.
 - **`SmartControlSettings.reduceMotion`** reaches Composables via `LocalReduceMotion` (provided once in `LauncherActivity.setContent`, default `false`). Check it before adding a new `AnimatedVisibility`/`animateScrollToPage` — swap to `EnterTransition.None`/`ExitTransition.None`/`scrollToPage` when `true`, same pattern as `OnboardingScreen` and `AppsScreen`'s folder expand animation.
 - **`IconCache`** sizes itself off `ActivityManager.getMemoryClass()` (1/8th, clamped to [4 MB, 32 MB]) instead of a hardcoded constant — see kdoc in `IconCache.kt` if you need to retune the fraction/clamp.
