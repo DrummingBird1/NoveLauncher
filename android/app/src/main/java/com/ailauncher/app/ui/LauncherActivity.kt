@@ -66,6 +66,9 @@ class LauncherActivity : FragmentActivity() {
     /** v10: generalised from "pending app" to any action waiting on a PIN/password/pattern. */
     private val pendingUnlock = mutableStateOf<PendingUnlock?>(null)
 
+    /** v10: the latest Home press — LauncherRoot returns to the default page on each one. */
+    val homeRequest = mutableStateOf<HomeRequest?>(null)
+
     private val widgets = WidgetHostController(this, { widgetHost }) { id, spanY -> viewModel?.addWidget(id, spanY) }
 
     // v9.3: without this, POST_NOTIFICATIONS (API 33+) is never granted, so
@@ -194,6 +197,19 @@ class LauncherActivity : FragmentActivity() {
         try { unregisterReceiver(screenOffReceiver) } catch (_: IllegalArgumentException) {}
     }
 
+    /**
+     * v10: Home pressed. Without this, pressing Home while on the Apps (or any
+     * other) page left you there. Animated only when the launcher was already in
+     * front — coming back from an app just lands on the default page.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (!intent.hasCategory(Intent.CATEGORY_HOME)) return
+        val alreadyOnHome = hasWindowFocus() &&
+            (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) == 0
+        homeRequest.value = HomeRequest(animate = alreadyOnHome)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         widgets.onSaveInstanceState(outState)
@@ -284,3 +300,6 @@ class LauncherActivity : FragmentActivity() {
         const val RESUME_RELOCK_THRESHOLD_MS = 30_000L
     }
 }
+
+/** A Home press; a new instance each time, so pressing Home twice still triggers twice. */
+class HomeRequest(val animate: Boolean)

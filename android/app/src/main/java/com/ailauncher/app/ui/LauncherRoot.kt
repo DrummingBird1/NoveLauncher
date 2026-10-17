@@ -119,6 +119,16 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
         }
     }
 
+    // v10: Home pressed → close search and go back to the default page.
+    val homeRequest = activity.homeRequest.value
+    val reduceMotion = LocalReduceMotion.current
+    LaunchedEffect(homeRequest) {
+        if (homeRequest == null) return@LaunchedEffect
+        showGlobalSearch = false
+        if (homeRequest.animate && !reduceMotion) pagerState.animateScrollToPage(defaultIndex)
+        else pagerState.scrollToPage(defaultIndex)
+    }
+
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage < enabledPages.size) viewModel.navigateToPage(enabledPages[pagerState.currentPage])
     }
@@ -169,7 +179,6 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
                 }
             }
 
-            val reduceMotion = LocalReduceMotion.current
             AnimatedVisibility(
                 visible = showNavBar && enabledPages.size > 1,
                 enter = if (reduceMotion) EnterTransition.None else slideInVertically { it },
