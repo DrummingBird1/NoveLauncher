@@ -1,8 +1,8 @@
 package com.ailauncher.app.data.update
 
 import android.content.Context
-import android.os.Build
 import com.ailauncher.app.BuildConfig
+import com.ailauncher.app.data.install.installerPackage
 import com.ailauncher.app.domain.install.InstallSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -52,21 +52,7 @@ class UpdateChecker
          * goes online and nothing is ever reported. The installer can only change
          * with an update, which restarts the process, so it's read once.
          */
-        val isAvailable: Boolean by lazy { !InstallSource.isStoreInstall(installerPackage()) }
-
-        private fun installerPackage(): String? =
-            try {
-                val pm = context.packageManager
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    pm.getInstallSourceInfo(context.packageName).installingPackageName
-                } else {
-                    @Suppress("DEPRECATION")
-                    pm.getInstallerPackageName(context.packageName)
-                }
-            } catch (e: Exception) {
-                Timber.w(e, "Couldn't read the installer package")
-                null
-            }
+        val isAvailable: Boolean by lazy { !InstallSource.isStoreInstall(installerPackage(context)) }
 
         /** Cached result of the last check, if it found something newer than this build. */
         fun cached(): UpdateInfo? {

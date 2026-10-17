@@ -2,7 +2,8 @@ package com.ailauncher.app.domain.install
 
 /**
  * Which app store, if any, installed this APK. Pure — the installer's package
- * name itself is read from PackageManager by the caller (UpdateChecker).
+ * name itself is read from PackageManager by the caller
+ * ([com.ailauncher.app.data.install.installerPackage]).
  *
  * The same signed APK ships through GitHub Releases, Obtainium, Google Play and
  * the alternative stores. A store updates the app itself, and store review
@@ -12,15 +13,14 @@ package com.ailauncher.app.domain.install
  * Obtainium (`dev.imranr.obtainium*`) — keeps it.
  */
 object InstallSource {
-    val STORE_INSTALLERS =
-        setOf(
-            "com.android.vending", // Google Play
-            "com.sec.android.app.samsungapps", // Samsung Galaxy Store
-            "com.huawei.appmarket", // Huawei AppGallery
-            "cm.aptoide.pt", // Aptoide
-            "com.uptodown", // Uptodown
-            "com.apkpure.aegon", // APKPure
-        )
+    const val GOOGLE_PLAY = "com.android.vending"
+    const val GALAXY_STORE = "com.sec.android.app.samsungapps"
+    const val APPGALLERY = "com.huawei.appmarket"
+    const val APTOIDE = "cm.aptoide.pt"
+    const val UPTODOWN = "com.uptodown"
+    const val APKPURE = "com.apkpure.aegon"
+
+    val STORE_INSTALLERS = setOf(GOOGLE_PLAY, GALAXY_STORE, APPGALLERY, APTOIDE, UPTODOWN, APKPURE)
 
     fun isStoreInstall(installerPackage: String?): Boolean = installerPackage in STORE_INSTALLERS
 }

@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import com.ailauncher.app.R
+import com.ailauncher.app.data.install.installerPackage
+import com.ailauncher.app.domain.install.RateTarget
 import kotlinx.coroutines.launch
 
 // v10: split out of MiscSettings.kt.
@@ -72,6 +74,7 @@ fun AboutSection(
     val scope = rememberCoroutineScope()
     var updateStatus by remember { mutableStateOf<String?>(null) }
     var checking by remember { mutableStateOf(false) }
+    val rateTarget = remember { RateTarget.forInstaller(installerPackage(context)) }
 
     fun open(url: String) {
         try {
@@ -165,15 +168,15 @@ fun AboutSection(
                 stringResource(R.string.about_source_code),
             ) { open("https://github.com/DrummingBird1/NoveLauncher") }
         }
-        item {
-            val rateLabel = stringResource(R.string.about_rate)
-            AboutButton(Icons.Rounded.Star, rateLabel) {
-                try {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ailauncher.app")))
-                } catch (
-                    _: Exception,
-                ) {
-                    open("https://play.google.com/store/apps/details?id=com.ailauncher.app")
+        // The installing store's own page, or no button at all (RateTarget, Pitfall #40).
+        rateTarget?.let { target ->
+            item {
+                AboutButton(Icons.Rounded.Star, stringResource(R.string.about_rate)) {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(target.uri)))
+                    } catch (_: Exception) {
+                        target.fallbackUri?.let(::open)
+                    }
                 }
             }
         }
