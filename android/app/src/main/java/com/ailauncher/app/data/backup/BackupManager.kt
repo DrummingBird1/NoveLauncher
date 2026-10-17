@@ -21,7 +21,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class BackupManager(private val context: Context, private val settingsRepo: SettingsRepository) {
+class BackupManager(
+    private val context: Context,
+    private val settingsRepo: SettingsRepository,
+    private val drive: DriveClient = DriveClient()
+) {
     sealed class BackupResult {
         data class Success(val path: String) : BackupResult()
         data class Error(val message: String) : BackupResult()
@@ -164,40 +168,58 @@ class BackupManager(private val context: Context, private val settingsRepo: Sett
      * [DriveAuth] (Google Identity Services AuthorizationClient) — the account is
      * connected from Settings → Backup. Fetched fresh each call; Google access
      * tokens are short-lived and AuthorizationClient caches/refreshes them itself.
+     * The file goes into the app's "NoveLauncher" folder under its real name.
      */
-    private fun backupToGoogleDrive(fileName: String, data: String): BackupResult {
-        val token = fetchDriveAccessToken()
-            ?: return BackupResult.Error(context.getString(R.string.backup_error_not_connected))
+    private fun backupToGoogleDrive(fileName: String, data: String): BackupResult =
+        withDriveToken({ BackupResult.Error(it) }) { token ->
+            val folderId = drive.findOrCreateFolder(token)
+            val file = drive.upload(token, fileName, data, folderId)
+            BackupResult.Success("Google Drive: ${DriveClient.FOLDER_NAME}/${file.name}")
+        }
 
-        val url = URL("https://www.googleapis.com/upload/drive/v3/files?uploadType=media")
-        val conn = url.openConnection() as HttpURLConnection
-        return try {
-            conn.requestMethod = "POST"
-            conn.setRequestProperty("Authorization", "Bearer $token")
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("X-Upload-Content-Type", "application/json")
-            conn.doOutput = true
-            OutputStreamWriter(conn.outputStream).use { it.write(data) }
-
-            when {
-                conn.responseCode in 200..299 -> BackupResult.Success("Google Drive: $fileName")
-                conn.responseCode == 401 -> {
-                    // Drop the cached token so the next attempt re-fetches.
-                    try {
-                        DriveAuth.client(context).clearToken(
-                            com.google.android.gms.auth.api.identity.ClearTokenRequest.builder().setToken(token).build()
-                        )
-                    } catch (_: Exception) {}
-                    BackupResult.Error(context.getString(R.string.backup_error_token_expired))
-                }
-                else -> BackupResult.Error("Google Drive error: ${conn.responseCode} ${conn.responseMessage}")
-            }
-        } catch (e: Exception) {
-            BackupResult.Error("Google Drive: ${e.message}")
-        } finally { conn.disconnect() }
+    /** Result of a Drive call made outside [backup] (listing / downloading for restore). */
+    sealed class DriveResult<out T> {
+        data class Success<T>(val value: T) : DriveResult<T>()
+        data class Error(val message: String) : DriveResult<Nothing>()
     }
 
-    private fun fetchDriveAccessToken(): String? = DriveAuth.accessTokenBlocking(context)
+    /** The app's backups in Google Drive, newest first. */
+    suspend fun listDriveBackups(): DriveResult<List<DriveClient.DriveFile>> = withContext(Dispatchers.IO) {
+        withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.listBackups(token)) }
+    }
+
+    /** Raw content of a Drive backup — plain JSON or a PortableBackupCrypto
+     *  envelope — to hand to [restoreFromJson]. */
+    suspend fun downloadDriveBackup(file: DriveClient.DriveFile): DriveResult<String> = withContext(Dispatchers.IO) {
+        withDriveToken({ DriveResult.Error(it) }) { token -> DriveResult.Success(drive.download(token, file.id)) }
+    }
+
+    /**
+     * Runs [block] with a fresh Drive access token. No token (never connected, or
+     * consent revoked), a rejected token (401 — dropped from AuthorizationClient's
+     * cache so the next attempt re-fetches) and any other failure become [onError]
+     * with a message for the UI.
+     */
+    private inline fun <T> withDriveToken(onError: (String) -> T, block: (token: String) -> T): T {
+        val token = DriveAuth.accessTokenBlocking(context)
+            ?: return onError(context.getString(R.string.backup_error_not_connected))
+        return try {
+            block(token)
+        } catch (e: DriveClient.HttpException) {
+            if (e.code == 401) {
+                try {
+                    DriveAuth.client(context).clearToken(
+                        com.google.android.gms.auth.api.identity.ClearTokenRequest.builder().setToken(token).build()
+                    )
+                } catch (_: Exception) {}
+                onError(context.getString(R.string.backup_error_token_expired))
+            } else {
+                onError("Google Drive error: ${e.message}")
+            }
+        } catch (e: Exception) {
+            onError("Google Drive: ${e.message}")
+        }
+    }
 
     /**
      * v9: NAS now reads its settings (address/path/credentials) from the same
