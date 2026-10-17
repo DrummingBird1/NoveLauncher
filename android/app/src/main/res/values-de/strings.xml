@@ -4,10 +4,12 @@
 
     <string name="whats_new_title">Neuigkeiten</string>
     <string-array name="whats_new_items">
-        <item>Schnelleres Laden der Symbole direkt nach dem Öffnen der App</item>
-        <item>Sieh, wann die letzte Sicherung lief und ob sie erfolgreich war</item>
-        <item>Ein Hinweis in den Sicherheitseinstellungen, falls das Gerät gerootet zu sein scheint</item>
-        <item>Zuverlässigere App-Updates — ein Problem behoben, durch das neue Versionen nicht über alte installiert werden konnten</item>
+        <item>Apps aus Arbeitsprofil und Privatem Bereich, dazu App-Shortcuts per langem Drücken</item>
+        <item>Hintergründe: eigene Fotos oder Verläufe — pro Seite, Uhrzeit oder Wochentag</item>
+        <item>Gesten: nach oben für Apps, nach unten für Benachrichtigungen, Doppeltippen schaltet den Bildschirm aus</item>
+        <item>Schlauere Suche: Namen auf Hebräisch oder Englisch, Tippfehler, Rechner und Einheitenumrechnung</item>
+        <item>Jüdischer Kalender mit Zeiten fürs Kerzenzünden, dazu der Schabbat-Modus</item>
+        <item>Icon-Pakete lassen sich jetzt anwenden, und Vorschläge lernen, was du wirklich öffnest</item>
     </string-array>
 
     <string name="page_home">Start</string>

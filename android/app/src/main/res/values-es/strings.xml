@@ -4,10 +4,12 @@
 
     <string name="whats_new_title">Novedades</string>
     <string-array name="whats_new_items">
-        <item>Carga más rápida de los iconos justo al abrir la app</item>
-        <item>Consulta cuándo se hizo la última copia de seguridad y si tuvo éxito</item>
-        <item>Un aviso en Ajustes de seguridad si el dispositivo parece tener root</item>
-        <item>Actualizaciones más fiables — se corrigió un problema que impedía instalar versiones nuevas sobre las antiguas</item>
+        <item>Apps del perfil de trabajo y del Espacio privado, y accesos directos al mantener pulsada una app</item>
+        <item>Fondos de pantalla: tus fotos o degradados — por página, por hora o por día</item>
+        <item>Gestos: hacia arriba para las apps, hacia abajo para las notificaciones, dos toques para apagar la pantalla</item>
+        <item>Búsqueda más lista: nombres en hebreo o inglés, erratas, calculadora y conversión de unidades</item>
+        <item>Calendario hebreo con los horarios de encendido de velas, y modo Shabat</item>
+        <item>Los paquetes de iconos ya se aplican, y las sugerencias aprenden de lo que de verdad abres</item>
     </string-array>
 
     <string name="page_home">Inicio</string>

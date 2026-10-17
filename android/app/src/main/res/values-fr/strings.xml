@@ -4,10 +4,12 @@
 
     <string name="whats_new_title">Nouveautés</string>
     <string-array name="whats_new_items">
-        <item>Chargement plus rapide des icônes juste après l\'ouverture de l\'application</item>
-        <item>Voyez quand votre dernière sauvegarde a été effectuée et si elle a réussi</item>
-        <item>Une alerte dans les paramètres de sécurité si votre appareil semble rooté</item>
-        <item>Mises à jour plus fiables — correction d\'un problème empêchant l\'installation de nouvelles versions par-dessus les anciennes</item>
+        <item>Applis du profil professionnel et de l\'Espace privé, et raccourcis d\'applis par appui long</item>
+        <item>Fonds d\'écran : vos photos ou des dégradés — par page, par heure ou par jour</item>
+        <item>Gestes : vers le haut pour les applis, vers le bas pour les notifications, double toucher pour éteindre l\'écran</item>
+        <item>Recherche plus futée : noms en hébreu ou en anglais, fautes de frappe, calculatrice et conversion d\'unités</item>
+        <item>Calendrier hébraïque avec les heures d\'allumage des bougies, et mode Chabbat</item>
+        <item>Les packs d\'icônes s\'appliquent enfin, et les suggestions apprennent de ce que vous ouvrez vraiment</item>
     </string-array>
 
     <string name="page_home">Accueil</string>
