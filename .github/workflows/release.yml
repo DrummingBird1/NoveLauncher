@@ -1,5 +1,12 @@
 # v9.3: release-on-tag workflow. Push a tag matching v*.*.* (e.g. v9.3.0) and
-# this builds the release APK + AAB and attaches them to a new GitHub Release.
+# this builds the signed release APK and attaches it to a new draft GitHub
+# Release as NoveLauncher-X.Y.Z-release.apk.
+#
+# v10: APK only. Releases up to 10.0.0 also carried the .aab, which nobody can
+# install from GitHub (it's an upload format for Google Play), and whose v1
+# signature files are named after the key alias. Every store this app is on
+# takes the APK. If a store ever needs the AAB, build it locally with
+# `./gradlew bundleRelease` and the RELEASE_* env vars — don't publish it here.
 #
 # Signing follows the exact same opt-in pattern as android.yml's release build:
 # absent the RELEASE_KEYSTORE_BASE64 (+ password/alias) secrets, the outputs
@@ -58,23 +65,11 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
 
-      # Play Store / most alternative stores want an AAB, not an APK — see
-      # assets/distribution/ALTERNATIVE_STORES.md. Built separately from
-      # assembleRelease above because `bundleRelease` is its own Gradle task
-      # (different output format, same signing config).
-      - name: Assemble release AAB (R8)
-        run: ./gradlew bundleRelease --stacktrace
-        env:
-          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-
-      - name: Report artifact sizes
+      - name: Report APK size
         run: |
           {
-            echo "### Release artifact sizes"
-            for f in app/build/outputs/apk/release/*.apk app/build/outputs/bundle/release/*.aab; do
+            echo "### Release APK size"
+            for f in app/build/outputs/apk/release/*.apk; do
               [ -f "$f" ] && echo "- \`$(basename "$f")\`: $(du -h "$f" | cut -f1)"
             done
           } >> "$GITHUB_STEP_SUMMARY"
@@ -90,11 +85,14 @@ jobs:
           echo "::error::RELEASE_KEYSTORE_BASE64 (and the password/alias secrets) are not set, so this build is UNSIGNED and cannot be installed on any device. Add the signing secrets to this repository, then re-run. See the 'Release signing' section in CLAUDE.md."
           exit 1
 
+      # Same file name as every earlier release, so links and store kits can
+      # rely on it: NoveLauncher-<version>-release.apk.
+      - name: Name the APK
+        run: cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/NoveLauncher-${GITHUB_REF_NAME#v}-release.apk"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          files: |
-            android/app/build/outputs/apk/release/*.apk
-            android/app/build/outputs/bundle/release/*.aab
+          files: android/app/build/outputs/apk/release/NoveLauncher-*-release.apk
           generate_release_notes: true
           draft: true  # review before publishing — never auto-publish to users
