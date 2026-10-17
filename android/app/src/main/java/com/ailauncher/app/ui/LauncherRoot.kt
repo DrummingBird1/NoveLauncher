@@ -213,11 +213,13 @@ fun LauncherRoot(viewModel: LauncherViewModel, activity: LauncherActivity) {
 
 /**
  * v10: shown when double-tap-to-lock is on but the accessibility helper isn't
- * enabled. Doubles as Google Play's required prominent disclosure: it says what
- * the service does and doesn't do before sending the user to system settings.
+ * enabled, and when the user switches it on in Settings → Gestures. Doubles as
+ * Google Play's required prominent disclosure: it says what the service does
+ * and doesn't do before sending the user to system settings. [onConsent] runs
+ * only for "Open accessibility settings"; Cancel and outside taps just dismiss.
  */
 @Composable
-fun LockGestureSetupDialog(onDismiss: () -> Unit) {
+fun LockGestureSetupDialog(onDismiss: () -> Unit, onConsent: () -> Unit = {}) {
     val context = LocalContext.current
     val supported = LockScreenAccessibilityService.isLockSupported
     AlertDialog(
@@ -229,6 +231,7 @@ fun LockGestureSetupDialog(onDismiss: () -> Unit) {
         confirmButton = {
             if (supported) {
                 TextButton(onClick = {
+                    onConsent()
                     GestureActions.openAccessibilitySettings(context)
                     onDismiss()
                 }) { Text(stringResource(R.string.gesture_lock_setup_open)) }

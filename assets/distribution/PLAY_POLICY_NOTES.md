@@ -72,48 +72,58 @@ Hebrew (`values/`, the app's default locale):
 > מבצעים את המחווה. הוא לא יכול לקרוא את מה שמוצג על המסך, לראות מה אתם
 > מקלידים או לאסוף מידע כלשהו. אפשר לכבות אותו בכל עת בהגדרות הנגישות.
 
-The same string exists in all seven locales. It appears in two places:
+The same string exists in all seven locales. It is shown as a dialog,
+`LockGestureSetupDialog` in `ui/LauncherRoot.kt`: title "Double tap to lock",
+the disclosure, and two buttons — **Open accessibility settings** (consent: it
+opens the system screen where the user turns the service on) and **Cancel**
+(no consent: the dialog closes and nothing changes). The dialog appears at
+two moments, both only while the service isn't enabled:
 
-- **On the home screen** — `LockGestureSetupDialog` in `ui/LauncherRoot.kt`.
-  When double-tap-to-lock is switched on but the service isn't enabled, a
-  double-tap opens this dialog: title "Double tap to lock", the disclosure,
-  and two buttons — **Open accessibility settings** (consent: it opens the
-  system screen where the user turns the service on) and **Cancel** (no
-  consent: the dialog closes and nothing changes). This is the
-  disclosure to show in the video, because it appears during normal use.
-- **Settings → Gestures** — a card with the same title and text, the current
-  status ("Accessibility helper: on/off") and the same button.
+- **When the user turns the feature on** — switching **Double tap → screen
+  off** on in Settings → Gestures opens the dialog before the switch changes.
+  **Open accessibility settings** turns the switch on and opens the system
+  screen; **Cancel** leaves the switch off. This is the user's first contact
+  with the feature, so it is the disclosure to lead with in the video.
+- **On the home screen** — if the switch is on but the service still isn't
+  enabled (the user consented but didn't finish, or turned the service off
+  later), a double-tap opens the same dialog instead of doing nothing.
+
+Settings → Gestures also has a card with the same title and text, the current
+status ("Accessibility helper: on/off") and the same button.
 
 Play's rules for this disclosure, and how the app meets them:
 
 | Requirement | NoveLauncher |
 |---|---|
 | Inside the app, not only in the listing or privacy policy | In-app dialog and Settings card |
-| Shown during normal use | The home-screen dialog appears on the gesture itself |
+| Shown during normal use | The dialog appears when the user turns the gesture on, and again on the gesture itself |
 | Says what data is accessed and how it is used | Two actions, no screen content, no typing, no data collected |
 | Not bundled with other disclosures | A dedicated dialog for this service only |
 | Affirmative consent | The user taps **Open accessibility settings** and then turns the service on in Android's own settings |
 | Not replaced by the manifest description | The manifest's `a11y_service_description` repeats it, but the dialog is the disclosure |
 
-One weak spot to know about: the double-tap switch itself is in Settings →
-Gestures (off by default), so the first time a user meets the feature may be
-in Settings rather than on the home screen. The dialog still appears on the
-home screen before the service can be enabled from there. If a reviewer
-objects, the fix is in code (e.g. showing the dialog right when the switch is
-turned on), not in this text.
+Why the dialog also appears on the switch: the double-tap switch lives in
+Settings → Gestures (off by default), so a user meets the feature there before
+ever double-tapping the home screen. Showing the disclosure at that moment
+ties consent to the user's choice to turn the feature on, and the switch
+can't end up on without the user having seen it and tapped **Open
+accessibility settings**. Every in-app route to Android's Accessibility screen
+shows the disclosure first — the two dialog triggers above, and the Settings
+card, whose button sits directly under the same text.
 
 **Video (required).** Upload an unlisted YouTube video (portrait, ~1 minute)
-showing, in order, scrolling slowly enough that every line of the disclosure
-can be read:
+showing, in order, slowly enough that every line of the disclosure can be
+read:
 
 1. Opening NoveLauncher on the home screen.
-2. Settings → Gestures: the explanation card, then turning on
-   **Double tap → screen off**.
-3. Back on the home screen: double-tap → the disclosure dialog → **Cancel**
-   (non-consent path: nothing happens).
-4. Double-tap again → **Open accessibility settings** → enabling
-   "NoveLauncher gestures" in Android's settings (show the system
-   confirmation).
+2. Settings → Gestures: turning on **Double tap → screen off** → the
+   disclosure dialog → **Cancel** (non-consent path: the switch stays off).
+3. Turning the switch on again → **Open accessibility settings** (consent:
+   the switch is now on) → Android's Accessibility screen opens; go back
+   without enabling the service.
+4. Back on the home screen: double-tap → the same dialog, during normal use →
+   **Open accessibility settings** → enabling "NoveLauncher gestures" in
+   Android's settings (show the system confirmation).
 5. Back on the home screen: double-tap turns the screen off; swipe down opens
    the notifications.
 

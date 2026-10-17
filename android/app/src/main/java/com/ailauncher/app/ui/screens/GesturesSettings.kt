@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.SmartControlSettings
+import com.ailauncher.app.ui.LockGestureSetupDialog
 import com.ailauncher.app.ui.gestures.GestureActions
 import com.ailauncher.app.ui.gestures.LockScreenAccessibilityService
 
@@ -39,12 +40,15 @@ import com.ailauncher.app.ui.gestures.LockScreenAccessibilityService
  *
  * Double-tap-to-lock needs the accessibility helper. The explanation card below
  * is the prominent disclosure Google Play requires before sending the user to
- * enable it: what it does, what it can't do, and that it's optional.
+ * enable it: what it does, what it can't do, and that it's optional. Switching
+ * double-tap on while the helper is off also shows it as LockGestureSetupDialog,
+ * so the disclosure and consent come at the moment the user opts in.
  */
 @Composable
 fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSettings) -> Unit) {
     val context = LocalContext.current
     var helperEnabled by remember { mutableStateOf(LockScreenAccessibilityService.isEnabled(context)) }
+    var showDisclosure by remember { mutableStateOf(false) }
     // Re-check whenever the user comes back from system settings.
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
@@ -60,7 +64,13 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
             item { SwitchSetting(stringResource(R.string.gesture_swipe_up), settings.swipeUpAppDrawer) { onUpdate(settings.copy(swipeUpAppDrawer = it)) } }
             item { SwitchSetting(stringResource(R.string.gesture_swipe_down), settings.swipeDownNotifications) { onUpdate(settings.copy(swipeDownNotifications = it)) } }
             if (LockScreenAccessibilityService.isLockSupported) {
-                item { SwitchSetting(stringResource(R.string.gesture_double_tap_lock), settings.doubleTapToSleep) { onUpdate(settings.copy(doubleTapToSleep = it)) } }
+                item {
+                    SwitchSetting(stringResource(R.string.gesture_double_tap_lock), settings.doubleTapToSleep) {
+                        // Switching on without the helper shows the disclosure first; the
+                        // switch only turns on if the user agrees to go enable it.
+                        if (it && !helperEnabled) showDisclosure = true else onUpdate(settings.copy(doubleTapToSleep = it))
+                    }
+                }
             }
         }
 
@@ -91,5 +101,12 @@ fun GesturesSection(settings: SmartControlSettings, onUpdate: (SmartControlSetti
                 }
             }
         }
+    }
+
+    if (showDisclosure) {
+        LockGestureSetupDialog(
+            onDismiss = { showDisclosure = false },
+            onConsent = { onUpdate(settings.copy(doubleTapToSleep = true)) }
+        )
     }
 }
