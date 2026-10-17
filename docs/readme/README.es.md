@@ -55,7 +55,7 @@ teléfono.
 | 🔒 **Bloqueo de apps** | PIN, contraseña, patrón o biometría por aplicación, carpeta privada y apps ocultas |
 | 🌍 **7 idiomas** | Hebreo, inglés, árabe, francés, ruso, español y alemán — totalmente compatible con RTL |
 | 📰 **Noticias** | Fuentes integradas y tus propios feeds RSS |
-| 💾 **Copias de seguridad** | Local, Google Drive o NAS/WebDAV, programadas, con cifrado por contraseña opcional |
+| 💾 **Copias de seguridad** | En local o en tu NAS/WebDAV, programadas, con cifrado por contraseña opcional |
 | 📊 **Estadísticas de uso** | Tiempo de pantalla y uso de apps por día, semana o mes, leídos de Android en tu dispositivo |
 | 🧩 **Widgets y dock** | Widgets estándar de Android (con su pantalla de configuración y tamaño ajustable) y un dock inferior fijo |
 
@@ -86,17 +86,16 @@ Es la razón de ser del proyecto, así que conviene ser preciso:
     predeterminada.
   - **Noticias** — la página de Noticias descarga los feeds RSS que hayas
     activado, directamente de cada medio.
-  - **Copias de seguridad** — solo si las eliges: tu propio Google Drive (con el
-    ámbito `drive.file`, así la app solo ve los archivos de copia que ella misma
-    crea — nunca el resto de tu Drive) o tu propio NAS por HTTPS.
+  - **Copias de seguridad** — solo si eliges un NAS: tu propio servidor, por
+    HTTPS.
   - **Búsqueda de actualizaciones** — desactivada por defecto. Si la activas, la
     app consulta la API de versiones de GitHub como máximo una vez al día. No se
     envía nada sobre ti ni sobre tu dispositivo, y no se descarga nada
     automáticamente.
 
   Todo lo demás se queda en tu dispositivo.
-- **Tus copias son tuyas.** En local, en tu Google Drive o en tu NAS, con
-  cifrado mediante una contraseña que solo tú conoces.
+- **Tus copias son tuyas.** En el teléfono o en tu NAS, con cifrado mediante
+  una contraseña que solo tú conoces.
 - **El calendario hebreo se calcula en el teléfono.** Los horarios de
   festividades, encendido de velas y Havdalá usan tu ubicación aproximada si lo
   permites (si no, una ciudad predeterminada) y no se envían a ningún sitio.
@@ -165,8 +164,8 @@ apoyar el desarrollo:
 
 <div align="center">
 
-[![Patreon](https://img.shields.io/badge/Patreon-Apoyar-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/cw/MrIdan)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Apoyar-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/novelauncher)
+[![Patreon](https://img.shields.io/badge/Patreon-Apoyar-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/c/Solvaris)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Apoyar-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/solvaris)
 
 </div>
 

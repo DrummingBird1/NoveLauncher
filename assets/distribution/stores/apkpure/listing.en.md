@@ -23,7 +23,7 @@ A private home screen that learns your habits, entirely on your phone
 
 ## Description
 
-_3066 chars of 4000 max; no published limit; Google Play's limit used_
+_3052 chars of 4000 max; no published limit; Google Play's limit used_
 
 ```text
 NoveLauncher is an Android home screen that learns which apps you need and puts them in front of you. It doesn't send anything about you anywhere: every suggestion is worked out on your phone.
@@ -42,7 +42,7 @@ WHAT'S INSIDE
 • App lock: a PIN, password, pattern or fingerprint per app, a hidden private folder, and hidden apps.
 • News page: a built-in RSS reader with Hebrew and English sources, or add your own feeds.
 • Usage statistics: screen time and opens per app, by day, week or month.
-• Backups: to your phone, Google Drive or your own NAS, on a schedule, optionally encrypted with a password only you know.
+• Backups: to your phone or your own NAS, on a schedule, optionally encrypted with a password only you know.
 • Seven languages: Hebrew, English, Arabic, French, Russian, Spanish and German, with full right-to-left support.
 
 PRIVACY

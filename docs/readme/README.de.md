@@ -55,7 +55,7 @@ Telefon nie.
 | 🔒 **App-Sperre** | PIN, Passwort, Muster oder Biometrie pro App, privater Ordner und ausgeblendete Apps |
 | 🌍 **7 Sprachen** | Hebräisch, Englisch, Arabisch, Französisch, Russisch, Spanisch, Deutsch — vollständig RTL-fähig |
 | 📰 **Nachrichten** | Integrierte Quellen sowie eigene RSS-Feeds |
-| 💾 **Sicherungen** | Lokal, Google Drive oder NAS/WebDAV, zeitgesteuert, optional passwortverschlüsselt |
+| 💾 **Sicherungen** | Lokal oder auf deinem NAS/WebDAV, zeitgesteuert, optional passwortverschlüsselt |
 | 📊 **Nutzungsstatistik** | Bildschirmzeit und App-Nutzung pro Tag, Woche oder Monat, direkt auf dem Gerät aus Android gelesen |
 | 🧩 **Widgets und Dock** | Standard-Android-Widgets (mit ihrem Einrichtungsbildschirm, in der Größe anpassbar) und ein angeheftetes unteres Dock |
 
@@ -86,17 +86,16 @@ Das ist der eigentliche Zweck des Projekts, deshalb hier präzise:
     Wetter einer Standardstadt abgefragt.
   - **Nachrichten** — die Nachrichtenseite lädt die RSS-Feeds, die du aktiviert
     hast, direkt vom jeweiligen Anbieter.
-  - **Sicherungen** — nur, wenn du sie wählst: dein eigenes Google Drive
-    (Bereich `drive.file`, die App sieht also nur die Sicherungsdateien, die sie
-    selbst anlegt — nie den Rest deines Drive) oder dein eigenes NAS über HTTPS.
+  - **Sicherungen** — nur, wenn du ein NAS wählst: dein eigener Server, über
+    HTTPS.
   - **Update-Prüfung** — standardmäßig aus. Wenn du sie einschaltest, fragt die
     App höchstens einmal am Tag die Release-API von GitHub nach der neuesten
     Version. Über dich oder dein Gerät wird nichts gesendet, und nichts wird
     automatisch heruntergeladen.
 
   Alles andere bleibt auf deinem Gerät.
-- **Deine Sicherungen gehören dir.** Lokal, in deinem Google Drive oder auf
-  deinem NAS, mit Verschlüsselung durch ein Passwort, das nur du kennst.
+- **Deine Sicherungen gehören dir.** Auf dem Handy oder auf deinem NAS, mit
+  Verschlüsselung durch ein Passwort, das nur du kennst.
 - **Der jüdische Kalender wird auf dem Handy berechnet.** Feiertags-,
   Kerzenzünd- und Hawdala-Zeiten nutzen deinen ungefähren Standort, wenn du ihn
   erlaubst (sonst eine Standardstadt), und werden nirgendwohin gesendet.
@@ -165,8 +164,8 @@ Entwicklung unterstützen möchtest:
 
 <div align="center">
 
-[![Patreon](https://img.shields.io/badge/Patreon-Unterst%C3%BCtzen-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/cw/MrIdan)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Unterst%C3%BCtzen-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/novelauncher)
+[![Patreon](https://img.shields.io/badge/Patreon-Unterst%C3%BCtzen-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/c/Solvaris)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Unterst%C3%BCtzen-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/solvaris)
 
 </div>
 

@@ -32,7 +32,7 @@ WHAT'S INSIDE
 • App lock: a PIN, password, pattern or fingerprint per app, a hidden private folder, and hidden apps.
 • News page: a built-in RSS reader with Hebrew and English sources, or add your own feeds.
 • Usage statistics: screen time and opens per app, by day, week or month.
-• Backups: to your phone, Google Drive or your own NAS, on a schedule, optionally encrypted with a password only you know.
+• Backups: to your phone or your own NAS, on a schedule, optionally encrypted with a password only you know.
 • Seven languages: Hebrew, English, Arabic, French, Russian, Spanish and German, with full right-to-left support.
 
 PRIVACY

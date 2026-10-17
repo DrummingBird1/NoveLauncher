@@ -28,7 +28,7 @@ nothing useful until it's set as the default Home app.
 | `USE_BIOMETRIC` / `USE_FINGERPRINT` | Install-time (normal) | Optional fingerprint/face unlock for apps the user locked | Handled by Android's BiometricPrompt. The app never sees biometric data. |
 | `POST_NOTIFICATIONS` | Optional, runtime prompt (Android 13+) | Only to report a scheduled backup that failed | n/a |
 | `READ_EXTERNAL_STORAGE` (Android 12 and older only) | Optional | Restoring a settings backup the user picked from storage | Read on the device only |
-| `INTERNET`, `ACCESS_NETWORK_STATE` | Install-time | Weather (Open-Meteo), RSS news feeds the user picks, backups the user sets up (Google Drive, own NAS), optional once-a-day update check (GitHub API) | Only to those services. There are no ads, analytics or tracking SDKs. |
+| `INTERNET`, `ACCESS_NETWORK_STATE` | Install-time | Weather (Open-Meteo), RSS news feeds the user picks, backups the user sets up (their own NAS), optional once-a-day update check (GitHub API) | Only to those services. There are no ads, analytics or tracking SDKs. |
 | `BIND_APPWIDGET`, `VIBRATE` | Install-time | Hosting home-screen widgets; haptic feedback | n/a |
 
 ## Things reviewers sometimes ask
@@ -44,6 +44,8 @@ nothing useful until it's set as the default Home app.
   itself. When a store installed the app (Google Play, Galaxy Store,
   AppGallery, Aptoide, Uptodown, APKPure), the check is hidden entirely and
   never goes online, and Rate opens that store.
-- **Google Drive backup** uses Google Play services (`play-services-auth`). On
-  devices without them (Huawei), the app hides Drive from Settings → Backup.
-  Local and NAS backups don't depend on Google.
+- **Google Drive backup is switched off in 10.0.0** (a build switch, until a
+  Google Cloud OAuth client exists), so no store build offers it. When it
+  returns it needs Google Play services (`play-services-auth`), and on devices
+  without them (Huawei) the app hides it from Settings → Backup. Local and NAS
+  backups don't depend on Google.

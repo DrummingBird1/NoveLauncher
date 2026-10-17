@@ -47,21 +47,33 @@ All notable changes to NoveLauncher. Versions follow the app's
 - **Widgets, end to end.** Adding a widget runs its configuration screen,
   cancelled or removed widgets release their IDs, providers are told their
   real size, and widget height is resizable.
-- **Google Drive connect / disconnect** in Settings → Backup, showing which
-  account is connected. Only the `drive.file` scope (files the app created)
-  and `email` are requested.
-- **Restore from Google Drive.** Drive backups now go into a NoveLauncher
-  folder under their real file names, and Settings → Backup → Restore lists
-  them, newest first. Password-protected backups ask for their password.
 - **Optional update check** in Settings → About: off by default; when on, it
   asks GitHub's releases API at most once a day (or when you tap "Check now")
   and links to the release. Nothing is downloaded or installed by the app.
+  Installs from an app store don't show it at all — updates come from the
+  store.
+- **Rate opens the right store.** Settings → About → Rate goes to the store
+  the app was installed from (Galaxy Store, AppGallery, Aptoide, …).
+- **Get it on Obtainium.** The README and website link to Obtainium, which
+  installs and updates NoveLauncher straight from GitHub Releases.
+
+### Not in this release
+- **Google Drive backup is switched off.** The old option could never connect
+  (see Fixed), and the new connection needs a Google Cloud setup that isn't in
+  place yet, so Settings → Backup offers local and NAS backups only. The
+  groundwork is in the code — Google Identity Services authorization, named
+  backups in a NoveLauncher folder, and restore from Drive — behind a build
+  switch, ready for a later release.
 
 ### Fixed
-- **Google Drive backup could never connect.** The sign-in code existed but
-  nothing called it, so choosing Google Drive always failed — and Google has
-  since removed the GoogleSignIn API it used. Drive now connects through
-  Google Identity Services from Settings → Backup.
+- **A Google Drive backup option that could never work.** Drive was offered as
+  a destination, but the sign-in code had no caller, so it always failed — and
+  Google has since removed the GoogleSignIn API it used. The broken option is
+  gone (see Not in this release).
+- **The language picker did nothing on Android 13+.** Choosing a language in
+  Settings → Appearance now applies it immediately.
+- **Home didn't take you home.** Pressing Home while the launcher was open left
+  you in the app drawer or search; it now returns to the default page.
 - **The Statistics page was always empty.** It read a table that nothing ever
   wrote. It now reads Android's usage statistics directly, by day, week or
   month.
@@ -83,7 +95,14 @@ All notable changes to NoveLauncher. Versions follow the app's
 - An app with two launcher activities, or installed in two profiles, could
   crash the app grid.
 - Wallpaper settings had no visible effect, and the gesture switches (in
-  Settings since v5) did nothing.
+  Settings since v5) did nothing. "Live wallpaper" mode now really shows the
+  system wallpaper, and an hourly wallpaper without a start time counts as
+  midnight instead of never showing.
+- Candle-lighting and Shabbat-end times follow the launcher clock's 12/24-hour
+  setting.
+- Turning on double-tap-to-lock now explains the accessibility helper before
+  enabling it.
+- New donation links in Settings → About, the README and the website.
 
 ### Changed (technical)
 - **targetSdk 36** — required by Google Play for new apps and updates since
@@ -98,8 +117,9 @@ All notable changes to NoveLauncher. Versions follow the app's
   APK shrinks from 7.96 MB to 3.58 MB, with no NDK libraries left (so no
   16 KB page-size risk). Crash reporting stays off — no DSN is configured.
 - Google Drive authorization moved to Google Identity Services'
-  `AuthorizationClient` (`DriveAuth`). It needs an Android OAuth client per
-  signing key in Google Cloud — see
+  `AuthorizationClient` (`DriveAuth`), with Drive REST in `DriveClient`. It's
+  off in this release (`BuildConfig.DRIVE_BACKUP_ENABLED = false`); turning it
+  on needs an Android OAuth client per signing key in Google Cloud — see
   [GOOGLE_DRIVE_SETUP.md](assets/distribution/GOOGLE_DRIVE_SETUP.md).
 - App list, launching and shortcuts through `LauncherApps` instead of
   `PackageManager`; entries are keyed by activity + profile.
@@ -113,14 +133,17 @@ All notable changes to NoveLauncher. Versions follow the app's
   (normal; swipe-down fallback) and the optional `LockScreenAccessibilityService`
   — see [PLAY_POLICY_NOTES.md](assets/distribution/PLAY_POLICY_NOTES.md) for the
   Play Console declarations.
-- Tests: 94 JVM tests, adding search matching, instant answers, feedback
-  scoring, wallpaper rules, the update checker, sunset maths and the Jewish
-  calendar. A Hilt instrumented test drives the real `LauncherActivity`
-  (home, app-lock flow); it compiles but hasn't run on a device yet. Jacoco
-  now reads AGP 9's class output (it had been reporting 0% against a stale
-  directory); Paparazzi 2.0 goldens re-recorded.
-- New `:baselineprofile` module — Baseline Profile generator and a startup
-  macrobenchmark. The profile itself hasn't been generated yet.
+- Tests: new JVM suites for search matching, instant answers, feedback
+  scoring, wallpaper rules, the update checker and install source, sunset
+  maths and the Jewish calendar. A Hilt instrumented test drives the real
+  `LauncherActivity` (home, app-lock flow) and passes on an Android 16
+  emulator and in CI. Jacoco now reads AGP 9's class output (it had been
+  reporting 0% against a stale directory); Paparazzi 2.0 goldens re-recorded.
+- Baseline Profile: a new `:baselineprofile` module generated a ~24k-rule
+  profile (cold start, app drawer, search), shipped with the app; plus a
+  startup macrobenchmark.
+- Code style: every Kotlin file formatted with ktlint 1.8, and ktlint is now a
+  blocking CI check.
 
 ---
 

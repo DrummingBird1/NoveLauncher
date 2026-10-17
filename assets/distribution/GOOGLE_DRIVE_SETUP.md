@@ -1,5 +1,12 @@
 # Google Drive backup — Google Cloud setup
 
+> **Status (10.0.0): Drive backup is switched off.** `BuildConfig.DRIVE_BACKUP_ENABLED`
+> is `false` in `android/app/build.gradle.kts`, so Settings → Backup doesn't offer
+> Drive on any device. After completing the setup below, set it to `true`, check
+> Connect / backup / restore on a device, and mention Drive again in the README,
+> website, privacy policy (`docs/privacy.html` + `PRIVACY_POLICY.md`), terms and
+> store listings — all of them currently say Drive isn't offered.
+
 NoveLauncher connects to Google Drive through Google Identity Services'
 `AuthorizationClient` ([`DriveAuth.kt`](../../android/app/src/main/java/com/ailauncher/app/data/backup/DriveAuth.kt)).
 Google only authorizes an Android app it can identify: a Google Cloud project

@@ -199,9 +199,8 @@
         <p>Backups are off unless you set them up. A backup contains your launcher settings as a JSON file — including the hashed (never plain-text) lock credentials and the list of locked and hidden apps. If you set a backup password, the file is encrypted with AES-256-GCM using a key derived from that password. Wallpaper images are not included.</p>
         <ul>
             <li><strong>Local file:</strong> Saved to your device's Downloads folder. Never transmitted.</li>
-            <li><strong>Google Drive:</strong> You connect your own Google account in Settings → Backup through Google's consent screen (Google Identity Services, provided by Google Play services). The app requests only two scopes: <code>drive.file</code> — it can create and see only the files it creates itself, never the rest of your Drive — and <code>email</code>, used only to show which account is connected. Your Google password never passes through the app. Google Play services issues short-lived access tokens when a backup runs; the app stores only the connected account's email address on your device. &quot;Disconnect&quot; revokes the grant with Google.</li>
             <li><strong>NAS / WebDAV:</strong> You provide your own server address. The file is sent to that address only, over HTTPS (plain HTTP is refused). The NAS password is stored encrypted on your device and is never included in exported files.</li>
-            <li><strong>OneDrive and Box</strong> are not available in the app.</li>
+            <li><strong>Google Drive, OneDrive and Box</strong> are not available in the app. If a cloud destination is added later, this policy will describe it before the version that offers it ships.</li>
         </ul>
 
         <h2>3. Network Connections</h2>
@@ -210,8 +209,6 @@
             <tr><th>Service</th><th>When</th><th>Data sent</th></tr>
             <tr><td>Open-Meteo<br><code>api.open-meteo.com</code></td><td>When the launcher starts, for the weather line on the home screen</td><td>Your approximate latitude/longitude if you granted location permission; otherwise the coordinates of the default city</td></tr>
             <tr><td>RSS news feeds<br>(the publishers you enable)</td><td>When the News page loads. By default ynet, Walla and Google News Israel are enabled; you can change them and add your own feeds</td><td>No personal data — a standard request for the feed</td></tr>
-            <tr><td>Google Drive (opt-in)<br><code>www.googleapis.com</code></td><td>When a backup to Drive runs</td><td>Your backup file, with an access token for your account</td></tr>
-            <tr><td>Google Identity Services (opt-in)<br>via Google Play services</td><td>When you connect Drive, and before each Drive backup to get a fresh token</td><td>Handled by Google Play services under Google's privacy policy; the app receives an access token and your account's email address</td></tr>
             <tr><td>Your NAS (opt-in)<br>the address you enter</td><td>When a backup to the NAS runs</td><td>Your backup file and the NAS username/password you entered, over HTTPS</td></tr>
             <tr><td>GitHub releases API (opt-in)<br><code>api.github.com</code></td><td>At most once a day while &quot;Check for updates automatically&quot; is on (off by default), or when you tap &quot;Check now&quot; in Settings → About</td><td>No personal data — the request names the app version in its User-Agent. The app only shows a link to the release; it never downloads or installs anything itself</td></tr>
         </table>
@@ -223,20 +220,19 @@
             <li>All data is stored locally on your device</li>
             <li>Reset what suggestions have learned from the Statistics page</li>
             <li>Clear all data via Android Settings → Apps → NoveLauncher → Storage → Clear Storage</li>
-            <li>Uninstalling removes everything on the device. Backup files you saved to your Drive or NAS stay there until you delete them</li>
-            <li>Revoke Google Drive access with Settings → Backup → Disconnect, or from your Google Account</li>
+            <li>Uninstalling removes everything on the device. Backup files you saved to your NAS stay there until you delete them</li>
         </ul>
 
         <h2>5. Children's Privacy</h2>
         <p>NoveLauncher does not target children under 13. We do not knowingly collect any data from children.</p>
 
         <h2>6. Your Rights (GDPR / CCPA)</h2>
-        <p>Since we do not collect or store any data on servers of our own, there is nothing for us to provide, delete, or correct on your behalf. Data on your device is under your control, and so are any backup files in your own Drive or NAS.</p>
+        <p>Since we do not collect or store any data on servers of our own, there is nothing for us to provide, delete, or correct on your behalf. Data on your device is under your control, and so are any backup files on your own NAS.</p>
 
         <h2>7. Changes to This Policy</h2>
         <p>If this policy changes, we will update the &quot;Last updated&quot; date at the top. Material changes will be highlighted in the app's release notes.</p>
         <ul>
-            <li><strong>October 17, 2026:</strong> Covers what NoveLauncher 10 adds — the optional update check, the Google Drive connection details, the gestures accessibility service, work profile and Private Space, wallpaper photos, the Jewish calendar's use of location, and the headphones ranking hint. Every network connection is now listed in section 3. OneDrive and Box, which the app does not offer, were removed.</li>
+            <li><strong>October 17, 2026:</strong> Covers what NoveLauncher 10 adds — the optional update check, the gestures accessibility service, work profile and Private Space, wallpaper photos, the Jewish calendar's use of location, and the headphones ranking hint. Every network connection is now listed in section 3. Google Drive, OneDrive and Box, which this version does not offer, are not described.</li>
         </ul>
 
         <h2>8. Contact</h2>

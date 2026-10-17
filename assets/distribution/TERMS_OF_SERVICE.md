@@ -42,7 +42,7 @@ Your use of NoveLauncher is also governed by our [Privacy Policy](https://drummi
 
 ## 5. Third-Party Services
 
-NoveLauncher integrates with optional third-party services (Google Drive and Google Play services for connecting it, NAS/WebDAV endpoints you configure, Open-Meteo, the RSS feeds you subscribe to, and GitHub for the optional update check). Your use of those services is governed by their own terms.
+NoveLauncher integrates with optional third-party services (NAS/WebDAV endpoints you configure, Open-Meteo, the RSS feeds you subscribe to, and GitHub for the optional update check). Your use of those services is governed by their own terms.
 
 ## 6. Backups
 

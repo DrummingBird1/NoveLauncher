@@ -40,7 +40,7 @@ NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמארגן את מס
 
 🔒 אבטחה מתקדמת — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה של אייקונים.
 
-💾 גיבוי — מקומי, Google Drive או שרת NAS פרטי, עם תזמון והצפנה אופציונלית בסיסמה.
+💾 גיבוי — מקומי או לשרת NAS פרטי, עם תזמון והצפנה אופציונלית בסיסמה.
 
 🧩 ווידג'טים — הוסף כל ווידג'ט מהמערכת, הגדר אותו ושנה את גודלו.
 
@@ -72,12 +72,12 @@ NoveLauncher does NOT collect personal data and has no servers of its own.
 - App usage statistics are read from Android's UsageStatsManager and processed on the device
 - App categorization uses on-device heuristics (no cloud AI)
 - Settings are stored locally using Android DataStore; security and backup settings are encrypted
-- Backups go only to destinations YOU choose (local file, your own Google Drive, your own NAS) and are encrypted only if you set a backup password
+- Backups go only to destinations YOU choose (local file or your own NAS) and are encrypted only if you set a backup password
 
 ### Network connections
 - Weather: Open-Meteo, with approximate coordinates only if location permission is granted (a default city otherwise)
 - News: the RSS feeds enabled on the News page, fetched directly from each publisher
-- Backups (opt-in): your Google Drive (`drive.file` scope only, via Google Play services) or your NAS over HTTPS
+- Backups (opt-in): your own NAS over HTTPS
 - Update check (opt-in, off by default): GitHub's releases API, at most once a day
 - Nothing else. No analytics, tracking or advertising SDKs.
 

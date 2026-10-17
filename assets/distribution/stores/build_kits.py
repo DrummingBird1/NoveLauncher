@@ -59,7 +59,10 @@ SHOTS: list[tuple[str, float]] = [
 ]
 
 # Text the Huawei build must not carry: AppGallery devices ship without Google
-# Play Services, so Google Drive backup can't work there.
+# Play Services, so Google Drive backup can't work there. In 10.0.0 Drive is
+# switched off everywhere (BuildConfig.DRIVE_BACKUP_ENABLED), so the source copy
+# doesn't mention it and every store is checked; keep this map for when Drive
+# returns, because Huawei must still drop it then.
 NO_GMS = {
     "en": [("to your phone, Google Drive or your own NAS", "to your phone or your own NAS")],
     "he": [("לטלפון, ל-Google Drive או ל-NAS ביתי", "לטלפון או ל-NAS ביתי")],
@@ -239,8 +242,8 @@ def write_listing(slug: str, cfg: dict, lang: str, listing: dict[str, str]) -> N
             for old, new in NO_GMS[lang]:
                 if old in value:
                     value = value.replace(old, new)
-            if "Google Drive" in value:
-                errors.append(f"{slug}/{lang}: '{label}' still mentions Google Drive")
+        if "Google Drive" in value:
+            errors.append(f"{slug}/{lang}: '{label}' still mentions Google Drive")
         size = measure(value, unit)
         if limit is not None and size > limit:
             errors.append(f"{slug}/{lang}: '{label}' is {size} {unit} (max {limit})")

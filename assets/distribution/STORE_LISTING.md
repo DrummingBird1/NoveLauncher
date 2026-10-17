@@ -43,7 +43,7 @@ NoveLauncher is a private Android launcher that organizes your home screen aroun
 
 🔒 **Advanced Security** — App lock with PIN, password, pattern, fingerprint or face authentication. Hidden private folder. Layout lock to prevent accidental moves.
 
-💾 **Backups** — Back up your settings locally, to your own Google Drive, or to your own NAS. Schedule them, and optionally encrypt them with a password only you hold.
+💾 **Backups** — Back up your settings on the phone or to your own NAS. Schedule them, and optionally encrypt them with a password only you hold.
 
 🧩 **Widgets** — Add any widget, run its setup, and resize it.
 
@@ -91,7 +91,7 @@ NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמסדר את מסך
 
 🔒 **אבטחה מתקדמת** — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה נגד הזזה בטעות.
 
-💾 **גיבויים** — מקומי, ל-Google Drive שלך או ל-NAS שלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
+💾 **גיבויים** — מקומי או ל-NAS שלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
 
 🧩 **ווידג'טים** — הוסף כל ווידג'ט, הגדר אותו ושנה את גודלו.
 
@@ -127,7 +127,7 @@ gestures, icon packs, jewish calendar, shabbat mode
 - Gestures: swipe up for apps, down for notifications, double-tap to turn the screen off
 - Smarter search: Hebrew ↔ English names, typos, calculator, unit conversion
 - Jewish calendar with candle-lighting times, and Shabbat mode
-- Fixed: Google Drive backup now connects, Statistics shows real data, icon packs apply
+- Fixed: Statistics shows real data, icon packs apply, the language picker works
 
 **HE**
 - תמיכה בפרופיל עבודה ובמרחב פרטי, וקיצורי דרך בלחיצה ארוכה
@@ -135,7 +135,7 @@ gestures, icon packs, jewish calendar, shabbat mode
 - מחוות: למעלה לאפליקציות, למטה להתראות, הקשה כפולה לכיבוי המסך
 - חיפוש חכם יותר: עברית ↔ אנגלית, שגיאות הקלדה, מחשבון והמרת יחידות
 - לוח עברי עם זמני הדלקת נרות, ומצב שבת
-- תוקן: גיבוי ל-Google Drive מתחבר, הסטטיסטיקות מציגות נתונים אמיתיים, חבילות אייקונים מוחלות
+- תוקן: הסטטיסטיקות מציגות נתונים אמיתיים, חבילות אייקונים מוחלות, בחירת השפה עובדת
 
 ## Pricing
 **Free** (no in-app purchases planned, no ads)

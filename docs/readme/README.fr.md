@@ -55,7 +55,7 @@ d'utilisation ne quittent jamais votre téléphone.
 | 🔒 **Verrouillage d'applications** | Code PIN, mot de passe, schéma ou biométrie par application, dossier privé et applications masquées |
 | 🌍 **7 langues** | Hébreu, anglais, arabe, français, russe, espagnol, allemand — entièrement compatible RTL |
 | 📰 **Fil d'actualités** | Sources intégrées et vos propres flux RSS |
-| 💾 **Sauvegardes** | Local, Google Drive ou NAS/WebDAV, planifiées, avec chiffrement par mot de passe en option |
+| 💾 **Sauvegardes** | En local ou sur votre NAS/WebDAV, planifiées, avec chiffrement par mot de passe en option |
 | 📊 **Statistiques d'usage** | Temps d'écran et utilisation par jour, semaine ou mois, lus depuis Android sur votre appareil |
 | 🧩 **Widgets et dock** | Widgets Android standard (avec leur écran de configuration, redimensionnables) et dock inférieur épinglé |
 
@@ -88,17 +88,16 @@ C'est la raison d'être du projet, autant être précis :
     la météo d'une ville par défaut qui est demandée.
   - **Actualités** — la page Actualités récupère les flux RSS que vous avez
     activés, directement auprès de chaque éditeur.
-  - **Sauvegardes** — seulement si vous les choisissez : votre propre Google
-    Drive (portée `drive.file` : l'appli ne voit que les fichiers de sauvegarde
-    qu'elle crée — jamais le reste de votre Drive) ou votre propre NAS en HTTPS.
+  - **Sauvegardes** — seulement si vous choisissez un NAS : votre propre
+    serveur, en HTTPS.
   - **Recherche de mises à jour** — désactivée par défaut. Une fois activée,
     l'appli interroge l'API des versions de GitHub au plus une fois par jour.
     Rien sur vous ni sur votre appareil n'est envoyé, et rien n'est téléchargé
     automatiquement.
 
   Tout le reste reste sur votre appareil.
-- **Vos sauvegardes vous appartiennent.** En local, sur votre Google Drive ou
-  votre NAS, avec un chiffrement par mot de passe que vous seul détenez.
+- **Vos sauvegardes vous appartiennent.** Sur le téléphone ou sur votre NAS,
+  avec un chiffrement par mot de passe que vous seul détenez.
 - **Le calendrier hébraïque est calculé sur le téléphone.** Les heures des
   fêtes, de l'allumage des bougies et de la Havdala utilisent votre position
   approximative si vous l'autorisez (une ville par défaut sinon), et ne sont
@@ -169,8 +168,8 @@ soutenir le développement :
 
 <div align="center">
 
-[![Patreon](https://img.shields.io/badge/Patreon-Soutenir-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/cw/MrIdan)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Soutenir-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/novelauncher)
+[![Patreon](https://img.shields.io/badge/Patreon-Soutenir-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/c/Solvaris)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Soutenir-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/solvaris)
 
 </div>
 

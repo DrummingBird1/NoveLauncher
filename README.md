@@ -55,7 +55,7 @@ analytics, no ads. Your usage data never leaves your phone.
 | 🔒 **App lock** | PIN, password, pattern or biometric lock on individual apps, plus a private folder and hidden apps |
 | 🌍 **7 languages** | Hebrew, English, Arabic, French, Russian, Spanish, German — fully RTL-aware |
 | 📰 **News feed** | Built-in sources plus your own custom RSS feeds |
-| 💾 **Backups** | Local, Google Drive or NAS/WebDAV, on a schedule, optionally password-encrypted |
+| 💾 **Backups** | Local or your own NAS/WebDAV, on a schedule, optionally password-encrypted |
 | 📊 **Usage statistics** | Screen time and app usage by day, week or month, read from Android on your device |
 | 🧩 **Widgets & dock** | Standard Android widgets (with their setup screens, resizable) and a pinned bottom dock |
 
@@ -85,16 +85,14 @@ This is the whole point of the project, so it's worth being precise:
     location permission; without it, it asks for a default city.
   - **News** — the News page fetches the RSS feeds you have enabled, directly
     from each publisher.
-  - **Backups** — only if you choose them: your own Google Drive (the
-    `drive.file` scope, so the app sees only the backup files it creates —
-    never the rest of your Drive) or your own NAS over HTTPS.
+  - **Backups** — only if you choose a NAS: your own server, over HTTPS.
   - **Update check** — off by default. When you turn it on, the app asks
     GitHub's releases API for the latest version at most once a day. Nothing
     about you or your device is sent, and nothing is downloaded automatically.
 
   Everything else stays on your device.
-- **Backups are yours.** Local, your own Google Drive, or your own NAS. Exports
-  can be encrypted with a password only you hold.
+- **Backups are yours.** On the phone or on your own NAS. Exports can be
+  encrypted with a password only you hold.
 - **The Jewish calendar is computed on the phone.** Holiday, candle-lighting
   and Havdalah times use your approximate location if you allow it (a default
   city otherwise), and are never sent anywhere.
@@ -190,8 +188,8 @@ support development:
 
 <div align="center">
 
-[![Patreon](https://img.shields.io/badge/Patreon-Support-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/cw/MrIdan)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/novelauncher)
+[![Patreon](https://img.shields.io/badge/Patreon-Support-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/c/Solvaris)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/solvaris)
 
 </div>
 

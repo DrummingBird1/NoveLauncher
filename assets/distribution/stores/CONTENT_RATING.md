@@ -30,7 +30,7 @@ answers in [../CHECKLIST.md](../CHECKLIST.md).
 | --- | --- |
 | Does the developer collect any user data? | **Nothing reaches the developer:** no server, account, analytics or advertising ID. Forms that use Google's definition ("transmitted off the device", to anyone) should declare one type: **approximate location**. It's sent to Open-Meteo for the weather request, only if granted, processed ephemerally, not shared, for app functionality. That's the answer given on Google Play ([../CHECKLIST.md](../CHECKLIST.md)). |
 | Data processed on the device | App usage and installed apps (ranking, statistics), notification counts (badges), contacts (search), photos picked as wallpapers, location for Shabbat times. None of it leaves the phone. |
-| Data sent to third parties | Only when the user turns the feature on: coordinates to Open-Meteo for weather; requests to the RSS feeds the user picks; backup files to the user's own Google Drive or NAS; an optional daily version check to GitHub's public API (no identifiers). |
+| Data sent to third parties | Only when the user turns the feature on: coordinates to Open-Meteo for weather; requests to the RSS feeds the user picks; backup files to the user's own NAS; an optional daily version check to GitHub's public API (no identifiers). |
 | Encrypted in transit? | Yes, HTTPS for every request. The one exception is a NAS address the user types as plain `http://` on their own network. |
 | Encrypted at rest? | App-lock and backup credentials are AES-256-GCM via Android Keystore. Exported backups can optionally be password-encrypted. |
 | Can users delete their data? | Yes. Everything is local, so clearing app data or uninstalling deletes it. Usage-learning can also be reset in Settings → Usage statistics. |

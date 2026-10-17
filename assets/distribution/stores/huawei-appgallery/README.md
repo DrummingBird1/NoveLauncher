@@ -39,7 +39,8 @@ page. Older guides quote 450×800 screenshots; any 9:16 image is accepted, and
 - **No Google Play services: handled in code.** Google Drive backup needs
   them, so on a phone without them Settings → Backup leaves Drive out of the
   destinations, the account card and the restore list (CLAUDE.md Pitfall #41).
-  The listing copy here doesn't mention Drive either. Local and NAS backups work.
+  The listing copy here doesn't mention Drive either. (In 10.0.0 Drive is
+  switched off on every device anyway.) Local and NAS backups work.
 - **Update check and Rate button: handled in code.** When AppGallery
   (`com.huawei.appmarket`) installed the app, the GitHub update check is
   hidden and **Rate** opens AppGallery (CLAUDE.md Pitfall #40).

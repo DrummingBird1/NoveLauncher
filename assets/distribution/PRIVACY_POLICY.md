@@ -76,9 +76,8 @@ To provide its functionality, NoveLauncher reads the following on your device. N
 Backups are off unless you set them up. A backup contains your launcher settings as a JSON file — including the hashed (never plain-text) lock credentials and the list of locked and hidden apps. If you set a backup password, the file is encrypted with AES-256-GCM using a key derived from that password. Wallpaper images are not included.
 
 - **Local file:** Saved to your device's Downloads folder. Never transmitted.
-- **Google Drive:** You connect your own Google account in Settings → Backup through Google's consent screen (Google Identity Services, provided by Google Play services). The app requests only two scopes: `drive.file` — it can create and see only the files it creates itself, never the rest of your Drive — and `email`, used only to show which account is connected. Your Google password never passes through the app. Google Play services issues short-lived access tokens when a backup runs; the app stores only the connected account's email address on your device. "Disconnect" revokes the grant with Google.
 - **NAS / WebDAV:** You provide your own server address. The file is sent to that address only, over HTTPS (plain HTTP is refused). The NAS password is stored encrypted on your device and is never included in exported files.
-- **OneDrive and Box** are not available in the app.
+- **Google Drive, OneDrive and Box** are not available in the app. If a cloud destination is added later, this policy will describe it before the version that offers it ships.
 
 ## 3. Network Connections
 
@@ -88,8 +87,6 @@ These are all the connections NoveLauncher itself makes:
 |---|---|---|
 | Open-Meteo (`api.open-meteo.com`) | When the launcher starts, for the weather line on the home screen | Your approximate latitude/longitude if you granted location permission; otherwise the coordinates of the default city |
 | RSS news feeds (the publishers you enable) | When the News page loads. By default ynet, Walla and Google News Israel are enabled; you can change them and add your own feeds | No personal data — a standard request for the feed |
-| Google Drive (opt-in, `www.googleapis.com`) | When a backup to Drive runs | Your backup file, with an access token for your account |
-| Google Identity Services (opt-in, via Google Play services) | When you connect Drive, and before each Drive backup to get a fresh token | Handled by Google Play services under Google's privacy policy; the app receives an access token and your account's email address |
 | Your NAS (opt-in, the address you enter) | When a backup to the NAS runs | Your backup file and the NAS username/password you entered, over HTTPS |
 | GitHub releases API (opt-in, `api.github.com`) | At most once a day while "Check for updates automatically" is on (off by default), or when you tap "Check now" in Settings → About | No personal data — the request names the app version in its User-Agent. The app only shows a link to the release; it never downloads or installs anything itself |
 
@@ -102,8 +99,7 @@ Shipped builds contain no analytics, advertising or tracking SDKs. The source co
 - All data is stored locally on your device
 - Reset what suggestions have learned from the Statistics page
 - Clear all data via Android Settings → Apps → NoveLauncher → Storage → Clear Storage
-- Uninstalling removes everything on the device. Backup files you saved to your Drive or NAS stay there until you delete them
-- Revoke Google Drive access with Settings → Backup → Disconnect, or from your Google Account
+- Uninstalling removes everything on the device. Backup files you saved to your NAS stay there until you delete them
 
 ## 5. Children's Privacy
 
@@ -111,13 +107,13 @@ NoveLauncher does not target children under 13. We do not knowingly collect any 
 
 ## 6. Your Rights (GDPR / CCPA)
 
-Since we do not collect or store any data on servers of our own, there is nothing for us to provide, delete, or correct on your behalf. Data on your device is under your control, and so are any backup files in your own Drive or NAS.
+Since we do not collect or store any data on servers of our own, there is nothing for us to provide, delete, or correct on your behalf. Data on your device is under your control, and so are any backup files on your own NAS.
 
 ## 7. Changes to This Policy
 
 If this policy changes, we will update the "Last updated" date at the top. Material changes will be highlighted in the app's release notes.
 
-- **October 17, 2026:** Covers what NoveLauncher 10 adds — the optional update check, the Google Drive connection details, the gestures accessibility service, work profile and Private Space, wallpaper photos, the Jewish calendar's use of location, and the headphones ranking hint. Every network connection is now listed in section 3. OneDrive and Box, which the app does not offer, were removed.
+- **October 17, 2026:** Covers what NoveLauncher 10 adds — the optional update check, the gestures accessibility service, work profile and Private Space, wallpaper photos, the Jewish calendar's use of location, and the headphones ranking hint. Every network connection is now listed in section 3. Google Drive, OneDrive and Box, which this version does not offer, are not described.
 
 ## 8. Contact
 
