@@ -28,7 +28,8 @@ if your SDK licences are accepted.
 ./gradlew assembleDebug          # must pass
 ./gradlew testDebugUnitTest      # must pass
 ./gradlew verifyPaparazziDebug   # screenshot tests must pass
-./gradlew lint ktlintCheck       # advisory — findings won't block CI
+./gradlew ktlintCheck            # must pass (`./gradlew ktlintFormat` fixes most findings)
+./gradlew lint                   # advisory — findings won't block CI
 ```
 
 If you intentionally change something visual, regenerate the screenshot

@@ -286,10 +286,8 @@ jacoco {
     toolVersion = "0.8.15"
 }
 
-// v9: advisory only (like AGP lint above) — the codebase predates ktlint and
-// hasn't been auto-formatted, so a hard gate would fail on pre-existing code
-// rather than catching new violations. CI runs `ktlintCheck` with
-// continue-on-error, same policy as `lint`.
+// v10: a hard CI gate (unlike AGP lint above). Rules and style are configured
+// in android/.editorconfig; `./gradlew ktlintFormat` fixes most findings.
 ktlint {
     version.set("1.8.0")
 }

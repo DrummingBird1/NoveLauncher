@@ -4,6 +4,8 @@
 # independent jobs that run in parallel (not chained with `needs:` — none of
 # them depends on another's output):
 #   1. build — assembleDebug + assembleRelease (R8), lint, ktlint, APK size.
+#      ktlint is a hard gate (the whole codebase was formatted with it);
+#      lint is still advisory.
 #   2. test — unit tests + Jacoco coverage.
 #   3. instrumented-tests — advisory only (continue-on-error), runs the single
 #      androidTest smoke test on an emulator. Kept separate from `build`/`test`
@@ -88,7 +90,6 @@ jobs:
 
       - name: ktlint
         run: ./gradlew ktlintCheck --stacktrace
-        continue-on-error: true  # codebase predates ktlint; advisory only, same policy as lint
 
       # Only runs (and only produces a file) when RELEASE_KEYSTORE_BASE64 is set
       # in repo secrets. Absent that secret, this step is skipped and the release
