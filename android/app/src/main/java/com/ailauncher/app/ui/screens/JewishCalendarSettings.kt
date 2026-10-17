@@ -45,7 +45,7 @@ fun JewishCalendarSection(
     fun update(n: JewishCalendarSettings) = onUpdate(appearance.copy(jewishCalendar = n))
     val context = LocalContext.current
     val preview by produceState<JewishDayInfo?>(null, s) { value = withContext(Dispatchers.Default) { service.dayInfo(s) } }
-    val timeFormat = android.text.format.DateFormat.getTimeFormat(context)
+    val timeFormat = calendarTimeFormat(appearance.clock.use24Hour, context.resources.configuration.locales[0])
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {

@@ -304,7 +304,8 @@ fun JewishCalendarLines(
     val context = LocalContext.current
     val color = parseHexColor(clock.fontColor).copy(alpha = clock.opacity * 0.8f)
     val font = launcherFontFamily(clock.font)
-    val timeFormat = remember { android.text.format.DateFormat.getTimeFormat(context) }
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    val timeFormat = remember(clock.use24Hour, locale) { calendarTimeFormat(clock.use24Hour, locale) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(bottom = 8.dp)) {
         if (shabbatActive) {
@@ -335,6 +336,13 @@ fun JewishCalendarLines(
         }
     }
 }
+
+/**
+ * Candle-lighting / Shabbat-end times in the launcher clock's own 12/24-hour
+ * setting, not the system's — they sit right under that clock.
+ */
+internal fun calendarTimeFormat(use24Hour: Boolean, locale: Locale) =
+    SimpleDateFormat(if (use24Hour) "HH:mm" else "h:mm a", locale)
 
 @Composable
 private fun CalendarLine(
