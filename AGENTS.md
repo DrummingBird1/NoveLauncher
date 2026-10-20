@@ -150,3 +150,10 @@ A single instrumented (`androidTest`) smoke test exists ([ApplicationIdTest.kt](
 - Home swipes are read in `PointerEventPass.Initial` without consuming — the grid's overscroll eats normal drag detectors.
 - Room is at schema 3; write migrations with `SqlMigration` so both Room APIs run them.
 - Google Drive auth is `DriveAuth` (Identity AuthorizationClient), not GoogleSignIn.
+
+## Cursor Cloud specific instructions
+
+- Build from `android/`, not the repo root. JDK 21 is `/usr/lib/jvm/java-21-openjdk-amd64`. The Android SDK is `/opt/android-sdk` (`JAVA_HOME`, `ANDROID_HOME`, and `ANDROID_SDK_ROOT` are set in `/etc/environment` and `/etc/profile.d/android-sdk.sh`). `android/local.properties` is gitignored; if it is missing, set `sdk.dir=/opt/android-sdk`.
+- `compileSdk 37` is the package `platforms;android-37.0`. There is no `platforms;android-37`. AGP 9.4 also needs Build-Tools 36, which is installed next to Build-Tools 37.
+- `./gradlew assembleDebug`, `testDebugUnitTest`, `verifyPaparazziDebug`, and `ktlintCheck` (all from `android/`) are the checks that must pass. They do not need a device.
+- Nested KVM on this kernel faults in `kvm_arch_vcpu_create`. Do not boot the emulator with `-accel on`. Software emulation can reach `sys.boot_completed`, but SwiftShader `screencap` stays black, so use the JVM tests above to verify changes.
