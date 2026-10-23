@@ -536,4 +536,12 @@
         <item quantity="other">%1$s بعد %2$d يوم</item>
     </plurals>
     <string name="backup_error_drive_disabled">النسخ الاحتياطي إلى Google Drive غير متاح في هذا الإصدار.</string>
+    <string name="section_clock_style">نمط الساعة</string>
+    <string name="clock_analog_size">حجم الساعة العقربية</string>
+    <string name="clock_analog_hands_color">لون العقارب</string>
+    <string name="clock_analog_accent_color">لون عقرب الثواني</string>
+    <string name="action_pin_dock">تثبيت في الشريط السفلي</string>
+    <string name="action_unpin_dock">إزالة من الشريط السفلي</string>
+    <string name="dock_full">الشريط السفلي ممتلئ (حتى %1$d تطبيقات)</string>
+    <string name="gesture_haptic_long_press">اهتزاز عند الضغط المطوّل على تطبيق</string>
 </resources>

@@ -533,4 +533,12 @@
         <item quantity="other">%1$s dans %2$d jours</item>
     </plurals>
     <string name="backup_error_drive_disabled">La sauvegarde sur Google Drive n\'est pas disponible dans cette version.</string>
+    <string name="section_clock_style">Style de l\'horloge</string>
+    <string name="clock_analog_size">Taille de l\'horloge analogique</string>
+    <string name="clock_analog_hands_color">Couleur des aiguilles</string>
+    <string name="clock_analog_accent_color">Couleur de la trotteuse</string>
+    <string name="action_pin_dock">Épingler au dock</string>
+    <string name="action_unpin_dock">Retirer du dock</string>
+    <string name="dock_full">Le dock est plein (%1$d applis max.)</string>
+    <string name="gesture_haptic_long_press">Vibrer lors d\'un appui long sur une appli</string>
 </resources>

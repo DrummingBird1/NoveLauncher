@@ -65,6 +65,7 @@ import com.ailauncher.app.domain.models.RankedApp
 import com.ailauncher.app.domain.models.SmartFolder
 import com.ailauncher.app.ui.LauncherViewModel
 import com.ailauncher.app.ui.launchApp
+import com.ailauncher.app.ui.theme.launcherFontFamily
 
 @Composable
 fun AppsScreen(
@@ -228,6 +229,7 @@ fun AppsScreen(
                         expandedFolder = appState.expandedFolder,
                         folderIconSizeDp = appearance.folderIconSizeDp,
                         folderFontSizeSp = appearance.folderFontSizeSp,
+                        folderFont = appearance.folderFont,
                         onFolderClick = { viewModel.expandFolder(it) },
                         onAppClick = { launchApp(context, it.app) },
                     )
@@ -400,6 +402,7 @@ fun FolderView(
     expandedFolder: AppCategory?,
     folderIconSizeDp: Int,
     folderFontSizeSp: Int,
+    folderFont: com.ailauncher.app.domain.models.LauncherFont,
     onFolderClick: (AppCategory?) -> Unit,
     onAppClick: (RankedApp) -> Unit,
 ) {
@@ -415,6 +418,7 @@ fun FolderView(
                 isExpanded = expandedFolder == folder.category,
                 iconSizeDp = folderIconSizeDp,
                 fontSizeSp = folderFontSizeSp,
+                font = folderFont,
                 onClick = {
                     onFolderClick(if (expandedFolder == folder.category) null else folder.category)
                 },
@@ -430,9 +434,12 @@ fun FolderCard(
     isExpanded: Boolean,
     iconSizeDp: Int,
     fontSizeSp: Int,
+    font: com.ailauncher.app.domain.models.LauncherFont,
     onClick: () -> Unit,
     onAppClick: (RankedApp) -> Unit,
 ) {
+    // Settings → Fonts → Folders: the folder name, its count and the app list inside.
+    val fontFamily = launcherFontFamily(font)
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
@@ -445,9 +452,15 @@ fun FolderCard(
                     fontSize = fontSizeSp.sp,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = fontFamily,
                 )
                 Spacer(Modifier.weight(1f))
-                Text("${folder.apps.size}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    "${folder.apps.size}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = fontFamily,
+                )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -498,7 +511,12 @@ fun FolderCard(
                                     )
                                 }
                                 Spacer(Modifier.width(10.dp))
-                                Text(rankedApp.app.label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    rankedApp.app.label,
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontFamily = fontFamily,
+                                )
                             }
                         }
                     }

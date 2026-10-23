@@ -6,6 +6,7 @@ import android.provider.Settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasText
@@ -52,7 +53,8 @@ class GesturesSettingsTest {
         }
 
     // SwitchSetting rows add no semantics node, so a label can't scope its switch.
-    // Order on the page: gestures on/off, swipe up, swipe down, double tap.
+    // Order on the page: gestures on/off, swipe up, swipe down, double tap,
+    // long-press vibration.
     private fun doubleTapSwitch() = composeRule.onAllNodes(isToggleable())[3]
 
     private fun dialogButton(id: Int) = composeRule.onNode(hasText(str(id)) and hasAnyAncestor(isDialog()))
@@ -101,5 +103,16 @@ class GesturesSettingsTest {
 
         composeRule.onNode(isDialog()).assertDoesNotExist()
         assertFalse(settings.doubleTapToSleep)
+    }
+
+    @Test fun `the long-press vibration switch stays reachable with gestures off`() {
+        settings = SmartControlSettings(gesturesEnabled = false, hapticFeedback = true)
+        show()
+        // Gestures off hides the three gesture switches: master switch, then vibration.
+        val switches = composeRule.onAllNodes(isToggleable())
+        switches.assertCountEquals(2)
+        switches[1].performClick()
+
+        assertFalse(settings.hapticFeedback)
     }
 }

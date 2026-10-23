@@ -582,4 +582,12 @@
         <item quantity="other">%1$s בעוד %2$d ימים</item>
     </plurals>
     <string name="backup_error_drive_disabled">גיבוי ל-Google Drive אינו זמין בגרסה זו.</string>
+    <string name="section_clock_style">סגנון שעון</string>
+    <string name="clock_analog_size">גודל השעון האנלוגי</string>
+    <string name="clock_analog_hands_color">צבע המחוגים</string>
+    <string name="clock_analog_accent_color">צבע מחוג השניות</string>
+    <string name="action_pin_dock">הצמד ל-Dock</string>
+    <string name="action_unpin_dock">הסר מה-Dock</string>
+    <string name="dock_full">ה-Dock מלא (עד %1$d אפליקציות)</string>
+    <string name="gesture_haptic_long_press">רטט בלחיצה ארוכה על אפליקציה</string>
 </resources>

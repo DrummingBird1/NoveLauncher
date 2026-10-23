@@ -2,23 +2,29 @@ package com.ailauncher.app.ui.theme
 
 import android.app.Activity
 import android.content.ContextWrapper
-import android.graphics.Typeface
 import android.os.Build
+import androidx.annotation.FontRes
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
+import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.LauncherFont
 import com.ailauncher.app.domain.models.ThemeMode
@@ -34,32 +40,91 @@ fun parseHexColor(
         Color(fallback)
     }
 
+/**
+ * The bundled fonts live in res/font, built by assets/fonts/prepare_fonts.py.
+ * Most are variable fonts with a weight axis, so one file serves every weight:
+ * each [Font] entry pins `wght` explicitly, because several files' default
+ * instance is not Regular (Rubik's is Light, Assistant's ExtraLight, Montserrat's
+ * Thin). Up to 10.0.0 these entries asked Typeface.create for names the system
+ * doesn't have and silently got the default font.
+ */
+private val variableWeights = listOf(FontWeight.Light, FontWeight.Normal, FontWeight.Medium, FontWeight.SemiBold, FontWeight.Bold)
+
+private fun variableFamily(
+    @FontRes res: Int,
+): FontFamily =
+    FontFamily(
+        variableWeights.map { w ->
+            Font(res, w, variationSettings = FontVariation.Settings(FontVariation.weight(w.weight)))
+        },
+    )
+
+private val heebo = variableFamily(R.font.heebo)
+private val rubik = variableFamily(R.font.rubik)
+private val assistant = variableFamily(R.font.assistant)
+private val openSans = variableFamily(R.font.open_sans)
+private val montserrat = variableFamily(R.font.montserrat)
+private val cairo = variableFamily(R.font.cairo)
+private val frankRuhl = variableFamily(R.font.frank_ruhl_libre)
+private val notoSans = variableFamily(R.font.noto_sans)
+private val poppins =
+    FontFamily(
+        Font(R.font.poppins_light, FontWeight.Light),
+        Font(R.font.poppins_regular, FontWeight.Normal),
+        Font(R.font.poppins_bold, FontWeight.Bold),
+    )
+
+// Single-weight families: Compose synthesises bold from them when asked.
+private val varelaRound = FontFamily(Font(R.font.varela_round))
+private val secularOne = FontFamily(Font(R.font.secular_one))
+
 fun launcherFontFamily(font: LauncherFont): FontFamily =
     when (font) {
-        LauncherFont.SYSTEM_DEFAULT -> {
-            FontFamily.Default
-        }
-
-        LauncherFont.MONOSPACE -> {
-            FontFamily.Monospace
-        }
-
-        LauncherFont.SERIF -> {
-            FontFamily.Serif
-        }
-
-        LauncherFont.CURSIVE -> {
-            FontFamily.Cursive
-        }
-
-        else -> {
-            try {
-                FontFamily(Typeface.create(font.fontFamily, Typeface.NORMAL))
-            } catch (_: Exception) {
-                FontFamily.Default
-            }
-        }
+        LauncherFont.SYSTEM_DEFAULT -> FontFamily.Default
+        LauncherFont.ROBOTO -> FontFamily.SansSerif
+        LauncherFont.MONOSPACE -> FontFamily.Monospace
+        LauncherFont.SERIF -> FontFamily.Serif
+        LauncherFont.CURSIVE -> FontFamily.Cursive
+        LauncherFont.NOTO_SANS -> notoSans
+        LauncherFont.RUBIK -> rubik
+        LauncherFont.HEEBO -> heebo
+        LauncherFont.ASSISTANT -> assistant
+        LauncherFont.VARELA_ROUND -> varelaRound
+        LauncherFont.OPEN_SANS -> openSans
+        LauncherFont.MONTSERRAT -> montserrat
+        LauncherFont.POPPINS -> poppins
+        LauncherFont.CAIRO -> cairo
+        LauncherFont.FRANK_RUHL -> frankRuhl
+        LauncherFont.SECULAR_ONE -> secularOne
     }
+
+/**
+ * [AppearanceSettings.uiFont] for every Material text style — the settings
+ * screens, dialogs, sheets and any Text without its own fontFamily. App names,
+ * folders, page names and the clock keep their own font settings.
+ */
+internal fun launcherTypography(uiFont: LauncherFont): Typography {
+    val base = Typography()
+    if (uiFont == LauncherFont.SYSTEM_DEFAULT) return base
+    val f = launcherFontFamily(uiFont)
+    return Typography(
+        displayLarge = base.displayLarge.copy(fontFamily = f),
+        displayMedium = base.displayMedium.copy(fontFamily = f),
+        displaySmall = base.displaySmall.copy(fontFamily = f),
+        headlineLarge = base.headlineLarge.copy(fontFamily = f),
+        headlineMedium = base.headlineMedium.copy(fontFamily = f),
+        headlineSmall = base.headlineSmall.copy(fontFamily = f),
+        titleLarge = base.titleLarge.copy(fontFamily = f),
+        titleMedium = base.titleMedium.copy(fontFamily = f),
+        titleSmall = base.titleSmall.copy(fontFamily = f),
+        bodyLarge = base.bodyLarge.copy(fontFamily = f),
+        bodyMedium = base.bodyMedium.copy(fontFamily = f),
+        bodySmall = base.bodySmall.copy(fontFamily = f),
+        labelLarge = base.labelLarge.copy(fontFamily = f),
+        labelMedium = base.labelMedium.copy(fontFamily = f),
+        labelSmall = base.labelSmall.copy(fontFamily = f),
+    )
+}
 
 @Composable
 fun AILauncherTheme(
@@ -108,7 +173,8 @@ fun AILauncherTheme(
         }
     }
 
-    MaterialTheme(colorScheme = colorScheme, content = content)
+    val typography = remember(appearance.uiFont) { launcherTypography(appearance.uiFont) }
+    MaterialTheme(colorScheme = colorScheme, typography = typography, content = content)
 }
 
 private fun buildPresetColorScheme(
