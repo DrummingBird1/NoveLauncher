@@ -1,5 +1,6 @@
 package com.ailauncher.app.ui.screens
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.R
 import com.ailauncher.app.data.JewishCalendarService
 import com.ailauncher.app.data.SettingsRepository
@@ -75,6 +77,16 @@ class SettingsActivity : ComponentActivity() {
     @Inject lateinit var updateChecker: UpdateChecker
 
     @Inject lateinit var feedbackRepo: SuggestionFeedbackRepository
+
+    // Below Android 13 the in-app language is applied here, per Activity (Pitfall #12).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocales.attach(this, newBase))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AppLocales.recreateIfStale(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
