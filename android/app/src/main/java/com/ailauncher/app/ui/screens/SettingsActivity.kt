@@ -43,6 +43,8 @@ import com.ailauncher.app.domain.models.PagesSettings
 import com.ailauncher.app.domain.models.SecuritySettings
 import com.ailauncher.app.security.AppLockManager
 import com.ailauncher.app.ui.theme.AILauncherTheme
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -85,7 +87,7 @@ class SettingsActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        AppLocales.recreateIfStale(this)
+        AppLocales.onResume(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -254,7 +256,11 @@ fun SettingsRoot(
                 SettingsPage.APPEARANCE -> {
                     AppearanceSection(
                         appearance,
-                        { scope.launch { settingsRepo.saveAppearance(it) } },
+                        // The language picker recreates this Activity right after saving
+                        // (below Android 13 it does so itself). A save tied to the
+                        // composition would be cancelled with it and the pick lost, so
+                        // this one runs to the end on its own.
+                        { scope.launch(NonCancellable, CoroutineStart.UNDISPATCHED) { settingsRepo.saveAppearance(it) } },
                         { currentPage = it },
                         smartControl,
                         { scope.launch { settingsRepo.saveSmartControl(it) } },

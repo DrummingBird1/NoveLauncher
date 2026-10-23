@@ -177,7 +177,7 @@ class LauncherActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (AppLocales.recreateIfStale(this)) return
+        if (AppLocales.onResume(this)) return
         if (!hasUsageStatsPermission() && !usagePermissionRequested) {
             usagePermissionRequested = true
             try {

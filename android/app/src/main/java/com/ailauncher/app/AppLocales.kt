@@ -24,8 +24,8 @@ import java.util.WeakHashMap
  * make was a no-op too: it only reaches AppCompatActivity delegates. So the app
  * does it itself (see CLAUDE.md Pitfall #12): the tag is kept in a small prefs
  * file that can be read synchronously, each Activity applies it in
- * attachBaseContext ([attach]), and an Activity created before the latest pick
- * recreates itself on resume ([recreateIfStale]).
+ * attachBaseContext ([attach]) and calls [onResume], which recreates an Activity
+ * created before the latest pick and fixes the window's layout direction.
  */
 object AppLocales {
     private const val PREFS = "app_locale"
@@ -77,16 +77,23 @@ object AppLocales {
     }
 
     /**
-     * Below 13, call from onResume: recreates [activity] if the language was changed
+     * Call from onResume. Below 13 it recreates [activity] if the language was changed
      * after it was created (picked in Settings while Home stayed alive, or synced at
-     * startup after Home was already up). Returns true when it did.
+     * startup after Home was already up), and returns true. Otherwise it sets the
+     * window's layout direction: Android 12 takes that from the system language, not
+     * from the Activity's resources, so Hebrew on an English phone came out left to
+     * right (AppCompat does the same on API 31+). Also when following the system:
+     * recreate() keeps the window, so a direction set for an earlier pick would stay.
      */
-    fun recreateIfStale(activity: Activity): Boolean {
+    fun onResume(activity: Activity): Boolean {
         if (modern) return false
         val createdWith = attached[activity] ?: return false
-        if (createdWith == storedTag(activity)) return false
-        activity.recreate()
-        return true
+        if (createdWith != storedTag(activity)) {
+            activity.recreate()
+            return true
+        }
+        activity.window.decorView.layoutDirection = activity.resources.configuration.layoutDirection
+        return false
     }
 
     /** The language the UI is shown in, for formatting outside an Activity's resources. */

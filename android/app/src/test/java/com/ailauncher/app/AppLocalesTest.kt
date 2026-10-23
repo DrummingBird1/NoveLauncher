@@ -72,7 +72,7 @@ class AppLocalesTest {
         val activity = Robolectric.buildActivity(LocaleTestActivity::class.java).setup().get()
 
         assertEquals("Utiliser ma position", activity.getString(R.string.location_allow))
-        assertFalse(AppLocales.recreateIfStale(activity))
+        assertFalse(AppLocales.onResume(activity))
     }
 
     @Test fun `an activity created before a new pick is recreated`() {
@@ -81,7 +81,30 @@ class AppLocalesTest {
 
         AppLocales.apply(context, "de")
 
-        assertTrue(AppLocales.recreateIfStale(activity))
+        assertTrue(AppLocales.onResume(activity))
+    }
+
+    @Test fun `a right-to-left pick sets the window's layout direction`() {
+        AppLocales.apply(context, "he")
+
+        val activity = Robolectric.buildActivity(LocaleTestActivity::class.java).setup().get()
+        AppLocales.onResume(activity)
+
+        assertEquals(View.LAYOUT_DIRECTION_RTL, activity.window.decorView.layoutDirection)
+    }
+
+    @Test fun `following the system again resets the window's layout direction`() {
+        AppLocales.apply(context, "he")
+        val activity = Robolectric.buildActivity(LocaleTestActivity::class.java).setup().get()
+        AppLocales.onResume(activity)
+
+        AppLocales.apply(context, "")
+        val next = Robolectric.buildActivity(LocaleTestActivity::class.java).setup().get()
+        // A recreated Activity can inherit the old window, direction and all.
+        next.window.decorView.layoutDirection = View.LAYOUT_DIRECTION_RTL
+        AppLocales.onResume(next)
+
+        assertEquals(View.LAYOUT_DIRECTION_LTR, next.window.decorView.layoutDirection)
     }
 }
 
@@ -95,6 +118,6 @@ class AppLocalesModernTest {
         val activity = Robolectric.buildActivity(LocaleTestActivity::class.java).setup().get()
 
         assertSame(context, AppLocales.wrap(context))
-        assertFalse(AppLocales.recreateIfStale(activity))
+        assertFalse(AppLocales.onResume(activity))
     }
 }
