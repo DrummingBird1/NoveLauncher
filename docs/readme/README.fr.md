@@ -57,7 +57,7 @@ d'utilisation ne quittent jamais votre téléphone.
 | 📰 **Fil d'actualités** | Sources intégrées et vos propres flux RSS |
 | 💾 **Sauvegardes** | En local ou sur votre NAS/WebDAV, planifiées, avec chiffrement par mot de passe en option |
 | 📊 **Statistiques d'usage** | Temps d'écran et utilisation par jour, semaine ou mois, lus depuis Android sur votre appareil |
-| 🧩 **Widgets et dock** | Widgets Android standard (avec leur écran de configuration, redimensionnables) et dock inférieur épinglé |
+| 🧩 **Widgets et dock** | Widgets Android standard (avec leur écran de configuration, de 1 à 4 rangées de haut) et dock inférieur de 5 applis épinglées maximum |
 
 ## Captures d'écran
 

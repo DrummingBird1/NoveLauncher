@@ -57,7 +57,7 @@ teléfono.
 | 📰 **Noticias** | Fuentes integradas y tus propios feeds RSS |
 | 💾 **Copias de seguridad** | En local o en tu NAS/WebDAV, programadas, con cifrado por contraseña opcional |
 | 📊 **Estadísticas de uso** | Tiempo de pantalla y uso de apps por día, semana o mes, leídos de Android en tu dispositivo |
-| 🧩 **Widgets y dock** | Widgets estándar de Android (con su pantalla de configuración y tamaño ajustable) y un dock inferior fijo |
+| 🧩 **Widgets y dock** | Widgets estándar de Android (con su pantalla de configuración y de 1 a 4 filas de alto) y un dock inferior con hasta 5 apps fijadas |
 
 ## Capturas de pantalla
 

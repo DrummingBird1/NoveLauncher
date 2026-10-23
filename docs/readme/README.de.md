@@ -57,7 +57,7 @@ Telefon nie.
 | 📰 **Nachrichten** | Integrierte Quellen sowie eigene RSS-Feeds |
 | 💾 **Sicherungen** | Lokal oder auf deinem NAS/WebDAV, zeitgesteuert, optional passwortverschlüsselt |
 | 📊 **Nutzungsstatistik** | Bildschirmzeit und App-Nutzung pro Tag, Woche oder Monat, direkt auf dem Gerät aus Android gelesen |
-| 🧩 **Widgets und Dock** | Standard-Android-Widgets (mit ihrem Einrichtungsbildschirm, in der Größe anpassbar) und ein angeheftetes unteres Dock |
+| 🧩 **Widgets und Dock** | Standard-Android-Widgets (mit ihrem Einrichtungsbildschirm, 1–4 Zeilen hoch) und ein unteres Dock mit bis zu 5 angehefteten Apps |
 
 ## Screenshots
 
