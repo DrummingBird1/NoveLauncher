@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.ClockSettings
+import com.ailauncher.app.domain.models.ClockStyle
 import com.ailauncher.app.domain.models.IconShape
 import com.ailauncher.app.domain.models.LauncherFont
 import com.ailauncher.app.domain.models.SmartControlSettings
@@ -259,12 +260,33 @@ fun LivePreview(appearance: AppearanceSettings) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(stringResource(R.string.preview_label), fontSize = 11.sp, color = fgColor.copy(alpha = 0.5f))
             Spacer(Modifier.height(4.dp))
-            Text(
-                "14:30",
-                fontSize = appearance.clock.fontSize.sp,
-                color = parseHexColor(appearance.clock.fontColor),
-                fontFamily = launcherFontFamily(appearance.clock.font),
-            )
+            val clock = appearance.clock
+            if (clock.clockStyle == ClockStyle.ANALOG) {
+                // Shrunk to fit the card; the home screen uses clock.analogSize.
+                AnalogClock(
+                    sizeDp = clock.analogSize.coerceAtMost(72),
+                    handsColor = parseHexColor(clock.analogColor, 0xFFFFFFFF).copy(alpha = clock.opacity),
+                    accentColor = parseHexColor(clock.analogAccentColor, 0xFF7C7CFF).copy(alpha = clock.opacity),
+                )
+            } else {
+                // 14:30:15 in the clock's own format, so 12/24-hour, seconds and MINIMAL show up here too.
+                val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+                val sample =
+                    remember(clock.clockStyle, clock.use24Hour, clock.showSeconds, locale) {
+                        val at =
+                            java.util.Calendar
+                                .getInstance()
+                                .apply { set(2026, 0, 1, 14, 30, 15) }
+                        java.text.SimpleDateFormat(clockTimePattern(clock), locale).format(at.time)
+                    }
+                Text(
+                    sample,
+                    fontSize = clockTimeFontSize(clock),
+                    fontWeight = clockTimeFontWeight(clock),
+                    color = parseHexColor(clock.fontColor).copy(alpha = clock.opacity),
+                    fontFamily = launcherFontFamily(clock.font),
+                )
+            }
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 repeat(appearance.gridColumns.coerceAtMost(5)) { i ->
@@ -631,9 +653,41 @@ fun ClockSection(
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { LivePreview(appearance) }
+        item { SectionLabel(stringResource(R.string.section_clock_style)) }
         item {
-            SliderSetting(stringResource(R.string.clock_size), clock.fontSize.toFloat(), 24f..120f, "${clock.fontSize}sp") {
-                updateClock(clock.copy(fontSize = it.toInt()))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ClockStyle.entries.forEach { style ->
+                    FilterChip(
+                        selected = clock.clockStyle == style,
+                        onClick = { updateClock(clock.copy(clockStyle = style)) },
+                        label = { Text(stringResource(style.displayNameRes)) },
+                    )
+                }
+            }
+        }
+        if (clock.clockStyle == ClockStyle.ANALOG) {
+            item {
+                SliderSetting(stringResource(R.string.clock_analog_size), clock.analogSize.toFloat(), 96f..280f, "${clock.analogSize}dp") {
+                    updateClock(clock.copy(analogSize = it.toInt()))
+                }
+            }
+            // Keyed: the pickers keep their hex text field in remembered state, and
+            // switching style shifts the item indices.
+            item(key = "clock_hands_color") {
+                FullColorPicker(stringResource(R.string.clock_analog_hands_color), clock.analogColor) {
+                    updateClock(clock.copy(analogColor = it))
+                }
+            }
+            item(key = "clock_accent_color") {
+                FullColorPicker(stringResource(R.string.clock_analog_accent_color), clock.analogAccentColor) {
+                    updateClock(clock.copy(analogAccentColor = it))
+                }
+            }
+        } else {
+            item {
+                SliderSetting(stringResource(R.string.clock_size), clock.fontSize.toFloat(), 24f..120f, "${clock.fontSize}sp") {
+                    updateClock(clock.copy(fontSize = it.toInt()))
+                }
             }
         }
         item {
@@ -648,8 +702,18 @@ fun ClockSection(
         }
         item { SwitchSetting(stringResource(R.string.clock_show_date), clock.showDate) { updateClock(clock.copy(showDate = it)) } }
         item { SwitchSetting(stringResource(R.string.clock_24_hour), clock.use24Hour) { updateClock(clock.copy(use24Hour = it)) } }
-        item { SwitchSetting(stringResource(R.string.clock_show_seconds), clock.showSeconds) { updateClock(clock.copy(showSeconds = it)) } }
-        item { FullColorPicker(stringResource(R.string.clock_color), clock.fontColor) { updateClock(clock.copy(fontColor = it)) } }
+        // MINIMAL never shows seconds and ANALOG always has a second hand.
+        if (clock.clockStyle == ClockStyle.DIGITAL) {
+            item {
+                SwitchSetting(stringResource(R.string.clock_show_seconds), clock.showSeconds) {
+                    updateClock(clock.copy(showSeconds = it))
+                }
+            }
+        }
+        // For ANALOG this colours the date and weather lines under the dial.
+        item(key = "clock_font_color") {
+            FullColorPicker(stringResource(R.string.clock_color), clock.fontColor) { updateClock(clock.copy(fontColor = it)) }
+        }
         item { SectionLabel(stringResource(R.string.section_clock_font)) }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

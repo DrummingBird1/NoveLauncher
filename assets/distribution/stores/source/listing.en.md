@@ -28,7 +28,7 @@ WHAT'S INSIDE
 • Wallpapers: your own photos or built-in gradients, with a different one per page, per hour or per weekday. Adjust brightness, blur and warmth, or show your live wallpaper.
 • Gestures: swipe up for all apps, swipe down for notifications, double-tap to turn the screen off (optional).
 • Smart folders: apps are sorted automatically into Work, Social, Games, Tools and more.
-• Make it yours: 12 themes, custom colours or colours from your wallpaper, 16 fonts, icon shapes, third-party icon packs, a digital or analog clock, widgets, custom pages and a dock.
+• Make it yours: 12 themes, custom colours or colours from your wallpaper, 16 fonts, icon shapes, third-party icon packs, a digital, analog or minimal clock, widgets, custom pages and a dock.
 • App lock: a PIN, password, pattern or fingerprint per app, a hidden private folder, and hidden apps.
 • News page: a built-in RSS reader with Hebrew and English sources, or add your own feeds.
 • Usage statistics: screen time and opens per app, by day, week or month.

@@ -5,6 +5,39 @@ All notable changes to NoveLauncher. Versions follow the app's
 
 ---
 
+## Unreleased
+*Settings that now do what their screens say.*
+
+### Added
+- **Clock style picker.** Settings → Appearance → Clock now offers Digital,
+  Analog and Minimal. Analog gets its own size and colour controls for the
+  hands and the second hand; Minimal shows the time alone, smaller and in a
+  light weight. The clock's opacity now applies to the analog face too.
+- **Pin to dock.** Long-press a personal app → Pin to dock / Unpin from dock,
+  up to five apps. Before this nothing could ever add an app to the dock.
+- **Long-press vibration switch** in Settings → Gestures.
+
+### Fixed
+- **Fonts.** Eleven of the sixteen fonts (Heebo, Rubik, Assistant, Varela
+  Round, Open Sans, Montserrat, Poppins, Cairo, Frank Ruhl Libre, Secular One,
+  Noto Sans) silently fell back to the system font. They now ship with the app
+  (SIL Open Font License), which adds about 1.15 MB to the APK.
+- The **Folders** and **General UI** font settings were saved but never used.
+  They now set the smart-folder cards and the font of the whole interface.
+- With the 12-hour clock and seconds on, the seconds came after AM/PM
+  ("02:30 PM:15").
+
+### Removed
+- Settings fields that had no screen and no effect: voice control, pinch to
+  overview, shake to search, smart screen off, long-press action, home-button
+  double tap, clock search/reminders, search-bar and lock-screen settings,
+  lock-screen wallpaper, category tabs and custom categories, sort by
+  category, UI scale, per-page top bar/dock/columns, private-folder lock flag,
+  onboarding step and personal-zone lock method. Existing settings and backups
+  that still contain them load as before.
+
+---
+
 ## v10.0.0 — Profiles, wallpapers, gestures, Jewish calendar
 *Released 2026-10-17 · versionCode 13. Work profile and Private Space, app shortcuts, wallpapers, gestures, smart search and the Jewish calendar.*
 

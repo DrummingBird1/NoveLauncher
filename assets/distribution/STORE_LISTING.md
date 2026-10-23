@@ -45,7 +45,7 @@ NoveLauncher is a private Android launcher that organizes your home screen aroun
 
 💾 **Backups** — Back up your settings on the phone or to your own NAS. Schedule them, and optionally encrypt them with a password only you hold.
 
-🧩 **Widgets** — Add any widget, run its setup, and resize it.
+🧩 **Widgets** — Add any widget, run its setup, and make it one to four rows tall.
 
 📱 **Custom Pages** — Create new pages, reorder them, enable or disable individual pages.
 
@@ -93,7 +93,7 @@ NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמסדר את מסך
 
 💾 **גיבויים** — מקומי או ל-NAS שלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
 
-🧩 **ווידג'טים** — הוסף כל ווידג'ט, הגדר אותו ושנה את גודלו.
+🧩 **ווידג'טים** — הוסף כל ווידג'ט, הגדר אותו ובחר לו גובה של שורה עד ארבע שורות.
 
 📱 **עמודים מותאמים** — צור עמודים חדשים, שנה סדר, הפעל או כבה עמודים.
 

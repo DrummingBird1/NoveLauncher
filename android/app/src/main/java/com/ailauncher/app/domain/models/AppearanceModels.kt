@@ -207,29 +207,31 @@ data class ThemePreset(
     OCTAGON(R.string.icon_shape_octagon),
 }
 
+// The non-system fonts ship in res/font (OFL, built by assets/fonts/prepare_fonts.py);
+// launcherFontFamily in ui/theme/Theme.kt maps each entry to its FontFamily.
 @Serializable enum class LauncherFont(
     @StringRes val displayNameRes: Int,
-    val fontFamily: String,
 ) {
-    SYSTEM_DEFAULT(R.string.font_system_default, "sans-serif"),
-    ROBOTO(R.string.font_roboto, "sans-serif"),
-    NOTO_SANS(R.string.font_noto_sans, "noto-sans"),
-    RUBIK(R.string.font_rubik, "rubik"),
-    HEEBO(R.string.font_heebo, "heebo"),
-    ASSISTANT(R.string.font_assistant, "assistant"),
-    VARELA_ROUND(R.string.font_varela_round, "varela-round"),
-    OPEN_SANS(R.string.font_open_sans, "open-sans"),
-    MONTSERRAT(R.string.font_montserrat, "montserrat"),
-    POPPINS(R.string.font_poppins, "poppins"),
-    CAIRO(R.string.font_cairo, "cairo"),
-    FRANK_RUHL(R.string.font_frank_ruhl, "frank-ruhl"),
-    SECULAR_ONE(R.string.font_secular_one, "secular-one"),
-    MONOSPACE(R.string.font_monospace, "monospace"),
-    SERIF(R.string.font_serif, "serif"),
-    CURSIVE(R.string.font_cursive, "cursive"),
+    SYSTEM_DEFAULT(R.string.font_system_default),
+    ROBOTO(R.string.font_roboto),
+    NOTO_SANS(R.string.font_noto_sans),
+    RUBIK(R.string.font_rubik),
+    HEEBO(R.string.font_heebo),
+    ASSISTANT(R.string.font_assistant),
+    VARELA_ROUND(R.string.font_varela_round),
+    OPEN_SANS(R.string.font_open_sans),
+    MONTSERRAT(R.string.font_montserrat),
+    POPPINS(R.string.font_poppins),
+    CAIRO(R.string.font_cairo),
+    FRANK_RUHL(R.string.font_frank_ruhl),
+    SECULAR_ONE(R.string.font_secular_one),
+    MONOSPACE(R.string.font_monospace),
+    SERIF(R.string.font_serif),
+    CURSIVE(R.string.font_cursive),
 }
 
-// v5: Analog clock option + more settings
+// v5: Analog clock option + more settings. MINIMAL is the digital time alone,
+// smaller and in a light weight, without seconds or AM/PM (see ClockHeader).
 @Serializable enum class ClockStyle(
     @StringRes val displayNameRes: Int,
 ) {
@@ -248,23 +250,10 @@ data class ClockSettings(
     val showSeconds: Boolean = false,
     val font: LauncherFont = LauncherFont.SYSTEM_DEFAULT,
     val opacity: Float = 1f,
-    val showSearch: Boolean = true,
-    val showReminders: Boolean = false,
     val clockStyle: ClockStyle = ClockStyle.DIGITAL,
     val analogSize: Int = 160,
     val analogColor: String = "#FFFFFF",
     val analogAccentColor: String = "#7C7CFF",
-)
-
-@Serializable
-data class SearchBarSettings(
-    val visible: Boolean = true,
-    val heightDp: Int = 48,
-    val cornerRadius: Int = 24,
-    val showMicButton: Boolean = true,
-    val showCameraButton: Boolean = false,
-    val backgroundColor: String = "",
-    val textColor: String = "",
 )
 
 @Serializable enum class WallpaperMode(
@@ -331,17 +320,6 @@ data class WallpaperSettings(
     val mode: WallpaperMode = WallpaperMode.SINGLE,
     val entries: List<WallpaperEntry> = emptyList(),
     val dimOnScroll: Boolean = false,
-    val lockScreenSameAsHome: Boolean = true,
-    val lockScreenWallpaper: WallpaperEntry? = null,
-)
-
-@Serializable data class LockScreenSettings(
-    val customEnabled: Boolean = false,
-    val showClock: Boolean = true,
-    val alwaysOnDisplay: Boolean = false,
-    val aodBrightness: Float = 0.3f,
-    val clockFont: LauncherFont = LauncherFont.SYSTEM_DEFAULT,
-    val clockColor: String = "#FFFFFF",
 )
 
 // v5: max gridColumns = 8
@@ -365,12 +343,8 @@ data class WallpaperSettings(
     val useDynamicColor: Boolean = false, // Material You (Android 12+); ignored if useCustomColors is on
     val clock: ClockSettings = ClockSettings(),
     val wallpaper: WallpaperSettings = WallpaperSettings(),
-    val lockScreen: LockScreenSettings = LockScreenSettings(),
-    val searchBar: SearchBarSettings = SearchBarSettings(),
-    val sortAppsByCategory: Boolean = true,
     val showNotificationBadges: Boolean = true,
     val badgeSnoozedUntil: Long = 0L, // epoch millis; 0 or past = not snoozed
-    val categoryTabs: CategoryTabSettings = CategoryTabSettings(),
     val appLanguage: String = "", // empty = system default
     // v10: package of the selected icon pack (Nova/ADW/Lawnchair format); "" = system icons.
     val iconPackPackage: String = "",

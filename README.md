@@ -57,7 +57,7 @@ analytics, no ads. Your usage data never leaves your phone.
 | 📰 **News feed** | Built-in sources plus your own custom RSS feeds |
 | 💾 **Backups** | Local or your own NAS/WebDAV, on a schedule, optionally password-encrypted |
 | 📊 **Usage statistics** | Screen time and app usage by day, week or month, read from Android on your device |
-| 🧩 **Widgets & dock** | Standard Android widgets (with their setup screens, resizable) and a pinned bottom dock |
+| 🧩 **Widgets & dock** | Standard Android widgets (with their setup screens, 1–4 rows tall) and a bottom dock of up to 5 pinned apps |
 
 ## Screenshots
 
