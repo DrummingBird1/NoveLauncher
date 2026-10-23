@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">Shabbat mode</string>
     <string name="jc_shabbat_mode_desc">From candle lighting until nightfall on Shabbat and holidays, the home screen hides social, entertainment, game and shopping suggestions and notification badges, and greets you with Shabbat Shalom. Nothing is blocked — every app is still in the Apps page.</string>
     <string name="jc_location_note">Times are calculated on your phone from your approximate location (if location access is granted), or for Tel Aviv otherwise. Nothing is sent anywhere.</string>
+    <string name="onboarding_location_title">Weather and Shabbat times</string>
+    <string name="onboarding_location_desc">Your approximate location (never the exact one) shows the weather and Shabbat times where you are. The weather request sends it to Open-Meteo; the times are calculated on the phone.\n\nOptional — without it, both use Tel Aviv.</string>
+    <string name="onboarding_location_action">Allow approximate location</string>
+    <string name="location_granted">Approximate location allowed</string>
+    <string name="location_default_city">Weather and Shabbat times use Tel Aviv until you allow approximate location.</string>
+    <string name="location_allow">Use my location</string>
+    <string name="location_allow_in_settings">Allow in system settings</string>
     <string name="jc_holiday_tomorrow">%1$s tomorrow</string>
     <string name="jc_candle_lighting">🕯 Candle lighting %1$s</string>
     <string name="jc_havdalah">✨ Ends at %1$s (Havdalah)</string>

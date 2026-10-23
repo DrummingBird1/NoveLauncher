@@ -12,19 +12,19 @@ import androidx.core.content.ContextCompat
  * Jewish-calendar times (extracted from WeatherService). Never requests a fix —
  * it only reads what the OS already has cached — and never leaves the device
  * from here; WeatherService is the only caller that sends coordinates anywhere.
+ * The permission itself is asked for in context, see ui/location/LocationPermission.kt.
  */
 object CoarseLocation {
     /** Tel Aviv — used when location permission is denied or nothing is cached. */
     const val DEFAULT_LAT = 32.0853
     const val DEFAULT_LON = 34.7818
 
+    fun isGranted(context: Context): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
     @SuppressLint("MissingPermission")
     fun lastKnown(context: Context): Pair<Double, Double>? {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            return null
-        }
+        if (!isGranted(context)) return null
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
         val providers = listOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER, LocationManager.PASSIVE_PROVIDER)
         for (p in providers) {

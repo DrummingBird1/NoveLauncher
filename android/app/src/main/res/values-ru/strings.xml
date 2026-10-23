@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">Субботний режим</string>
     <string name="jc_shabbat_mode_desc">От зажигания свечей до наступления темноты в субботу и праздники главный экран скрывает предложения соцсетей, развлечений, игр и покупок, а также значки уведомлений и приветствует вас «Шабат шалом». Ничего не блокируется — все приложения остаются на странице приложений.</string>
     <string name="jc_location_note">Время рассчитывается на телефоне по вашему примерному местоположению (если доступ разрешён), иначе для Тель-Авива. Никакие данные никуда не отправляются.</string>
+    <string name="onboarding_location_title">Погода и время субботы</string>
+    <string name="onboarding_location_desc">Примерное местоположение (никогда не точное) показывает погоду и время субботы там, где вы находитесь. Запрос погоды отправляет его в Open-Meteo, а время рассчитывается на телефоне.\n\nНеобязательно — без него используется Тель-Авив.</string>
+    <string name="onboarding_location_action">Разрешить примерное местоположение</string>
+    <string name="location_granted">Примерное местоположение разрешено</string>
+    <string name="location_default_city">Погода и время субботы показываются для Тель-Авива, пока вы не разрешите примерное местоположение.</string>
+    <string name="location_allow">Использовать моё местоположение</string>
+    <string name="location_allow_in_settings">Разрешить в настройках системы</string>
     <string name="jc_holiday_tomorrow">Завтра: %1$s</string>
     <string name="jc_candle_lighting">🕯 Зажигание свечей %1$s</string>
     <string name="jc_havdalah">✨ Исход в %1$s (Авдала)</string>

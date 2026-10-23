@@ -17,12 +17,15 @@
                         leaks usage patterns AND immediately gets stale.
       - secure_lock_prefs / secure_lock_prefs_fallback — PBKDF2 salt. Per-install
                         by design (see AppLockManager.getOrCreateSalt).
+      - location_permission — whether this install already asked for location.
+                        Permissions don't transfer, so neither should this.
 -->
 <full-backup-content>
     <exclude domain="sharedpref" path="cloud_auth.xml" />
     <exclude domain="sharedpref" path="nas_config.xml" />
     <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
     <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+    <exclude domain="sharedpref" path="location_permission.xml" />
     <exclude domain="database" path="launcher.db" />
     <exclude domain="database" path="launcher.db-journal" />
     <exclude domain="database" path="launcher.db-shm" />

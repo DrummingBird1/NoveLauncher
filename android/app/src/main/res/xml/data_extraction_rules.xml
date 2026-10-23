@@ -11,6 +11,7 @@
         <exclude domain="sharedpref" path="nas_config.xml" />
         <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
         <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+        <exclude domain="sharedpref" path="location_permission.xml" />
         <exclude domain="database" path="launcher.db" />
         <exclude domain="database" path="launcher.db-journal" />
         <exclude domain="database" path="launcher.db-shm" />
@@ -21,6 +22,7 @@
         <exclude domain="sharedpref" path="nas_config.xml" />
         <exclude domain="sharedpref" path="secure_lock_prefs.xml" />
         <exclude domain="sharedpref" path="secure_lock_prefs_fallback.xml" />
+        <exclude domain="sharedpref" path="location_permission.xml" />
         <exclude domain="database" path="launcher.db" />
         <exclude domain="database" path="launcher.db-journal" />
         <exclude domain="database" path="launcher.db-shm" />

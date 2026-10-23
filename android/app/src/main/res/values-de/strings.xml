@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">Schabbat-Modus</string>
     <string name="jc_shabbat_mode_desc">Vom Kerzenzünden bis zum Einbruch der Nacht an Schabbat und Feiertagen blendet der Startbildschirm Vorschläge für soziale Netzwerke, Unterhaltung, Spiele und Shopping sowie Benachrichtigungs-Badges aus und begrüßt dich mit Schabbat Schalom. Nichts wird blockiert – alle Apps bleiben auf der Apps-Seite.</string>
     <string name="jc_location_note">Die Zeiten werden auf deinem Handy aus deinem ungefähren Standort berechnet (falls Standortzugriff erlaubt ist), sonst für Tel Aviv. Es wird nichts gesendet.</string>
+    <string name="onboarding_location_title">Wetter und Schabbat-Zeiten</string>
+    <string name="onboarding_location_desc">Dein ungefährer Standort (nie der genaue) zeigt Wetter und Schabbat-Zeiten dort, wo du bist. Die Wetterabfrage sendet ihn an Open-Meteo; die Zeiten werden auf dem Handy berechnet.\n\nOptional – ohne ihn gilt beides für Tel Aviv.</string>
+    <string name="onboarding_location_action">Ungefähren Standort erlauben</string>
+    <string name="location_granted">Ungefährer Standort erlaubt</string>
+    <string name="location_default_city">Wetter und Schabbat-Zeiten gelten für Tel Aviv, bis du den ungefähren Standort erlaubst.</string>
+    <string name="location_allow">Meinen Standort verwenden</string>
+    <string name="location_allow_in_settings">In den Systemeinstellungen erlauben</string>
     <string name="jc_holiday_tomorrow">Morgen: %1$s</string>
     <string name="jc_candle_lighting">🕯 Kerzenzünden %1$s</string>
     <string name="jc_havdalah">✨ Ende um %1$s (Hawdala)</string>

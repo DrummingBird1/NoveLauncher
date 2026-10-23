@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">Mode Chabbat</string>
     <string name="jc_shabbat_mode_desc">De l\'allumage des bougies jusqu\'à la tombée de la nuit, le Chabbat et les fêtes, l\'écran d\'accueil masque les suggestions de réseaux sociaux, de divertissement, de jeux et d\'achats ainsi que les badges de notification, et vous souhaite Chabbat Chalom. Rien n\'est bloqué : toutes les applis restent dans la page Applications.</string>
     <string name="jc_location_note">Les horaires sont calculés sur votre téléphone à partir de votre position approximative (si l\'accès est autorisé), sinon pour Tel-Aviv. Rien n\'est envoyé nulle part.</string>
+    <string name="onboarding_location_title">Météo et horaires du Chabbat</string>
+    <string name="onboarding_location_desc">Votre position approximative (jamais la position exacte) affiche la météo et les horaires du Chabbat là où vous êtes. La requête météo l\'envoie à Open-Meteo ; les horaires sont calculés sur le téléphone.\n\nFacultatif — sans elle, les deux utilisent Tel-Aviv.</string>
+    <string name="onboarding_location_action">Autoriser la position approximative</string>
+    <string name="location_granted">Position approximative autorisée</string>
+    <string name="location_default_city">La météo et les horaires du Chabbat utilisent Tel-Aviv tant que la position approximative n\'est pas autorisée.</string>
+    <string name="location_allow">Utiliser ma position</string>
+    <string name="location_allow_in_settings">Autoriser dans les paramètres système</string>
     <string name="jc_holiday_tomorrow">Demain : %1$s</string>
     <string name="jc_candle_lighting">🕯 Allumage des bougies %1$s</string>
     <string name="jc_havdalah">✨ Fin à %1$s (Havdala)</string>

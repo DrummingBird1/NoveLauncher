@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">Modo Shabat</string>
     <string name="jc_shabbat_mode_desc">Desde el encendido de velas hasta el anochecer en Shabat y festividades, la pantalla de inicio oculta sugerencias de redes sociales, entretenimiento, juegos y compras, además de los indicadores de notificaciones, y te saluda con Shabat Shalom. No se bloquea nada: todas las apps siguen en la página de aplicaciones.</string>
     <string name="jc_location_note">Los horarios se calculan en tu teléfono a partir de tu ubicación aproximada (si concedes el permiso) o, si no, para Tel Aviv. No se envía nada a ningún sitio.</string>
+    <string name="onboarding_location_title">Tiempo y horarios del Shabat</string>
+    <string name="onboarding_location_desc">Tu ubicación aproximada (nunca la exacta) muestra el tiempo y los horarios del Shabat donde estás. La consulta del tiempo la envía a Open-Meteo; los horarios se calculan en el teléfono.\n\nOpcional: sin ella, ambos usan Tel Aviv.</string>
+    <string name="onboarding_location_action">Permitir ubicación aproximada</string>
+    <string name="location_granted">Ubicación aproximada permitida</string>
+    <string name="location_default_city">El tiempo y los horarios del Shabat usan Tel Aviv hasta que permitas la ubicación aproximada.</string>
+    <string name="location_allow">Usar mi ubicación</string>
+    <string name="location_allow_in_settings">Permitir en los ajustes del sistema</string>
     <string name="jc_holiday_tomorrow">Mañana: %1$s</string>
     <string name="jc_candle_lighting">🕯 Encendido de velas %1$s</string>
     <string name="jc_havdalah">✨ Termina a las %1$s (Havdalá)</string>
