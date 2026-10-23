@@ -37,6 +37,8 @@ import com.ailauncher.app.ui.gestures.LockScreenAccessibilityService
 /**
  * v10: home-screen gestures. The four settings existed in SmartControlSettings
  * since v5 with no UI and no effect; LauncherRoot/HomeScreen now honour them.
+ * The long-press vibration switch (hapticFeedback, read by HomeScreen and
+ * AppsScreen) lives here too.
  *
  * Double-tap-to-lock needs the accessibility helper. The explanation card below
  * is the prominent disclosure Google Play requires before sending the user to
@@ -88,6 +90,12 @@ fun GesturesSection(
                         if (it && !helperEnabled) showDisclosure = true else onUpdate(settings.copy(doubleTapToSleep = it))
                     }
                 }
+            }
+        }
+        // Not a home gesture, so it stays visible with gestures switched off.
+        item {
+            SwitchSetting(stringResource(R.string.gesture_haptic_long_press), settings.hapticFeedback) {
+                onUpdate(settings.copy(hapticFeedback = it))
             }
         }
 

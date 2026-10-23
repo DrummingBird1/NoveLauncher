@@ -17,6 +17,7 @@ import com.ailauncher.app.data.update.UpdateChecker
 import com.ailauncher.app.domain.calendar.JewishDayInfo
 import com.ailauncher.app.domain.models.AdaptiveDisplaySettings
 import com.ailauncher.app.domain.models.AppCategory
+import com.ailauncher.app.domain.models.AppProfile
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.BackupDestination
 import com.ailauncher.app.domain.models.BackupSettings
@@ -31,6 +32,7 @@ import com.ailauncher.app.domain.models.SecuritySettings
 import com.ailauncher.app.domain.models.SmartControlSettings
 import com.ailauncher.app.domain.models.SmartFolder
 import com.ailauncher.app.domain.models.WidgetSlot
+import com.ailauncher.app.domain.models.toggleDockApp
 import com.ailauncher.app.domain.search.SearchMatcher
 import com.ailauncher.app.domain.usecases.GetRankedAppsUseCase
 import com.ailauncher.app.security.AppLockManager
@@ -441,6 +443,17 @@ class LauncherViewModel
                 settingsRepo.saveHiddenApps(c.copy(privateFolderPackages = c.privateFolderPackages + p))
                 forceRefresh()
             }
+        }
+
+        /** Personal-profile packages the Home dock can show right now (installed, not hidden). */
+        fun dockablePackages(): Set<String> =
+            appState.value.rankedApps
+                .filter { it.app.profile == AppProfile.PERSONAL }
+                .mapTo(HashSet()) { it.app.packageName }
+
+        /** Long-press → Pin to dock / Unpin. At most PageLayoutSettings.MAX_DOCK_APPS. */
+        fun toggleDockApp(p: String) {
+            viewModelScope.launch { settingsRepo.savePages(pagesSettings.value.toggleDockApp(p, dockablePackages())) }
         }
 
         fun completeOnboarding() {

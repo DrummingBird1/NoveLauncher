@@ -539,4 +539,12 @@
         <item quantity="other">%1$s in %2$d days</item>
     </plurals>
     <string name="backup_error_drive_disabled">Google Drive backup isn\'t available in this version.</string>
+    <string name="section_clock_style">Clock style</string>
+    <string name="clock_analog_size">Analog clock size</string>
+    <string name="clock_analog_hands_color">Hands color</string>
+    <string name="clock_analog_accent_color">Second hand color</string>
+    <string name="action_pin_dock">Pin to dock</string>
+    <string name="action_unpin_dock">Unpin from dock</string>
+    <string name="dock_full">Dock is full (up to %1$d apps)</string>
+    <string name="gesture_haptic_long_press">Vibrate on app long press</string>
 </resources>

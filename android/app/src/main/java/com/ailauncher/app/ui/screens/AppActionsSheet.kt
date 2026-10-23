@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,8 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.AppProfile
+import com.ailauncher.app.domain.models.PageLayoutSettings
 import com.ailauncher.app.domain.models.RankedApp
+import com.ailauncher.app.domain.models.dockPackages
 import com.ailauncher.app.ui.LauncherViewModel
 import com.ailauncher.app.ui.LocalAppLauncher
 import com.ailauncher.app.ui.findLauncherActivity
@@ -51,7 +56,8 @@ import kotlinx.coroutines.withContext
  * to be duplicated in both), shows the app's own shortcuts at the top
  * ("New chat", "Navigate home"…, read through LauncherApps — only available
  * while NoveLauncher is the default home app), and knows about profiles: work
- * and Private Space apps get App info but no in-place uninstall.
+ * and Private Space apps get App info but no in-place uninstall. Personal apps
+ * can be pinned to the Home dock unless the layout is locked.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +69,9 @@ fun AppActionsSheet(
     val context = LocalContext.current
     val appLauncher = LocalAppLauncher.current
     val app = target.app
+    val pages by viewModel.pagesSettings.collectAsState()
+    val security by viewModel.security.collectAsState()
+    val dock = remember(pages) { pages.dockPackages(viewModel.dockablePackages()) }
 
     val shortcuts by produceState(emptyList<Pair<ShortcutInfo, ImageBitmap?>>(), app.key) {
         value =
@@ -107,6 +116,32 @@ fun AppActionsSheet(
                 HorizontalDivider(Modifier.padding(vertical = 6.dp), color = MaterialTheme.colorScheme.surfaceVariant)
             }
 
+            // The dock only shows personal-profile apps (HomeScreen), so only they get the row.
+            if (app.profile == AppProfile.PERSONAL && !security.isLayoutLocked) {
+                when {
+                    app.packageName in dock -> {
+                        ActionRow(Icons.Rounded.PushPin, stringResource(R.string.action_unpin_dock)) {
+                            viewModel.toggleDockApp(app.packageName)
+                            onDismiss()
+                        }
+                    }
+
+                    dock.size < PageLayoutSettings.MAX_DOCK_APPS -> {
+                        ActionRow(Icons.Rounded.PushPin, stringResource(R.string.action_pin_dock)) {
+                            viewModel.toggleDockApp(app.packageName)
+                            onDismiss()
+                        }
+                    }
+
+                    else -> {
+                        ActionRow(
+                            Icons.Rounded.PushPin,
+                            stringResource(R.string.dock_full, PageLayoutSettings.MAX_DOCK_APPS),
+                            enabled = false,
+                        ) {}
+                    }
+                }
+            }
             ActionRow(Icons.Rounded.VisibilityOff, stringResource(R.string.action_hide_app)) {
                 viewModel.hideApp(app.packageName)
                 onDismiss()
@@ -148,14 +183,16 @@ private fun profileLabel(profile: AppProfile): Int? =
 private fun ActionRow(
     icon: ImageVector,
     label: String,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
+    val alpha = if (enabled) 1f else 0.38f
     Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp, horizontal = 4.dp),
+        modifier = Modifier.fillMaxWidth().clickable(enabled = enabled, onClick = onClick).padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+        Icon(icon, null, tint = MaterialTheme.colorScheme.primary.copy(alpha = alpha), modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(16.dp))
-        Text(label, color = MaterialTheme.colorScheme.onSurface)
+        Text(label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha))
     }
 }

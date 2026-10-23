@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ailauncher.app.R
@@ -47,7 +49,8 @@ fun ClockHeader(
     val date = remember { mutableStateOf("") }
     val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
 
-    LaunchedEffect(clock.use24Hour, clock.showSeconds, locale) {
+    val timePattern = clockTimePattern(clock)
+    LaunchedEffect(timePattern, locale) {
         // Locale-aware date pattern: getBestDateTimePattern picks the right ordering
         // and connectors per locale (e.g. Hebrew "5 בינואר", English "January 5",
         // French "5 janvier").
@@ -56,14 +59,9 @@ fun ClockHeader(
                 .getBestDateTimePattern(locale, "EEEEdMMMM")
         while (true) {
             val now = Date()
-            val timePattern =
-                buildString {
-                    append(if (clock.use24Hour) "HH:mm" else "hh:mm a")
-                    if (clock.showSeconds) append(":ss")
-                }
             time.value = SimpleDateFormat(timePattern, locale).format(now)
             date.value = SimpleDateFormat(datePattern, locale).format(now)
-            kotlinx.coroutines.delay(if (clock.showSeconds) 1000L else 30_000L)
+            kotlinx.coroutines.delay(if (timePattern.contains("ss")) 1000L else 30_000L)
         }
     }
 
@@ -74,15 +72,16 @@ fun ClockHeader(
         if (clock.clockStyle == ClockStyle.ANALOG) {
             AnalogClock(
                 sizeDp = clock.analogSize,
-                handsColor = parseHexColor(clock.analogColor, 0xFFFFFFFF),
-                accentColor = parseHexColor(clock.analogAccentColor, 0xFF7C7CFF),
+                handsColor = parseHexColor(clock.analogColor, 0xFFFFFFFF).copy(alpha = clock.opacity),
+                accentColor = parseHexColor(clock.analogAccentColor, 0xFF7C7CFF).copy(alpha = clock.opacity),
             )
         } else {
             Text(
                 text = time.value,
-                fontSize = clock.fontSize.sp,
+                fontSize = clockTimeFontSize(clock),
+                fontWeight = clockTimeFontWeight(clock),
                 color = parseHexColor(clock.fontColor).copy(alpha = clock.opacity),
-                letterSpacing = (-2).sp,
+                letterSpacing = if (clock.clockStyle == ClockStyle.MINIMAL) 0.sp else (-2).sp,
                 fontFamily = launcherFontFamily(clock.font),
             )
         }
@@ -106,6 +105,27 @@ fun ClockHeader(
         }
     }
 }
+
+/**
+ * The digital time format. MINIMAL drops seconds and the AM/PM marker whatever
+ * the other switches say; DIGITAL follows [ClockSettings.use24Hour] and
+ * [ClockSettings.showSeconds].
+ */
+internal fun clockTimePattern(clock: ClockSettings): String =
+    if (clock.clockStyle == ClockStyle.MINIMAL) {
+        if (clock.use24Hour) "HH:mm" else "h:mm"
+    } else {
+        // Seconds go before the AM/PM marker ("02:30:15 PM"); 10.0.0 appended them
+        // after it ("02:30 PM:15").
+        val seconds = if (clock.showSeconds) ":ss" else ""
+        if (clock.use24Hour) "HH:mm$seconds" else "hh:mm$seconds a"
+    }
+
+/** MINIMAL draws the time at 80% of the chosen size, in a light weight. */
+internal fun clockTimeFontSize(clock: ClockSettings): TextUnit =
+    if (clock.clockStyle == ClockStyle.MINIMAL) (clock.fontSize * 0.8f).sp else clock.fontSize.sp
+
+internal fun clockTimeFontWeight(clock: ClockSettings): FontWeight? = if (clock.clockStyle == ClockStyle.MINIMAL) FontWeight.Light else null
 
 /**
  * v8: minimal analog clock used when [ClockSettings.clockStyle] == ANALOG.
@@ -132,7 +152,7 @@ fun AnalogClock(
         val r = kotlin.math.min(cx, cy)
         // Dial outline
         drawCircle(
-            color = handsColor.copy(alpha = 0.25f),
+            color = handsColor.copy(alpha = handsColor.alpha * 0.25f),
             radius = r * 0.97f,
             center =
                 androidx.compose.ui.geometry
@@ -149,7 +169,7 @@ fun AnalogClock(
             val ex = cx + kotlin.math.cos(angle).toFloat() * r * 0.95f
             val ey = cy + kotlin.math.sin(angle).toFloat() * r * 0.95f
             drawLine(
-                handsColor.copy(alpha = 0.5f),
+                handsColor.copy(alpha = handsColor.alpha * 0.5f),
                 androidx.compose.ui.geometry
                     .Offset(sx, sy),
                 androidx.compose.ui.geometry

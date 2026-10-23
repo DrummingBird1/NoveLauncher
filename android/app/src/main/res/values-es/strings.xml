@@ -540,4 +540,12 @@
         <item quantity="other">%1$s en %2$d días</item>
     </plurals>
     <string name="backup_error_drive_disabled">La copia de seguridad en Google Drive no está disponible en esta versión.</string>
+    <string name="section_clock_style">Estilo del reloj</string>
+    <string name="clock_analog_size">Tamaño del reloj analógico</string>
+    <string name="clock_analog_hands_color">Color de las manecillas</string>
+    <string name="clock_analog_accent_color">Color del segundero</string>
+    <string name="action_pin_dock">Fijar en el dock</string>
+    <string name="action_unpin_dock">Quitar del dock</string>
+    <string name="dock_full">El dock está lleno (máx. %1$d apps)</string>
+    <string name="gesture_haptic_long_press">Vibrar al mantener pulsada una app</string>
 </resources>

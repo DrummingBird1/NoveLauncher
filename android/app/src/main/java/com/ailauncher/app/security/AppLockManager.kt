@@ -381,7 +381,7 @@ class AppLockManager(
 
     suspend fun setPersonalZonePin(pin: String) {
         val c = settingsRepo.securityFlow.first()
-        settingsRepo.saveSecurity(c.copy(personalZoneLockMethod = LockMethod.PIN, personalZonePin = hash(pin)))
+        settingsRepo.saveSecurity(c.copy(personalZonePin = hash(pin)))
     }
 
     suspend fun toggleAppLock(pkg: String) {

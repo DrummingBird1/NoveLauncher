@@ -35,29 +35,22 @@ import kotlinx.serialization.Serializable
     val launcherLockMethod: LockMethod = LockMethod.NONE,
     val launcherLockPin: String = "",
     val launcherLockPassword: String = "",
-    val personalZoneLockMethod: LockMethod = LockMethod.PIN,
     val personalZonePin: String = "",
 )
 
 @Serializable data class HiddenAppsSettings(
     val hiddenPackages: Set<String> = emptySet(),
     val privateFolderPackages: Set<String> = emptySet(),
-    val privateFolderLocked: Boolean = true,
 )
 
 // v5: Gesture settings with UI
 @Serializable data class SmartControlSettings(
-    val voiceControlEnabled: Boolean = false,
     val gesturesEnabled: Boolean = true,
     val doubleTapToSleep: Boolean = false,
     val swipeDownNotifications: Boolean = true,
     val swipeUpAppDrawer: Boolean = true,
-    val pinchToOverview: Boolean = false,
-    val shakeToSearch: Boolean = false,
-    val smartScreenOff: Boolean = false,
+    // Vibrate when an app's long-press sheet opens (Home and Apps). Settings → Gestures.
     val hapticFeedback: Boolean = true,
-    val longPressAction: String = "menu", // menu, hide, lock, info
-    val homeButtonDoubleTap: String = "none", // none, search, recent, camera
     val reduceMotion: Boolean = false,
     // v10: opt-in. Asks GitHub's public API for the latest release at most once a
     // day; the only data sent is the request itself (IP + User-Agent).

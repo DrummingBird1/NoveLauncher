@@ -541,4 +541,12 @@
         <item quantity="other">%1$s через %2$d дня</item>
     </plurals>
     <string name="backup_error_drive_disabled">Резервное копирование в Google Drive недоступно в этой версии.</string>
+    <string name="section_clock_style">Стиль часов</string>
+    <string name="clock_analog_size">Размер стрелочных часов</string>
+    <string name="clock_analog_hands_color">Цвет стрелок</string>
+    <string name="clock_analog_accent_color">Цвет секундной стрелки</string>
+    <string name="action_pin_dock">Закрепить в доке</string>
+    <string name="action_unpin_dock">Убрать из дока</string>
+    <string name="dock_full">Док заполнен (не больше %1$d приложений)</string>
+    <string name="gesture_haptic_long_press">Вибрация при долгом нажатии на приложение</string>
 </resources>

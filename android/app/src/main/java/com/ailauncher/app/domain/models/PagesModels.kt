@@ -6,7 +6,7 @@ import com.ailauncher.app.R
 import kotlinx.serialization.Serializable
 
 /*
- * Launcher page model + per-page layout + bottom-tab category configuration.
+ * Launcher page model + per-page layout.
  */
 
 /**
@@ -33,29 +33,16 @@ import kotlinx.serialization.Serializable
     }
 }
 
-// v5: Category bottom tabs
-@Serializable data class CategoryTabSettings(
-    val enabled: Boolean = true,
-    val showBottomTabs: Boolean = true,
-    val customCategories: List<CustomCategory> = emptyList(),
-    val categoryIconSize: Int = 24,
-    val categoryFontSize: Int = 11,
-)
-
-@Serializable data class CustomCategory(
-    val id: String,
-    val name: String,
-    val iconName: String,
-    val packages: Set<String> = emptySet(),
-)
-
+// dockApps: package names pinned from the long-press sheet (personal profile),
+// at most PageLayoutSettings.MAX_DOCK_APPS. Only the "home" layout has a dock.
 @Serializable data class PageLayoutSettings(
     val pageId: String = "home",
-    val showTopBar: Boolean = true,
-    val showBottomDock: Boolean = false,
     val dockApps: List<String> = emptyList(),
-    val gridColumns: Int = 4,
-)
+) {
+    companion object {
+        const val MAX_DOCK_APPS = 5
+    }
+}
 
 @Serializable data class PagesSettings(
     val enabledPages: List<LauncherPage> = listOf(LauncherPage.HOME, LauncherPage.APPS, LauncherPage.NEWS),
@@ -63,3 +50,31 @@ import kotlinx.serialization.Serializable
     val customPages: List<LauncherPage> = emptyList(),
     val pageLayouts: Map<String, PageLayoutSettings> = emptyMap(),
 )
+
+/** The home dock's packages in order, keeping only those in [present] (installed, personal profile, not hidden). */
+fun PagesSettings.dockPackages(present: Set<String>): List<String> =
+    pageLayouts[LauncherPage.HOME.id]
+        ?.dockApps
+        .orEmpty()
+        .filter { it in present }
+        .distinct()
+
+/**
+ * Pins [packageName] to the home dock or, if it's already there, unpins it.
+ * Packages missing from [present] are dropped on the way, so an uninstalled or
+ * hidden app can't hold a slot nobody can see. A full dock is returned unchanged.
+ */
+fun PagesSettings.toggleDockApp(
+    packageName: String,
+    present: Set<String>,
+): PagesSettings {
+    val dock = dockPackages(present)
+    val next =
+        when {
+            packageName in dock -> dock - packageName
+            dock.size >= PageLayoutSettings.MAX_DOCK_APPS -> return this
+            else -> dock + packageName
+        }
+    val home = pageLayouts[LauncherPage.HOME.id] ?: PageLayoutSettings()
+    return copy(pageLayouts = pageLayouts + (LauncherPage.HOME.id to home.copy(dockApps = next)))
+}

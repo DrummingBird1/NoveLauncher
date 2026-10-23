@@ -539,4 +539,12 @@
         <item quantity="other">%1$s in %2$d Tagen</item>
     </plurals>
     <string name="backup_error_drive_disabled">Die Sicherung in Google Drive ist in dieser Version nicht verfügbar.</string>
+    <string name="section_clock_style">Uhrstil</string>
+    <string name="clock_analog_size">Größe der Analoguhr</string>
+    <string name="clock_analog_hands_color">Zeigerfarbe</string>
+    <string name="clock_analog_accent_color">Farbe des Sekundenzeigers</string>
+    <string name="action_pin_dock">Im Dock anheften</string>
+    <string name="action_unpin_dock">Aus dem Dock lösen</string>
+    <string name="dock_full">Dock ist voll (max. %1$d Apps)</string>
+    <string name="gesture_haptic_long_press">Vibration bei langem Drücken auf eine App</string>
 </resources>

@@ -60,7 +60,6 @@ import kotlinx.serialization.Serializable
     val tabletColumns: Int = 6,
     val foldableColumns: Int = 5,
     val landscapeColumns: Int = 8,
-    val scaleUi: Float = 1.0f,
 )
 
 @Serializable data class RepairSettings(
@@ -70,7 +69,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class OnboardingState(
     val completed: Boolean = false,
-    val currentStep: Int = 0,
     val lastSeenVersionCode: Int = 0, // drives the "What's New" dialog — see WhatsNewDialog
 )
 
