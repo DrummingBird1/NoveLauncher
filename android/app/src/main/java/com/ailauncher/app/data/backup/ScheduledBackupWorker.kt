@@ -13,6 +13,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.ailauncher.app.AILauncherApp
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.BackupSchedule
@@ -64,7 +65,7 @@ class ScheduledBackupWorker
                     )
                 } catch (_: Exception) {
                 }
-                notifyFailure(e.message ?: applicationContext.getString(R.string.notification_backup_failed_unknown))
+                notifyFailure(e.message ?: AppLocales.wrap(applicationContext).getString(R.string.notification_backup_failed_unknown))
                 Result.retry()
             }
         }
@@ -77,7 +78,7 @@ class ScheduledBackupWorker
                     NotificationCompat
                         .Builder(applicationContext, AILauncherApp.BACKUP_CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher_monochrome)
-                        .setContentTitle(applicationContext.getString(R.string.notification_backup_failed_title))
+                        .setContentTitle(AppLocales.wrap(applicationContext).getString(R.string.notification_backup_failed_title))
                         .setContentText(message)
                         .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)

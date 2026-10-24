@@ -1,16 +1,23 @@
 package com.ailauncher.app.ui.screens
 
-import androidx.compose.ui.test.junit4.createComposeRule
+import android.Manifest
+import android.app.Application
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import com.ailauncher.app.R
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
@@ -24,7 +31,16 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33])
 class OnboardingScreenTest {
-    @get:Rule val composeRule = createComposeRule()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    private val ctx get() = ApplicationProvider.getApplicationContext<android.content.Context>()
+
+    private fun goToLocationStep() {
+        repeat(2) {
+            composeRule.onNodeWithText(ctx.getString(R.string.action_next)).performClick()
+            composeRule.waitForIdle()
+        }
+    }
 
     @Test fun `skip button completes onboarding without visiting other steps`() {
         var completed = false
@@ -54,5 +70,24 @@ class OnboardingScreenTest {
         val found = composeRule.onAllNodesWithText(usageTitle).fetchSemanticsNodes().isNotEmpty()
         assertTrue("expected to land on the usage-access step after Next", found)
         assertTrue("onComplete should not fire from a single Next tap", !completed)
+    }
+
+    @Test fun `location step asks for approximate location only`() {
+        composeRule.setContent { OnboardingScreen(onComplete = {}) }
+        goToLocationStep()
+
+        composeRule.onNodeWithText(ctx.getString(R.string.onboarding_location_action)).performScrollTo().performClick()
+        composeRule.waitForIdle()
+
+        val requested = shadowOf(composeRule.activity).lastRequestedPermission
+        assertArrayEquals(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), requested.requestedPermissions)
+    }
+
+    @Test fun `location step shows it is done once allowed`() {
+        shadowOf(ApplicationProvider.getApplicationContext<Application>()).grantPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        composeRule.setContent { OnboardingScreen(onComplete = {}) }
+        goToLocationStep()
+
+        composeRule.onNodeWithText(ctx.getString(R.string.location_granted)).performScrollTo().assertIsNotEnabled()
     }
 }

@@ -466,6 +466,13 @@
     <string name="jc_shabbat_mode">وضع السبت</string>
     <string name="jc_shabbat_mode_desc">من إشعال الشموع حتى حلول الليل في السبت والأعياد، تُخفي الشاشة الرئيسية اقتراحات التواصل الاجتماعي والترفيه والألعاب والتسوق وشارات الإشعارات وتحيّيك بـ «شبات شالوم». لا يُحظر أي شيء — جميع التطبيقات تبقى في صفحة التطبيقات.</string>
     <string name="jc_location_note">تُحسب الأوقات على هاتفك وفق موقعك التقريبي (إذا منحت إذن الموقع) أو وفق تل أبيب خلاف ذلك. لا يُرسل أي شيء إلى أي مكان.</string>
+    <string name="onboarding_location_title">الطقس وأوقات السبت</string>
+    <string name="onboarding_location_desc">موقعك التقريبي (وليس الدقيق أبدًا) يعرض الطقس وأوقات السبت حيث أنت. طلب الطقس يرسله إلى Open-Meteo، أما الأوقات فتُحسب على الهاتف.\n\nاختياري — بدونه تُستخدم تل أبيب لكليهما.</string>
+    <string name="onboarding_location_action">السماح بالموقع التقريبي</string>
+    <string name="location_granted">تم السماح بالموقع التقريبي</string>
+    <string name="location_default_city">يُعرض الطقس وأوقات السبت وفق تل أبيب حتى تسمح بالموقع التقريبي.</string>
+    <string name="location_allow">استخدام موقعي</string>
+    <string name="location_allow_in_settings">السماح من إعدادات النظام</string>
     <string name="jc_holiday_tomorrow">غدًا: %1$s</string>
     <string name="jc_candle_lighting">🕯 إشعال الشموع %1$s</string>
     <string name="jc_havdalah">✨ الانتهاء %1$s (هافدالا)</string>

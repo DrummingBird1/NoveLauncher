@@ -82,6 +82,8 @@ import com.ailauncher.app.ui.LauncherViewModel
 import com.ailauncher.app.ui.LocalAppWidgetHost
 import com.ailauncher.app.ui.findLauncherActivity
 import com.ailauncher.app.ui.launchApp
+import com.ailauncher.app.ui.location.DefaultCityNote
+import com.ailauncher.app.ui.location.rememberLocationPermission
 import com.ailauncher.app.ui.theme.launcherFontFamily
 import com.ailauncher.app.ui.widgets.WidgetHostController
 
@@ -330,6 +332,8 @@ fun HomeScreen(
     // Quick clock settings dialog
     if (showClockSettings) {
         val clock = appearance.clock
+        // The weather line sits under the clock; this is where it can stop using the default city.
+        val location = rememberLocationPermission()
         AlertDialog(
             onDismissRequest = { showClockSettings = false },
             title = { Text(stringResource(R.string.clock_settings_title)) },
@@ -352,6 +356,7 @@ fun HomeScreen(
                     SwitchSetting(stringResource(R.string.jc_show_hebrew_date), appearance.jewishCalendar.showHebrewDate) { v ->
                         viewModel.updateAppearance { a -> a.copy(jewishCalendar = a.jewishCalendar.copy(showHebrewDate = v)) }
                     }
+                    DefaultCityNote(location, Modifier.padding(top = 8.dp))
                 }
             },
             confirmButton = { TextButton(onClick = { showClockSettings = false }) { Text(stringResource(R.string.action_close)) } },

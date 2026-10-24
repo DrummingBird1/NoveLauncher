@@ -21,11 +21,14 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.QueryStats
 import androidx.compose.material.icons.rounded.SwipeRight
@@ -49,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ailauncher.app.R
+import com.ailauncher.app.ui.location.rememberLocationPermission
 import kotlinx.coroutines.launch
 
 data class OnboardingStep(
@@ -73,6 +77,14 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 R.string.onboarding_usage_action,
                 "usage_stats",
             ),
+            // Optional: weather and Shabbat times use the default city without it.
+            OnboardingStep(
+                Icons.Rounded.LocationOn,
+                R.string.onboarding_location_title,
+                R.string.onboarding_location_desc,
+                R.string.onboarding_location_action,
+                "location",
+            ),
             OnboardingStep(Icons.Rounded.SwipeRight, R.string.onboarding_gestures_title, R.string.onboarding_gestures_desc),
             OnboardingStep(Icons.Rounded.Palette, R.string.onboarding_personalize_title, R.string.onboarding_personalize_desc),
             OnboardingStep(
@@ -87,6 +99,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { steps.size })
     val scope = rememberCoroutineScope()
     val reduceMotion = com.ailauncher.app.ui.LocalReduceMotion.current
+    val location = rememberLocationPermission()
 
     Column(
         modifier =
@@ -106,8 +119,10 @@ fun OnboardingScreen(onComplete: () -> Unit) {
 
         HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
             val step = steps[page]
+            // Scrolls when a step doesn't fit (small screen, large font) so its button
+            // never gets squeezed out; still centred when it does fit.
             Column(
-                Modifier.fillMaxSize().padding(16.dp),
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -136,10 +151,15 @@ fun OnboardingScreen(onComplete: () -> Unit) {
 
                 if (step.actionRes != null) {
                     Spacer(Modifier.height(24.dp))
-                    Button(onClick = {
+                    val done = step.actionType == "location" && location.granted
+                    Button(enabled = !done, onClick = {
                         when (step.actionType) {
                             "usage_stats" -> {
                                 context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                            }
+
+                            "location" -> {
+                                location.request()
                             }
 
                             "set_default" -> {
@@ -168,7 +188,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             }
                         }
                     }, shape = RoundedCornerShape(16.dp)) {
-                        Text(stringResource(step.actionRes))
+                        Text(stringResource(if (done) R.string.location_granted else step.actionRes))
                     }
                 }
             }

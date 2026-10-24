@@ -27,6 +27,8 @@ import com.ailauncher.app.data.JewishCalendarService
 import com.ailauncher.app.domain.calendar.JewishDayInfo
 import com.ailauncher.app.domain.models.AppearanceSettings
 import com.ailauncher.app.domain.models.JewishCalendarSettings
+import com.ailauncher.app.ui.location.DefaultCityNote
+import com.ailauncher.app.ui.location.rememberLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -45,7 +47,11 @@ fun JewishCalendarSection(
 
     fun update(n: JewishCalendarSettings) = onUpdate(appearance.copy(jewishCalendar = n))
     val context = LocalContext.current
-    val preview by produceState<JewishDayInfo?>(null, s) { value = withContext(Dispatchers.Default) { service.dayInfo(s) } }
+    // Shabbat times and Shabbat mode follow the location; switching either on asks for it once.
+    val location = rememberLocationPermission()
+    val preview by produceState<JewishDayInfo?>(null, s, location.granted) {
+        value = withContext(Dispatchers.Default) { service.dayInfo(s) }
+    }
     val timeFormat = calendarTimeFormat(appearance.clock.use24Hour, context.resources.configuration.locales[0])
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -100,7 +106,12 @@ fun JewishCalendarSection(
         item { SectionLabel(stringResource(R.string.jc_section_display)) }
         item { SwitchSetting(stringResource(R.string.jc_show_hebrew_date), s.showHebrewDate) { update(s.copy(showHebrewDate = it)) } }
         item { SwitchSetting(stringResource(R.string.jc_show_holidays), s.showHolidays) { update(s.copy(showHolidays = it)) } }
-        item { SwitchSetting(stringResource(R.string.jc_show_shabbat_times), s.showShabbatTimes) { update(s.copy(showShabbatTimes = it)) } }
+        item {
+            SwitchSetting(stringResource(R.string.jc_show_shabbat_times), s.showShabbatTimes) {
+                update(s.copy(showShabbatTimes = it))
+                if (it) location.requestIfNeverAsked()
+            }
+        }
         item { SwitchSetting(stringResource(R.string.jc_diaspora), s.diaspora) { update(s.copy(diaspora = it)) } }
 
         item { SectionLabel(stringResource(R.string.jc_candle_minutes)) }
@@ -117,8 +128,14 @@ fun JewishCalendarSection(
         }
 
         item { SectionLabel(stringResource(R.string.jc_shabbat_mode)) }
-        item { SwitchSetting(stringResource(R.string.jc_shabbat_mode), s.shabbatMode) { update(s.copy(shabbatMode = it)) } }
+        item {
+            SwitchSetting(stringResource(R.string.jc_shabbat_mode), s.shabbatMode) {
+                update(s.copy(shabbatMode = it))
+                if (it) location.requestIfNeverAsked()
+            }
+        }
         item { Text(stringResource(R.string.jc_shabbat_mode_desc), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         item { Text(stringResource(R.string.jc_location_note), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        item { DefaultCityNote(location) }
     }
 }

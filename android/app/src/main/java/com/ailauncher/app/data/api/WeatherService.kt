@@ -89,6 +89,9 @@ class WeatherService
                 isLenient = true
             }
 
+        /** Whether [fetchWeather] will use the device's approximate location rather than the default city. */
+        fun hasLocation(): Boolean = CoarseLocation.isGranted(context)
+
         @SuppressLint("MissingPermission")
         suspend fun fetchWeather(
             lat: Double? = null,

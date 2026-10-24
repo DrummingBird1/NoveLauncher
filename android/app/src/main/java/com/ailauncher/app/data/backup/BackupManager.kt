@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.R
 import com.ailauncher.app.data.SettingsRepository
 import com.ailauncher.app.domain.models.BackupDestination
@@ -49,6 +51,12 @@ class BackupManager(
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
 
+    /** Error text in the in-app language — below Android 13 the Application context doesn't carry it. */
+    private fun text(
+        @StringRes id: Int,
+        vararg args: Any,
+    ): String = AppLocales.wrap(context).getString(id, *args)
+
     /** [password] blank = plain-JSON export (default); non-blank = AES-256-GCM
      *  envelope only that password can open (see PortableBackupCrypto). */
     suspend fun backup(
@@ -83,7 +91,7 @@ class BackupManager(
                     // failing on whatever happens to be in the legacy oauth_token slot.
                     BackupDestination.ONEDRIVE -> {
                         BackupResult.Error(
-                            context.getString(R.string.backup_error_onedrive),
+                            text(R.string.backup_error_onedrive),
                         )
                     }
 
@@ -91,7 +99,7 @@ class BackupManager(
                     // with a parent_id and a Box OAuth flow. Disabled until properly implemented.
                     BackupDestination.BOX -> {
                         BackupResult.Error(
-                            context.getString(R.string.backup_error_box),
+                            text(R.string.backup_error_box),
                         )
                     }
 
@@ -291,14 +299,14 @@ class BackupManager(
         block: (token: String) -> T,
     ): T {
         if (!com.ailauncher.app.BuildConfig.DRIVE_BACKUP_ENABLED) {
-            return onError(context.getString(R.string.backup_error_drive_disabled))
+            return onError(text(R.string.backup_error_drive_disabled))
         }
         if (!isDriveAvailable()) {
-            return onError(context.getString(R.string.backup_error_play_services_missing))
+            return onError(text(R.string.backup_error_play_services_missing))
         }
         val token =
             DriveAuth.accessTokenBlocking(context)
-                ?: return onError(context.getString(R.string.backup_error_not_connected))
+                ?: return onError(text(R.string.backup_error_not_connected))
         return try {
             block(token)
         } catch (e: DriveClient.HttpException) {
@@ -312,7 +320,7 @@ class BackupManager(
                     )
                 } catch (_: Exception) {
                 }
-                onError(context.getString(R.string.backup_error_token_expired))
+                onError(text(R.string.backup_error_token_expired))
             } else {
                 onError("Google Drive error: ${e.message}")
             }
@@ -399,9 +407,9 @@ class BackupManager(
         backup: com.ailauncher.app.domain.models.BackupSettings,
     ): BackupResult {
         val addr = backup.nasAddress.trim()
-        if (addr.isEmpty()) return BackupResult.Error(context.getString(R.string.backup_error_nas_not_configured))
+        if (addr.isEmpty()) return BackupResult.Error(text(R.string.backup_error_nas_not_configured))
         if (!addr.startsWith("https://", ignoreCase = true)) {
-            return BackupResult.Error(context.getString(R.string.backup_error_nas_http_refused))
+            return BackupResult.Error(text(R.string.backup_error_nas_http_refused))
         }
         val path = backup.nasPath.ifBlank { "/backup/novelauncher" }
         val dirUrl = "$addr$path"
@@ -415,10 +423,10 @@ class BackupManager(
             if (code in 200..299) {
                 BackupResult.Success("NAS: $addr")
             } else {
-                BackupResult.Error(context.getString(R.string.backup_error_nas_http_code, code))
+                BackupResult.Error(text(R.string.backup_error_nas_http_code, code))
             }
         } catch (e: Exception) {
-            BackupResult.Error(context.getString(R.string.backup_error_nas_io, e.message ?: ""))
+            BackupResult.Error(text(R.string.backup_error_nas_io, e.message ?: ""))
         }
     }
 

@@ -1,13 +1,13 @@
 package com.ailauncher.app.data
 
 import android.content.Context
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.data.location.CoarseLocation
 import com.ailauncher.app.domain.calendar.JewishCalendar
 import com.ailauncher.app.domain.calendar.JewishDayInfo
 import com.ailauncher.app.domain.models.JewishCalendarSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.ZoneId
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,7 +31,7 @@ class JewishCalendarService
                 zone = ZoneId.systemDefault(),
                 lat = lat,
                 lon = lon,
-                locale = context.resources.configuration.locales[0] ?: Locale.getDefault(),
+                locale = AppLocales.locale(context),
                 candleLightingMinutes = settings.candleLightingMinutes,
                 diaspora = settings.diaspora,
             )

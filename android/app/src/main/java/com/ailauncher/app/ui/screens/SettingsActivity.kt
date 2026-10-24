@@ -1,5 +1,6 @@
 package com.ailauncher.app.ui.screens
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.R
 import com.ailauncher.app.data.JewishCalendarService
 import com.ailauncher.app.data.SettingsRepository
@@ -41,6 +43,8 @@ import com.ailauncher.app.domain.models.PagesSettings
 import com.ailauncher.app.domain.models.SecuritySettings
 import com.ailauncher.app.security.AppLockManager
 import com.ailauncher.app.ui.theme.AILauncherTheme
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -75,6 +79,16 @@ class SettingsActivity : ComponentActivity() {
     @Inject lateinit var updateChecker: UpdateChecker
 
     @Inject lateinit var feedbackRepo: SuggestionFeedbackRepository
+
+    // Below Android 13 the in-app language is applied here, per Activity (Pitfall #12).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocales.attach(this, newBase))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AppLocales.onResume(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -242,7 +256,11 @@ fun SettingsRoot(
                 SettingsPage.APPEARANCE -> {
                     AppearanceSection(
                         appearance,
-                        { scope.launch { settingsRepo.saveAppearance(it) } },
+                        // The language picker recreates this Activity right after saving
+                        // (below Android 13 it does so itself). A save tied to the
+                        // composition would be cancelled with it and the pick lost, so
+                        // this one runs to the end on its own.
+                        { scope.launch(NonCancellable, CoroutineStart.UNDISPATCHED) { settingsRepo.saveAppearance(it) } },
                         { currentPage = it },
                         smartControl,
                         { scope.launch { settingsRepo.saveSmartControl(it) } },

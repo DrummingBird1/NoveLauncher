@@ -156,6 +156,7 @@ class LauncherViewModel
         private val _weather = MutableStateFlow<WeatherData?>(null)
         val weather: StateFlow<WeatherData?> = _weather.asStateFlow()
         private var weatherLastFetchedAt = 0L
+        private var weatherUsedLocation = false
 
         /**
          * v10: today's Jewish-calendar info, recomputed every minute — but only while
@@ -193,10 +194,13 @@ class LauncherViewModel
         fun refreshWeather(force: Boolean = false) {
             val now = System.currentTimeMillis()
             if (!force && now - weatherLastFetchedAt < WEATHER_TTL_MS && _weather.value != null) return
+            val hasLocation = weatherService.hasLocation()
             viewModelScope.launch {
                 try {
-                    _weather.value = weatherService.fetchWeather()
+                    val data = weatherService.fetchWeather()
+                    _weather.value = data
                     weatherLastFetchedAt = System.currentTimeMillis()
+                    if (data != null) weatherUsedLocation = hasLocation
                 } catch (e: Exception) {
                     Timber.w(e, "Weather fetch failed")
                 }
@@ -244,6 +248,9 @@ class LauncherViewModel
          * user just bounces in/out of an app.
          */
         fun refresh() {
+            // Location granted (onboarding, the clock dialog, system settings) or revoked
+            // since the last weather fetch: refetch now rather than on the next start.
+            if (weatherService.hasLocation() != weatherUsedLocation) refreshWeather(force = true)
             val now = System.currentTimeMillis()
             if (now - lastRefreshAt < MIN_REFRESH_INTERVAL_MS) return
             refreshInternal()

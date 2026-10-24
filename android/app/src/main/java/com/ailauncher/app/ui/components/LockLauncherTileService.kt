@@ -3,6 +3,8 @@ package com.ailauncher.app.ui.components
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
+import androidx.annotation.StringRes
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.R
 import com.ailauncher.app.domain.models.LockMethod
 import com.ailauncher.app.security.AppLockManager
@@ -33,11 +35,11 @@ class LockLauncherTileService : TileService() {
         super.onClick()
         scope.launch {
             if (appLockManager.getLauncherLockMethod() == LockMethod.NONE) {
-                showToast(getString(R.string.qs_tile_no_lock_configured))
+                showToast(R.string.qs_tile_no_lock_configured)
                 return@launch
             }
             appLockManager.revokeLauncherUnlock()
-            showToast(getString(R.string.qs_tile_locked))
+            showToast(R.string.qs_tile_locked)
         }
     }
 
@@ -51,10 +53,14 @@ class LockLauncherTileService : TileService() {
         }
     }
 
-    private fun showToast(message: String) {
+    private fun showToast(
+        @StringRes message: Int,
+    ) {
         // TileService callbacks run off the main thread; Toast needs Main.
         CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(this@LockLauncherTileService, message, Toast.LENGTH_SHORT).show()
+            // In the in-app language — below Android 13 a Service's own context doesn't carry it.
+            val text = AppLocales.wrap(this@LockLauncherTileService).getString(message)
+            Toast.makeText(this@LockLauncherTileService, text, Toast.LENGTH_SHORT).show()
         }
     }
 }

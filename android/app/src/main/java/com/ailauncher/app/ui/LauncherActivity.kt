@@ -29,6 +29,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.ailauncher.app.AppLocales
 import com.ailauncher.app.BuildConfig
 import com.ailauncher.app.R
 import com.ailauncher.app.data.IconCache
@@ -169,8 +170,14 @@ class LauncherActivity : FragmentActivity() {
         }
     }
 
+    // Below Android 13 the in-app language is applied here, per Activity (Pitfall #12).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocales.attach(this, newBase))
+    }
+
     override fun onResume() {
         super.onResume()
+        if (AppLocales.onResume(this)) return
         if (!hasUsageStatsPermission() && !usagePermissionRequested) {
             usagePermissionRequested = true
             try {

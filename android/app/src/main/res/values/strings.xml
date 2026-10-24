@@ -515,6 +515,13 @@
     <string name="jc_shabbat_mode">מצב שבת</string>
     <string name="jc_shabbat_mode_desc">מהדלקת הנרות ועד צאת השבת והחג, מסך הבית מסתיר הצעות של רשתות חברתיות, בידור, משחקים וקניות ואת תגי ההתראות, ומברך ב„שבת שלום”. שום דבר לא נחסם — כל האפליקציות עדיין זמינות בעמוד האפליקציות.</string>
     <string name="jc_location_note">הזמנים מחושבים בטלפון לפי המיקום המשוער שלכם (אם ניתנה הרשאת מיקום), אחרת לפי תל אביב. שום מידע לא נשלח לשום מקום.</string>
+    <string name="onboarding_location_title">מזג אוויר וזמני שבת</string>
+    <string name="onboarding_location_desc">המיקום המשוער שלכם (אף פעם לא המדויק) מציג את מזג האוויר וזמני השבת במקום שבו אתם נמצאים. בקשת מזג האוויר שולחת אותו ל-Open-Meteo; הזמנים מחושבים בטלפון.\n\nלא חובה — בלעדיו, שניהם לפי תל אביב.</string>
+    <string name="onboarding_location_action">אשר מיקום משוער</string>
+    <string name="location_granted">המיקום המשוער אושר</string>
+    <string name="location_default_city">מזג האוויר וזמני השבת מוצגים לפי תל אביב עד שתאשרו מיקום משוער.</string>
+    <string name="location_allow">השתמש במיקום שלי</string>
+    <string name="location_allow_in_settings">אשר בהגדרות המערכת</string>
     <string name="jc_holiday_tomorrow">מחר: %1$s</string>
     <string name="jc_candle_lighting">🕯 הדלקת נרות %1$s</string>
     <string name="jc_havdalah">✨ צאת השבת/החג %1$s</string>

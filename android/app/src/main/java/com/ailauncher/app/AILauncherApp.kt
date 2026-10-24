@@ -155,7 +155,7 @@ class AILauncherApp :
     /**
      * v8: Apply [com.ailauncher.app.domain.models.AppearanceSettings.appLanguage] at process
      * start. Empty string = follow system. Otherwise we pass an explicit tag like "he", "en",
-     * etc. through AndroidX's per-app locale API.
+     * etc. to [AppLocales].
      */
     private fun applyConfiguredLanguage() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -166,7 +166,10 @@ class AILauncherApp :
                         .appearanceFlow
                         .first()
                         .appLanguage
-                if (tag.isBlank()) return@launch
+                // On 13+ a blank tag leaves alone whatever the system per-app language
+                // setting holds. Below 13 AppLocales keeps its own copy, which has to
+                // follow the stored setting both ways (e.g. after a settings restore).
+                if (tag.isBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return@launch
                 AppLocales.apply(this@AILauncherApp, tag)
             } catch (e: Exception) {
                 Timber.w(e, "Could not apply configured language")
