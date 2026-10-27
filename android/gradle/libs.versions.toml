@@ -53,7 +53,7 @@ profileinstaller = "1.4.1"
 # v10: Baseline Profile generation + startup Macrobenchmark (:baselineprofile module).
 benchmark = "1.5.0"
 uiautomator = "2.4.0"
-sentry = "8.61.0"
+sentry = "8.61.1"
 
 # Logging
 timber = "5.0.1"
