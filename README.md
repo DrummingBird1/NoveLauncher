@@ -29,6 +29,8 @@
 
 ---
 
+🗺 **Planned work: see [ROADMAP.md](ROADMAP.md).**
+
 ## What it is
 
 NoveLauncher replaces your Android home screen. It ranks and groups your apps
