@@ -4,12 +4,11 @@
 
     <string name="whats_new_title">What\'s new</string>
     <string-array name="whats_new_items">
-        <item>Work profile and Private Space apps, plus app shortcuts on long-press</item>
-        <item>Wallpapers: your own photos or gradients — per page, hour or weekday</item>
-        <item>Gestures: swipe up for apps, down for notifications, double-tap to turn the screen off</item>
-        <item>Smarter search: Hebrew ↔ English names, typos, a calculator and unit conversion</item>
-        <item>Jewish calendar with candle-lighting times, and Shabbat mode</item>
-        <item>Icon packs now apply, and suggestions learn from what you actually open</item>
+        <item>Clock in three styles: digital, analog and minimal</item>
+        <item>Pin apps to the dock with a long-press</item>
+        <item>Your chosen fonts now really apply, across the whole interface</item>
+        <item>The language picker works on Android 8–12 too</item>
+        <item>Approximate location is asked for in context — for weather and Shabbat times</item>
     </string-array>
 
     <string name="page_home">Home</string>

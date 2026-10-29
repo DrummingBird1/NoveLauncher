@@ -4,12 +4,11 @@
 
     <string name="whats_new_title">Nouveautés</string>
     <string-array name="whats_new_items">
-        <item>Applis du profil professionnel et de l\'Espace privé, et raccourcis d\'applis par appui long</item>
-        <item>Fonds d\'écran : vos photos ou des dégradés — par page, par heure ou par jour</item>
-        <item>Gestes : vers le haut pour les applis, vers le bas pour les notifications, double toucher pour éteindre l\'écran</item>
-        <item>Recherche plus futée : noms en hébreu ou en anglais, fautes de frappe, calculatrice et conversion d\'unités</item>
-        <item>Calendrier hébraïque avec les heures d\'allumage des bougies, et mode Chabbat</item>
-        <item>Les packs d\'icônes s\'appliquent enfin, et les suggestions apprennent de ce que vous ouvrez vraiment</item>
+        <item>Horloge en trois styles : numérique, analogique et minimale</item>
+        <item>Épinglez des applis au dock par appui long</item>
+        <item>Les polices choisies s\'appliquent enfin à toute l\'interface</item>
+        <item>Le choix de la langue fonctionne aussi sous Android 8–12</item>
+        <item>La position approximative est demandée en contexte — pour la météo et les horaires du Chabbat</item>
     </string-array>
 
     <string name="page_home">Accueil</string>

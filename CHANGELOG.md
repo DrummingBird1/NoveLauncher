@@ -5,8 +5,8 @@ All notable changes to NoveLauncher. Versions follow the app's
 
 ---
 
-## Unreleased
-*Settings that now do what their screens say.*
+## v10.1.0 — Settings that do what their screens say
+*Released 2026-10-29 · versionCode 14. Clock styles, bundled fonts, pin to dock, and location and language fixes.*
 
 ### Added
 - **Clock style picker.** Settings → Appearance → Clock now offers Digital,
@@ -24,6 +24,12 @@ All notable changes to NoveLauncher. Versions follow the app's
   (SIL Open Font License), which adds about 1.15 MB to the APK.
 - The **Folders** and **General UI** font settings were saved but never used.
   They now set the smart-folder cards and the font of the whole interface.
+- **Language picker on Android 8–12.** The choice was not saved and the layout
+  direction stayed on the system language. It is now kept, and RTL/LTR follows it.
+- **Location.** Weather and Shabbat times were stuck on Tel Aviv unless the user
+  found the permission in system settings. Approximate location is now asked for
+  in context (onboarding, switching on Shabbat times, "Use my location").
+  Nothing changes about what is collected: still the last-known coarse location.
 - With the 12-hour clock and seconds on, the seconds came after AM/PM
   ("02:30 PM:15").
 

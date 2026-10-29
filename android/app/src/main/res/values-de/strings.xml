@@ -4,12 +4,11 @@
 
     <string name="whats_new_title">Neuigkeiten</string>
     <string-array name="whats_new_items">
-        <item>Apps aus Arbeitsprofil und Privatem Bereich, dazu App-Shortcuts per langem Drücken</item>
-        <item>Hintergründe: eigene Fotos oder Verläufe — pro Seite, Uhrzeit oder Wochentag</item>
-        <item>Gesten: nach oben für Apps, nach unten für Benachrichtigungen, Doppeltippen schaltet den Bildschirm aus</item>
-        <item>Schlauere Suche: Namen auf Hebräisch oder Englisch, Tippfehler, Rechner und Einheitenumrechnung</item>
-        <item>Jüdischer Kalender mit Zeiten fürs Kerzenzünden, dazu der Schabbat-Modus</item>
-        <item>Icon-Pakete lassen sich jetzt anwenden, und Vorschläge lernen, was du wirklich öffnest</item>
+        <item>Uhr in drei Stilen: digital, analog und minimal</item>
+        <item>Apps per langem Druck im Dock anheften</item>
+        <item>Die gewählten Schriften gelten jetzt wirklich in der ganzen Oberfläche</item>
+        <item>Die Sprachauswahl funktioniert auch unter Android 8–12</item>
+        <item>Der ungefähre Standort wird im Kontext abgefragt — für Wetter und Schabbat-Zeiten</item>
     </string-array>
 
     <string name="page_home">Start</string>
