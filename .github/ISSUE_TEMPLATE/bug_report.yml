@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems: please don't file them here, see [SECURITY.md](../blob/main/SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: NoveLauncher version
+      description: Settings → About
+      placeholder: "10.1.0"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: "Pixel 8, Android 15"
+    validations:
+      required: true
+  - type: dropdown
+    id: default_launcher
+    attributes:
+      label: Is NoveLauncher your default home app?
+      options: ["Yes", "No"]
+    validations:
+      required: true
+  - type: dropdown
+    id: install_source
+    attributes:
+      label: Installed from
+      options: ["GitHub release", "Obtainium", "Other store", "Built from source"]
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ..."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots or logs (optional)

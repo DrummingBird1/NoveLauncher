@@ -90,9 +90,16 @@ jobs:
       - name: Name the APK
         run: cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/NoveLauncher-${GITHUB_REF_NAME#v}-release.apk"
 
+      - name: Checksum
+        run: |
+          cd app/build/outputs/apk/release
+          for f in NoveLauncher-*-release.apk; do sha256sum "$f" > "$f.sha256"; done
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          files: android/app/build/outputs/apk/release/NoveLauncher-*-release.apk
+          files: |
+            android/app/build/outputs/apk/release/NoveLauncher-*-release.apk
+            android/app/build/outputs/apk/release/NoveLauncher-*-release.apk.sha256
           generate_release_notes: true
           draft: true  # review before publishing — never auto-publish to users

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/DrummingBird1/NoveLauncher/discussions
+    about: Ask a question or float an idea before filing an issue.
+  - name: Report a security problem privately
+    url: https://github.com/DrummingBird1/NoveLauncher/security/advisories/new
+    about: Please don't open a public issue for vulnerabilities.

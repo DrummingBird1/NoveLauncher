@@ -29,7 +29,7 @@
 
 ---
 
-🗺 **Planned work: see [ROADMAP.md](ROADMAP.md).**
+🇮🇱 **[קרא בעברית](docs/readme/README.he.md)** · 🗺 **Planned work: see [ROADMAP.md](ROADMAP.md).**
 
 ## What it is
 
@@ -114,6 +114,10 @@ Full detail: [**Privacy Policy**](https://drummingbird1.github.io/NoveLauncher/p
 ## Download
 
 Grab the signed APK from the [**latest release**](https://github.com/DrummingBird1/NoveLauncher/releases/latest).
+
+To check the download, compare it with the `.sha256` file attached to the same
+release: `sha256sum -c NoveLauncher-X.Y.Z-release.apk.sha256` (Windows:
+`certutil -hashfile <apk> SHA256`).
 
 You'll need to allow installation from unknown sources for whichever app you
 download it with. Every release is signed with the same key, so updates
@@ -203,4 +207,6 @@ Questions, bugs or feature requests: **solvaris2@gmail.com** or
 ## License
 
 See [LICENSE](LICENSE). The source is published for transparency and review —
-it is not released under an open-source licence.
+it is not released under an open-source licence. In practice: you may install and
+use the app and read the code; copying, redistributing or publishing modified
+versions is not permitted without permission.
