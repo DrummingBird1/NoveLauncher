@@ -24,7 +24,9 @@
 ## 📍 Where the Play Console stands (read-only check, 2026-10-31)
 
 - App "NoveLauncher", package `com.ailauncher.app`: **draft** since 2026-04-25. Nothing has been sent to Google.
-- App setup is 9 of 11 done. **Missing: privacy policy URL and Data safety.**
+- App setup was 9 of 11 done. **Update 2026-10-31:** the privacy policy URL, the Advertising ID declaration (No) and Data safety are now saved in the Console (saved, not sent: they wait in the publishing overview, "סיכום השינויים לפרסום"), and the target audience was corrected (below), so App content lists no declaration waiting for action. Still to do: the signing key choice, the signed AAB upload and, once the Console has seen the bundle, whatever it then asks for (expected: the Accessibility API and `QUERY_ALL_PACKAGES` declarations, which `PLAY_POLICY_NOTES.md` covers).
+- **Managed publishing is off** for this app (publishing overview). After Google approves a release, it goes live on its own; turn managed publishing on first if you want to press Publish yourself.
+- **Target audience was wrong.** Since 2026-04-25 the Console had *every* age group ticked (5 and under through 18+), which pulls in the Families Policy that a launcher with `QUERY_ALL_PACKAGES`, an accessibility service, usage access and notification access can't meet, and contradicts the privacy policy ("does not target children under 13"). Changed on 2026-10-31 to **13-15, 16-17 and 18+**, saved.
 - Internal testing: testers chosen and a draft release "V1.0.0" exists, but **no bundle has ever been uploaded**. Open testing is a draft (178 countries) and, like closed testing and production, stays locked until the app setup is complete.
 - Managed publishing may be on for this app (it was for PhoneLab, from the same account): if so, after Google approves someone must click **Publish** in the publishing overview ("סיכום השינויים לפרסום"). Check the setting before submitting.
 - Any Billing, ads or tip-jar library would add a payments profile and make Play show the developer's address publicly. NoveLauncher has none; keep it that way.
@@ -33,7 +35,7 @@
 
 1. App content → **Privacy policy**: paste `https://drummingbird1.github.io/NoveLauncher/privacy.html`.
 2. App content → **Data safety**: answers in the section below.
-3. The other App content forms: Ads **No**; App access: everything works without an account; Target audience 13+; Content rating (answers below); **Advertising ID: No** (the bundle declares no `AD_ID` permission, see "Verified on the build"); Government, financial and health apps: **No**; the **Accessibility API** declaration with its video and the **`QUERY_ALL_PACKAGES`** declaration, both in `PLAY_POLICY_NOTES.md`.
+3. The other App content forms: Ads **No**; App access: everything works without an account; Target audience **13-15, 16-17, 18+** (fixed, see above); Content rating (answers below); **Advertising ID: No** (the bundle declares no `AD_ID` permission, see "Verified on the build"); Government, financial and health apps: **No**; the **Accessibility API** declaration with its video and the **`QUERY_ALL_PACKAGES`** declaration, both in `PLAY_POLICY_NOTES.md`.
 4. Decide the **app signing key** (next section), then build the signed AAB and upload it to **Internal testing**.
 5. Install from the internal-testing link and record the accessibility video from that Play-installed build.
 6. Only then send the changes for review. A first release with an AccessibilityService and `QUERY_ALL_PACKAGES` can take longer than the usual 1–7 days.
@@ -108,15 +110,16 @@ Google defines "collected" as *transmitted off the device* — to anyone, includ
 
 - **Location → Approximate location**
   - Collected: **Yes** (sent to Open-Meteo in the weather request, only if the user granted location)
-  - Shared: **No** (it goes to the weather service only to answer that request)
-    - *Judgement call, decide before filling the form.* Google doesn't count data passed to a service provider that processes it on the developer's behalf as "shared", and Open-Meteo only answers that one forecast request, so **No** is defensible. Declaring **Yes** (third party: weather provider) is the cautious alternative: it costs one line on the store page and removes any chance of a reviewer disagreeing.
-  - Processed ephemerally: **Yes** (used for the request, not stored off the device)
+  - Shared: **Yes**, with a third party (the weather provider, Open-Meteo). Decided by the owner on 2026-10-31: the cautious answer, one extra line on the store page
+  - Processed ephemerally: **No**. The request puts the coordinates in the URL, and we can't confirm Open-Meteo doesn't keep request logs, so claiming "ephemeral" would be a guess. (An earlier version of this file said Yes.)
   - Required or optional: **Optional** (denied → weather uses a default city)
   - Purpose: **App functionality**
 
 Not collected (processed only on the device): app activity and installed apps (ranking, statistics, badges), contacts (search), photos picked for wallpapers. Backups to the user's own NAS are uploads the user sets up to their own storage (Drive backup is switched off in 10.x) — the developer never receives them — so they are not declared as collection. The RSS and update-check requests carry no user data.
 
-**Is all of the user data collected by your app encrypted in transit?** **Yes** (the Open-Meteo request is HTTPS)
+**Is all of the user data collected by your app encrypted in transit?** **Yes** (the Open-Meteo request is HTTPS; the code has no cleartext URLs)
+
+**Account creation:** "My app doesn't let users create an account". **Can users sign in with accounts created outside the app?** **No**. **Can users request that their data be deleted?** (optional) left unanswered: the developer keeps nothing off the device.
 
 **Do you provide a way for users to request that their data is deleted?** Nothing is retained off the device; on the device, Clear storage or uninstalling removes everything.
 
