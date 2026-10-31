@@ -1,7 +1,9 @@
 # Google Play Store — Listing Content
 
-## App Title
-**NoveLauncher - Smart AI Launcher**
+## App Title (max 30 chars)
+**NoveLauncher - Smart Launcher**
+
+29 characters. The previous title, "NoveLauncher - Smart AI Launcher", was 32, over Play's limit of 30, and the Console would have refused it.
 
 ## Short Description (max 80 chars — used in search results)
 **EN:** AI-powered launcher that learns your habits and organizes your phone for you
@@ -119,7 +121,23 @@ hebrew launcher, RTL, dark mode, app drawer, smart folders, productivity,
 no ads, on-device AI, customizable, work profile, private space, wallpapers,
 gestures, icon packs, jewish calendar, shabbat mode
 
-## What's New (release notes for v10.0.0, max 500 chars)
+## What's New (release notes for v10.1.0, max 500 chars)
+
+**EN**
+- Clock styles: digital, analog or minimal
+- 16 fonts that really change the look, for the whole interface and for folders
+- Pin up to five apps to the dock from the long-press menu
+- Approximate location is asked for only when you turn on weather or Shabbat times
+- Fixed: the language picker on Android 8–12
+
+**HE**
+- סגנונות שעון: דיגיטלי, אנלוגי או מינימלי
+- 16 גופנים שבאמת משנים את המראה, בכל הממשק ובתיקיות
+- הצמדת עד חמש אפליקציות ל-Dock מתפריט הלחיצה הארוכה
+- מיקום משוער מתבקש רק כשמדליקים מזג אוויר או זמני שבת
+- תוקן: בורר השפה ב-Android 8–12
+
+## What's New (earlier release: v10.0.0, kept for reference)
 
 **EN**
 - Work profile & Private Space support, plus app shortcuts on long-press
