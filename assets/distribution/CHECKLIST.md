@@ -125,12 +125,11 @@ Not collected (processed only on the device): app activity and installed apps (r
 
 ## 📦 Build the AAB
 
-Build from a checkout of the release tag, so the bundle matches the APK that was released, and run the script in **your own terminal** (it asks for the keystore and key passwords and sets them for that process only):
+Build from a checkout of the release tag, so the bundle matches the APK that was released. The script is not part of the tag, so run it from the checkout that has it and point `-RepoRoot` at the tag checkout (which also needs its own `android\local.properties`, the gitignored SDK path). Run it in **your own terminal**: it asks for the keystore and key passwords and sets them for that process only.
 
 ```powershell
-git worktree add ..\play-10.1.0 v10.1.0
-cd ..\play-10.1.0
-.\assets\distribution\build-play-aab.ps1 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
+git worktree add --detach ..\play-10.1.0 v10.1.0
+.\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
 ```
 
 Output: `android/app/build/outputs/bundle/release/app-release.aab`, after the script has checked its signature and printed the certificate fingerprint (it must match the released APK's) and the file hash. Upload it to Play Console → Internal testing; don't attach it to a public GitHub release. (Setting the `RELEASE_KEYSTORE_*` environment variables and running `.\gradlew.bat bundleRelease` from `android/` does the same, and Android Studio → **Build → Generate Signed Bundle / APK** works too; in every case use the existing release keystore, never a new one.)

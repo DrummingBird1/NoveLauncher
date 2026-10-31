@@ -4,12 +4,12 @@
 
 .DESCRIPTION
   release.yml builds an APK only, so the bundle Play wants is built here, on
-  your machine. Run it from a checkout of the release tag so the bundle matches
-  the APK that was released:
+  your machine. Point -RepoRoot at a checkout of the release tag so the bundle
+  matches the APK that was released. The script itself is not in the tag, so run
+  it from the checkout that has it (this branch, or main once it is merged):
 
-      git worktree add ..\play-10.1.0 v10.1.0
-      cd ..\play-10.1.0
-      .\assets\distribution\build-play-aab.ps1 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
+      git worktree add --detach ..\play-10.1.0 v10.1.0
+      .\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
 
   The keystore and key passwords are typed at the prompts below. They are put
   into environment variables of this PowerShell process only, for the length of
@@ -21,8 +21,10 @@
   cannot update anything already installed under the existing one.
 #>
 param(
+    # The checkout to build. Defaults to the one this script lives in.
+    [string]$RepoRoot = (Join-Path $PSScriptRoot '..\..'),
     # The release keystore is gitignored, so a fresh checkout or worktree does not have it.
-    [string]$Keystore = (Join-Path $PSScriptRoot '..\..\android\release.keystore'),
+    [string]$Keystore,
     [string]$Alias = 'Idan'
 )
 
@@ -41,12 +43,20 @@ function Find-JdkTool([string]$Name) {
     $Name
 }
 
+$repo = (Resolve-Path $RepoRoot).Path
+$androidDir = Join-Path $repo 'android'
+if (-not (Test-Path (Join-Path $androidDir 'gradlew.bat'))) {
+    throw "No Gradle project at '$androidDir'. Pass -RepoRoot with the path to a checkout of the repository."
+}
+if (-not $Keystore) { $Keystore = Join-Path $androidDir 'release.keystore' }
 if (-not (Test-Path $Keystore)) {
     throw "Keystore not found at '$Keystore'. Pass -Keystore with the path to android\release.keystore."
 }
-
-$androidDir = (Resolve-Path (Join-Path $PSScriptRoot '..\..\android')).Path
 $aab = Join-Path $androidDir 'app\build\outputs\bundle\release\app-release.aab'
+
+$tag = try { & git -C $repo describe --tags --exact-match 2>$null } catch { $null }
+if ($tag) { Write-Host "Building release tag $tag from $repo" }
+else { Write-Warning "$repo is not exactly on a release tag, so this bundle will not match a released APK." }
 
 $storePassword = Read-Secret 'Keystore password'
 $keyPassword = Read-Secret 'Key password (leave empty if it is the same)'
