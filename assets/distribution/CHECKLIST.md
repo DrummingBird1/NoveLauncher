@@ -24,7 +24,7 @@
 ## 📍 Where the Play Console stands (read-only check, 2026-10-31)
 
 - App "NoveLauncher", package `com.ailauncher.app`: **draft** since 2026-04-25. Nothing has been sent to Google.
-- App setup was 9 of 11 done. **Update 2026-10-31:** the privacy policy URL, the Advertising ID declaration (No) and Data safety are now saved in the Console (saved, not sent: they wait in the publishing overview, "סיכום השינויים לפרסום"), and the target audience was corrected (below), so App content lists no declaration waiting for action. Still to do: the signing key choice, the signed AAB upload and, once the Console has seen the bundle, whatever it then asks for (expected: the Accessibility API and `QUERY_ALL_PACKAGES` declarations, which `PLAY_POLICY_NOTES.md` covers).
+- App setup was 9 of 11 done. **Update 2026-10-31:** the privacy policy URL, the Advertising ID declaration (No) and Data safety are now saved in the Console (saved, not sent: they wait in the publishing overview, "סיכום השינויים לפרסום"), and the target audience was corrected (below), so App content lists no declaration waiting for action. Still to do: the signed AAB upload and, once the Console has seen the bundle, whatever it then asks for (expected: the Accessibility API and `QUERY_ALL_PACKAGES` declarations, which `PLAY_POLICY_NOTES.md` covers).
 - **Managed publishing is off** for this app (publishing overview). After Google approves a release, it goes live on its own; turn managed publishing on first if you want to press Publish yourself.
 - **Target audience was wrong.** Since 2026-04-25 the Console had *every* age group ticked (5 and under through 18+), which pulls in the Families Policy that a launcher with `QUERY_ALL_PACKAGES`, an accessibility service, usage access and notification access can't meet, and contradicts the privacy policy ("does not target children under 13"). Changed on 2026-10-31 to **13-15, 16-17 and 18+**, saved.
 - Internal testing: testers chosen and a draft release "V1.0.0" exists, but **no bundle has ever been uploaded**. Open testing is a draft (178 countries) and, like closed testing and production, stays locked until the app setup is complete.
@@ -36,20 +36,18 @@
 1. App content → **Privacy policy**: paste `https://drummingbird1.github.io/NoveLauncher/privacy.html`.
 2. App content → **Data safety**: answers in the section below.
 3. The other App content forms: Ads **No**; App access: everything works without an account; Target audience **13-15, 16-17, 18+** (fixed, see above); Content rating (answers below); **Advertising ID: No** (the bundle declares no `AD_ID` permission, see "Verified on the build"); Government, financial and health apps: **No**; the **Accessibility API** declaration with its video and the **`QUERY_ALL_PACKAGES`** declaration, both in `PLAY_POLICY_NOTES.md`.
-4. Decide the **app signing key** (next section), then build the signed AAB and upload it to **Internal testing**.
+4. Build the signed AAB (done: see the build section) and upload it to **Internal testing**. The app signing key is already fixed (next section).
 5. Install from the internal-testing link and record the accessibility video from that Play-installed build.
 6. Only then send the changes for review. A first release with an AccessibilityService and `QUERY_ALL_PACKAGES` can take longer than the usual 1–7 days.
 
-## 🔑 Play App Signing — decide before the first upload
+## 🔑 Play App Signing — already decided (found 2026-10-31)
 
-The first upload fixes which key Google uses to sign what users download. It can't be changed afterwards.
+This section used to say the key could be chosen at the first upload, and recommended exporting the release key to Play. **That is no longer possible.** The Console's app signing page (Test and release → App signing, `.../keymanagement`) shows Play App Signing **in use** for `com.ailauncher.app`, with a Google-generated app signing key created when the app was made in April: certificate SHA-256 `0C:35:A3:F9:…:5B:59:A7`. The release certificate (`android/release.keystore`) is `9F:D1:48:BD:…:94:8D:F8:A1`.
 
-| Choice | Effect |
-|---|---|
-| **Upload the existing release key** to Play App Signing (the Console offers to export and upload a key from a Java keystore, with Google's PEPK tool; the exact wording may differ) | One signature across Play, GitHub Releases, Obtainium and the other stores, so a user can update from any of them to any other without uninstalling. This is the recommended choice. |
-| **Let Google generate the signing key**; the existing key becomes only the *upload* key | Play installs carry a different signature from every other channel, and can't be updated from, or to, a GitHub or store install. Safer if the keystore were ever lost, because Google holds the key. |
-
-Either way the existing `android/release.keystore` stays the upload key, so back it up (password manager attachment plus one offline copy). Nobody — not Claude — should ever see its passwords.
+- The release keystore can only act as the **upload key**: Play checks that every bundle is signed with it, then re-signs what users download with Google's key.
+- **Consequence:** an install from Play carries a different signature from GitHub Releases, Obtainium and the other stores. Android refuses an update across different signatures, so a user can't move between Play and another channel without uninstalling, which erases the launcher's settings on that device.
+- The Console also lists a key replacement option on that page. It requests a new *Google-generated* key; it does not import an existing one.
+- Back up `android/release.keystore` anyway (password manager attachment plus one offline copy): losing the upload key means a reset request to Google. Nobody — not Claude — should ever see its passwords.
 
 ## 📋 Steps to publish
 
