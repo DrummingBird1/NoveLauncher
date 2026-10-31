@@ -40,14 +40,15 @@
 5. Install from the internal-testing link and record the accessibility video from that Play-installed build.
 6. Only then send the changes for review. A first release with an AccessibilityService and `QUERY_ALL_PACKAGES` can take longer than the usual 1–7 days.
 
-## 🔑 Play App Signing — already decided (found 2026-10-31)
+## 🔑 Play App Signing — the Console already holds a Google-generated key (found 2026-10-31)
 
-This section used to say the key could be chosen at the first upload, and recommended exporting the release key to Play. **That is no longer possible.** The Console's app signing page (Test and release → App signing, `.../keymanagement`) shows Play App Signing **in use** for `com.ailauncher.app`, with a Google-generated app signing key created when the app was made in April: certificate SHA-256 `0C:35:A3:F9:…:5B:59:A7`. The release certificate (`android/release.keystore`) is `9F:D1:48:BD:…:94:8D:F8:A1`.
+The Console's app signing page (Test and release → App signing, `.../keymanagement`) shows Play App Signing **in use** for `com.ailauncher.app`, with an app signing key Google generated when the app was created in April: certificate SHA-256 `0C:35:A3:F9:…:5B:59:A7`, installation base 0%. It also has an **upload key already registered**, SHA-1 `15:BC:DA:C6:…:A9:0F:8C`, which is *not* `android/release.keystore` (SHA-1 `42:71:55:2E:…:65:84:4F`, SHA-256 `9F:D1:48:BD:…:94:8D:F8:A1`; that keystore only dates from 2026-08-16). The first upload of the signed AAB was refused for exactly that reason: "signed with the wrong key".
 
-- The release keystore can only act as the **upload key**: Play checks that every bundle is signed with it, then re-signs what users download with Google's key.
-- **Consequence:** an install from Play carries a different signature from GitHub Releases, Obtainium and the other stores. Android refuses an update across different signatures, so a user can't move between Play and another channel without uninstalling, which erases the launcher's settings on that device.
-- The Console also lists a key replacement option on that page. It requests a new *Google-generated* key; it does not import an existing one.
-- Back up `android/release.keystore` anyway (password manager attachment plus one offline copy): losing the upload key means a reset request to Google. Nobody — not Claude — should ever see its passwords.
+The same page's **"App signing preferences"** dialog (button "החלפת המפתח") offers four choices: Google manages the key (current), reuse another app's key from the account, **export and upload a key from a Java keystore** (Google's PEPK tool plus a public encryption key, both downloaded from that dialog), or export and upload a key without a keystore. Choosing the third lets `release.keystore` become the app signing key, which keeps one signature across Play, GitHub Releases, Obtainium and the other stores. The dialog also has an optional step to register a *separate* new upload key (public cert as PEM); skipping it means uploads are signed with the app signing key itself. Unverified until tried: that the Console accepts this change for an app with no published release.
+
+If Google's key stays: Play installs carry a different signature from every other channel, Android refuses updates across them, and a user can't move between channels without uninstalling (which erases the launcher's settings on that device). The upload key then needs the separate "request reset" flow on the same page, with the PEM of `release.keystore`.
+
+Whichever way, back up `android/release.keystore` (password manager attachment plus one offline copy). Nobody — not Claude — should ever see its passwords.
 
 ## 📋 Steps to publish
 
