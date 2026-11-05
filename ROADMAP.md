@@ -15,7 +15,6 @@ A status list for **NoveLauncher**, a private, on-device Android launcher with H
 
 ## Next
 
-- Release the changes that are already merged but not yet published.
 - Submit to additional app stores beyond the main releases.
 
 ## Later
