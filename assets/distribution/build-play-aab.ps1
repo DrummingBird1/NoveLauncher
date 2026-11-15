@@ -9,7 +9,7 @@
   it from the checkout that has it (this branch, or main once it is merged):
 
       git worktree add --detach ..\play-10.1.0 v10.1.0
-      .\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
+      .\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore .\android\release.keystore
 
   The keystore and key passwords are typed at the prompts below. They are put
   into environment variables of this PowerShell process only, for the length of

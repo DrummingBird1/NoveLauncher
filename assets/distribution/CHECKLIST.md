@@ -128,7 +128,7 @@ Build from a checkout of the release tag, so the bundle matches the APK that was
 
 ```powershell
 git worktree add --detach ..\play-10.1.0 v10.1.0
-.\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore E:\AI\projects\nove-launcher\android\release.keystore
+.\assets\distribution\build-play-aab.ps1 -RepoRoot ..\play-10.1.0 -Keystore .\android\release.keystore
 ```
 
 Output: `android/app/build/outputs/bundle/release/app-release.aab`, after the script has checked its signature and printed the certificate fingerprint (it must match the released APK's) and the file hash. Upload it to Play Console → Internal testing; don't attach it to a public GitHub release. (Setting the `RELEASE_KEYSTORE_*` environment variables and running `.\gradlew.bat bundleRelease` from `android/` does the same, and Android Studio → **Build → Generate Signed Bundle / APK** works too; in every case use the existing release keystore, never a new one.)
