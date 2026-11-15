@@ -1,6 +1,7 @@
-# NoveLauncher — Codex Guide
+# NoveLauncher
 
 A Hebrew-RTL Android launcher with on-device AI ranking, smart folders, themes, widgets, news feed, backups, and biometric app lock.
+Single source of truth for any AI agent working in this repository (Claude, Codex, Copilot, Cursor, Gemini, ChatGPT, Grok, OpenCode). `CLAUDE.md` only imports this file. The long reference (numbered Pitfalls, security model, detailed architecture tree, full test list) is in [`assets/docs/agent-notes.md`](assets/docs/agent-notes.md).
 
 <!-- BEGIN core-rules v1 (generated from the shared core-rules.md; do not edit by hand) -->
 ## Core rules (apply to every agent)
@@ -22,12 +23,19 @@ A Hebrew-RTL Android launcher with on-device AI ranking, smart folders, themes, 
 - **Modules:** `:app` and `:baselineprofile` (v10 — Baseline Profile generator + startup benchmark)
 - **SDK:** `minSdk 26`, `targetSdk 36`, `compileSdk 37`, Java/Kotlin bytecode target 17
 - **Toolchain:** AGP 9.4.1 (built-in Kotlin — never apply `org.jetbrains.kotlin.android` to a module), Kotlin 2.4.21, KSP 2.3.12, Gradle 9.8.1, Compose BOM 2026.09.00. **Run Gradle on JDK 21** (Paparazzi 2.0 requires it).
-- **Version:** `14` / `10.1.0` (released 2026-10-29). Read CLAUDE.md Pitfalls #28–41 before touching launching, profiles, gestures, Room or Drive backup (Drive is switched off by a build flag).
-- **Language:** Kotlin only. **i18n is complete, not partial** — 7 locales (he/en/ar/fr/ru/es/de; default `values/` is Hebrew), 489 strings + 1 plurals each (474 in v10), all kept key-for-key identical (verify with `sed -n 's/.*<string name="\([^"]*\)".*/\1/p' values-XX/strings.xml | sort` diffed across locales). Don't add inline Hebrew literals — add a string resource in all 7 files. `AppearanceSettings.appLanguage` has a real picker UI (Settings → Appearance → language chips) that goes through `AppLocales`: on Android 13+ it sets the framework `LocaleManager` directly, because `AppCompatDelegate.setApplicationLocales` silently does nothing without an `AppCompatActivity` and neither `LauncherActivity` nor `SettingsActivity` is one. Below 13 (where that AppCompat call was a confirmed no-op too) each Activity applies the stored tag in `attachBaseContext` via `AppLocales.attach` and calls `AppLocales.onResume` (recreates it if the language changed since, and sets the window's layout direction, which Android 12 otherwise takes from the system language); the Application context is not wrapped, so user-visible text built from it goes through `AppLocales.wrap(context)` — see CLAUDE.md Pitfall #12.
-- **Git:** Tracked in git, origin = [github.com/DrummingBird1/NoveLauncher](https://github.com/DrummingBird1/NoveLauncher). `main` is the only branch. GitHub Actions runs three parallel jobs on every push/PR ([.github/workflows/android.yml](.github/workflows/android.yml)): `build` (assembleDebug/Release + lint + ktlint; lint is advisory, ktlint and the assembles are blocking), `test` (unit tests + Jacoco + Paparazzi screenshot verification), and `instrumented-tests` (emulator-based, advisory/continue-on-error — new and unproven). [.github/workflows/release.yml](.github/workflows/release.yml) builds + drafts a GitHub Release (signed APK only, no AAB) on any `vX.Y.Z` tag push. Update flow: `git add . && git commit -m "…" && git push`.
+- **Version:** `14` / `10.1.0` (released 2026-10-29). Read agent-notes Pitfalls #28–41 before touching launching, profiles, gestures, Room or Drive backup (Drive is switched off by a build flag).
+- **Language:** Kotlin only. **i18n is complete, not partial** — 7 locales (he/en/ar/fr/ru/es/de; default `values/` is Hebrew), 489 strings + 1 plurals each (474 in v10), all kept key-for-key identical (verify with `sed -n 's/.*<string name="\([^"]*\)".*/\1/p' values-XX/strings.xml | sort` diffed across locales). Don't add inline Hebrew literals — add a string resource in all 7 files. `AppearanceSettings.appLanguage` has a real picker UI (Settings → Appearance → language chips) that goes through `AppLocales`: on Android 13+ it sets the framework `LocaleManager` directly, because `AppCompatDelegate.setApplicationLocales` silently does nothing without an `AppCompatActivity` and neither `LauncherActivity` nor `SettingsActivity` is one. Below 13 (where that AppCompat call was a confirmed no-op too) each Activity applies the stored tag in `attachBaseContext` via `AppLocales.attach` and calls `AppLocales.onResume` (recreates it if the language changed since, and sets the window's layout direction, which Android 12 otherwise takes from the system language); the Application context is not wrapped, so user-visible text built from it goes through `AppLocales.wrap(context)` — see agent-notes Pitfall #12.
+- **Git:** Tracked in git, origin = [github.com/DrummingBird1/NoveLauncher](https://github.com/DrummingBird1/NoveLauncher). `main` is the only branch. GitHub Actions runs three parallel jobs on every push/PR ([.github/workflows/android.yml](.github/workflows/android.yml)): `build` (assembleDebug/Release + lint + ktlint; lint is advisory, ktlint and the assembles are blocking), `test` (unit tests + Jacoco + Paparazzi screenshot verification), and `instrumented-tests` (emulator-based, advisory/continue-on-error — new and unproven). [.github/workflows/release.yml](.github/workflows/release.yml) builds + drafts a GitHub Release (signed APK only, no AAB) on any `vX.Y.Z` tag push. Update flow: work on a branch, commit, open a pull request; do not push without the owner's approval.
 - **Dependencies:** managed via Gradle version catalog ([gradle/libs.versions.toml](android/gradle/libs.versions.toml)), including `[bundles]` for grouped deps (e.g. `libs.bundles.compose`). Don't hardcode versions in build.gradle.kts. [.github/dependabot.yml](.github/dependabot.yml) opens weekly bump PRs, but ignores major-version bumps on `androidx.biometric`/`androidx.security:security-crypto` — those need a human reading the changelog, not an auto-mergeable PR.
 - **Repo root layout:** three folders at the true repo root — `android/`, `assets/` and `docs/` (the published GitHub Pages site; see [ADR-0002](assets/docs/adr/0002-public-repo-docs-folder.md)). [android/](android/) is the entire Gradle/Android Studio project — open **this** folder in Android Studio. [assets/](assets/) holds everything else non-code: design source (`generate_graphics.py`, `graphics/`, `screenshots/`) and [assets/distribution/](assets/distribution/) (store listing text + [ALTERNATIVE_STORES.md](assets/distribution/ALTERNATIVE_STORES.md), a launch plan for stores other than Google Play). `.github/`, `CLAUDE.md`/`AGENTS.md` and the community health files (`README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`) stay at the true repo root regardless — tooling and GitHub only read them from there.
 - **Release signing** is opt-in via env vars read in [android/app/build.gradle.kts](android/app/build.gradle.kts) (`RELEASE_KEYSTORE_PATH/PASSWORD`, `RELEASE_KEY_ALIAS/PASSWORD`) — absent, `assembleRelease`/`bundleRelease` stay unsigned. **Debug builds are different**: they sign with a *committed* keystore, `android/app/debug.keystore` (fixed 2026-08-14) — before this fix, every CI runner generated its own random debug key, so every CI-built debug APK had a different signature and collided with whatever was previously installed ("App not installed as package conflicts with an existing package"). Don't regenerate `debug.keystore`; it needs to stay the same file forever.
+
+## Agent rules
+
+- The owner works in Hebrew: reply in Hebrew unless asked otherwise. Code, comments and docs stay in English; UI strings go in `strings.xml` (all 7 locales).
+- Before saying "done": run `.\gradlew.bat ktlintCheck testDebugUnitTest` from `android/` on JDK 21, and say what you ran and what you could not (instrumented and Paparazzi results need a device or the CI job).
+- Do not push, tag or cut a release without the owner's approval. Signing keystores and secrets never go into git; the only committed key is the throwaway `android/app/debug.keystore`, which must never be regenerated.
+- Do not re-add a dangerous permission without a real consumer, and do not add inline Hebrew literals.
 
 ## Build & run
 
@@ -109,9 +117,11 @@ AILauncherApp.kt               ← @HiltAndroidApp + WorkManager Configuration.P
 
 ### Permissions (in [AndroidManifest.xml](android/app/src/main/AndroidManifest.xml))
 
-Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_LISTENER_SERVICE`, `READ_CONTACTS`, `ACCESS_COARSE_LOCATION` (asked for only in context — the optional onboarding step, switching on Shabbat times/mode, or a "Use my location" button — via `ui/location/LocationPermission.kt`; see CLAUDE.md Pitfall #45), `POST_NOTIFICATIONS` (API 33+, requested at runtime from `LauncherActivity.onCreate`). `READ_EXTERNAL_STORAGE` only up to API 32. `CALL_PHONE`, `CAMERA`, and `ACCESS_FINE_LOCATION` were all removed years ago — don't re-add a dangerous permission without a real consumer.
+Sensitive ones: `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `BIND_NOTIFICATION_LISTENER_SERVICE`, `READ_CONTACTS`, `ACCESS_COARSE_LOCATION` (asked for only in context — the optional onboarding step, switching on Shabbat times/mode, or a "Use my location" button — via `ui/location/LocationPermission.kt`; see agent-notes Pitfall #45), `POST_NOTIFICATIONS` (API 33+, requested at runtime from `LauncherActivity.onCreate`). `READ_EXTERNAL_STORAGE` only up to API 32. `CALL_PHONE`, `CAMERA`, and `ACCESS_FINE_LOCATION` were all removed years ago — don't re-add a dangerous permission without a real consumer.
 
-## Pitfalls / non-obvious
+## Pitfalls / non-obvious (short list)
+
+This is a short list with its own numbering. The numbered Pitfalls that code comments and docs cite as `Pitfall #N` (and `CLAUDE.md Pitfall #N`, the old name) are in [agent-notes](assets/docs/agent-notes.md).
 
 1. **Crash handler lives in `AILauncherApp.installCrashHandler`**, installed once per process (not per-Activity) — records via a background `Thread` + `join(2s)` off the Main thread.
 2. **Hebrew weekend in category boost**: `AppCategoryProvider.computeCategoryBoost()` treats Friday+Saturday as weekend. Hardcoded.
@@ -155,7 +165,7 @@ Key files: [AppCategoryProviderTest.kt](android/app/src/test/java/com/ailauncher
 
 A single instrumented (`androidTest`) smoke test exists ([ApplicationIdTest.kt](android/app/src/androidTest/java/com/ailauncher/app/ApplicationIdTest.kt)) plus an emulator CI job — both new and deliberately advisory-only until proven stable. Real Activity-level `androidTest` coverage would need `HiltTestApplication` wiring, not yet done.
 
-## v10 essentials (full detail in CLAUDE.md)
+## v10 essentials (full detail in agent-notes)
 
 - App identity is `AppInfo.key` (`pkg/activity#userSerial`) for Lazy keys and the icon cache; locks/hidden/usage stay keyed by package name.
 - Launch only via `launchApp(context, app)` / `LauncherActivity.launch*WithLockCheck` — they go through the app lock and `AppLauncher` (LauncherApps, correct profile).
@@ -163,6 +173,6 @@ A single instrumented (`androidTest`) smoke test exists ([ApplicationIdTest.kt](
 - Home swipes are read in `PointerEventPass.Initial` without consuming — the grid's overscroll eats normal drag detectors.
 - Room is at schema 3; write migrations with `SqlMigration` so both Room APIs run them.
 - Google Drive auth is `DriveAuth` (Identity AuthorizationClient), not GoogleSignIn.
-- Fonts ship in `res/font` (OFL, built by `assets/fonts/prepare_fonts.py`); variable fonts need explicit `wght` settings because some files default to Light/Thin. `uiFont` drives the Material typography, `folderFont` the smart-folder cards. CLAUDE.md Pitfall #42.
-- Settings fields can be deleted (the Json ignores unknown keys), enum constants can't without `coerceInputValues` — a decode failure resets the whole group. CLAUDE.md Pitfall #43.
-- The Home dock is `pageLayouts["home"].dockApps` (max 5, personal apps), written by Pin/Unpin in the long-press sheet. Clock styles DIGITAL/ANALOG/MINIMAL all have a picker. CLAUDE.md Pitfall #44.
+- Fonts ship in `res/font` (OFL, built by `assets/fonts/prepare_fonts.py`); variable fonts need explicit `wght` settings because some files default to Light/Thin. `uiFont` drives the Material typography, `folderFont` the smart-folder cards. agent-notes Pitfall #42.
+- Settings fields can be deleted (the Json ignores unknown keys), enum constants can't without `coerceInputValues` — a decode failure resets the whole group. agent-notes Pitfall #43.
+- The Home dock is `pageLayouts["home"].dockApps` (max 5, personal apps), written by Pin/Unpin in the long-press sheet. Clock styles DIGITAL/ANALOG/MINIMAL all have a picker. agent-notes Pitfall #44.

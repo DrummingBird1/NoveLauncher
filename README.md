@@ -177,7 +177,7 @@ android/app/src/main/java/com/ailauncher/app/
 ```
 
 Deeper notes on conventions, pitfalls and where to start a given task live in
-[CLAUDE.md](CLAUDE.md) and [AGENTS.md](AGENTS.md); architecture decisions are
+[assets/docs/agent-notes.md](assets/docs/agent-notes.md) and [AGENTS.md](AGENTS.md); architecture decisions are
 recorded in [assets/docs/adr/](assets/docs/adr/).
 
 ## Contributing

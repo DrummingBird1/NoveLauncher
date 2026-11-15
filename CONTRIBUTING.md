@@ -39,7 +39,7 @@ alongside the code change.
 ## Conventions this codebase follows
 
 Most of these exist because breaking them previously caused a real bug — the
-reasoning is documented in the "Pitfalls" section of [CLAUDE.md](CLAUDE.md).
+reasoning is documented in the "Pitfalls" section of [assets/docs/agent-notes.md](assets/docs/agent-notes.md).
 
 - **No hardcoded UI strings.** Every user-visible string is a resource, and
   all 7 locales (`values/`, `values-en`, `-ar`, `-fr`, `-ru`, `-es`, `-de`)
