@@ -1,54 +1,56 @@
-# NoveLauncher — Google Play Store Listing (Hebrew-first)
+# NoveLauncher — Google Play Store Listing (short form)
 
-The Hebrew-first variant of the listing. The full bilingual copy, release
-notes and store URLs live in [STORE_LISTING.md](STORE_LISTING.md); keep the
-two in agreement.
+The short-form listing with the privacy and terms summaries for store forms.
+The full copy, release notes and store URLs live in
+[STORE_LISTING.md](STORE_LISTING.md); keep the two in agreement. Hebrew
+versions: [LISTING.he.md](LISTING.he.md) and
+[STORE_LISTING.he.md](STORE_LISTING.he.md).
 
 ## App Name
-NoveLauncher - AI Smart Launcher
+NoveLauncher - Smart Launcher
 
 ## Short Description (80 chars)
-לאנצ'ר חכם לאנדרואיד — AI שמארגן לך את הטלפון לפי ההרגלים שלך
+Smart Android launcher — AI that organizes your phone around your habits
 
 ## Full Description (4000 chars max)
 
-🚀 NoveLauncher — הלאנצ'ר החכם שלומד אותך
+🚀 NoveLauncher — The Smart Launcher That Learns You
 
-NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמארגן את מסך הבית לפי הדרך שבה אתה באמת משתמש בטלפון. הוא לומד את הרגלי השימוש שלך על המכשיר ומציב את האפליקציות הנכונות בזמן הנכון — בלי חשבון ובלי הגדרות.
+NoveLauncher is a private Android launcher that organizes your home screen around how you actually use your phone. It learns your usage habits on the device and puts the right apps in front of you at the right time — no account and no setup.
 
-✨ מה מיוחד ב-NoveLauncher?
+✨ What makes NoveLauncher special?
 
-🧠 AI מקומי — דירוג לפי שעה ביום, תדירות, שימוש אחרון וקטגוריה, ו"מומלצות עכשיו" לומדת מאילו הצעות אתה באמת פותח. הכל מתבצע על המכשיר — בלי שליחת נתוני שימוש לשום שרת.
+🧠 On-device AI — Ranks apps by time of day, frequency, recency and category, and "Recommended now" learns from which suggestions you actually open. Everything runs on the device — no usage data is sent to any server.
 
-📂 תיקיות חכמות — אפליקציות מתמיינות אוטומטית ל-11 קטגוריות: עבודה, חברה, פנאי, משחקים, קניות ועוד. לא צריך לסדר ידנית.
+📂 Smart Folders — Apps are auto-sorted into 11 categories: Work, Social, Entertainment, Games, Shopping and more. No manual sorting needed.
 
-💼 פרופיל עבודה ומרחב פרטי — אפליקציות עבודה עם התג שלהן ומתג השהיה; המרחב הפרטי של אנדרואיד 15 באזור נפרד שאפשר לנעול.
+💼 Work Profile & Private Space — Work apps keep their badge and a pause switch; Android 15's Private Space gets its own lockable section.
 
-⚡ קיצורי דרך — לחיצה ארוכה על אפליקציה פותחת את קיצורי הדרך שלה.
+⚡ App Shortcuts — Long-press an app to open its shortcuts.
 
-🔍 חיפוש חכם — עברית ואנגלית, סבלנות לשגיאות הקלדה וראשי תיבות, מחשבון והמרת יחידות.
+🔍 Smart Search — Hebrew and English, forgiving of typos and initials, with a calculator and unit conversion.
 
-🕯️ לוח עברי ומצב שבת — תאריך עברי, חגים, זמני הדלקת נרות וצאת שבת שמחושבים בטלפון; מצב שבת מסתיר הצעות מסיחות ותגי התראות.
+🕯️ Jewish Calendar & Shabbat Mode — Hebrew date, holidays, candle-lighting and Havdalah times calculated on the phone; Shabbat mode hides distracting suggestions and notification badges.
 
-🖼️ רקעים — תמונות משלך או מעברי צבע: קבוע, לפי עמוד, לפי שעה, לפי יום, או רקע חי. בהירות, ניגודיות, רוויה, חמימות, טשטוש וויניאטה.
+🖼️ Wallpapers — Your own photos or gradients: fixed, per page, by hour, by weekday, or a live wallpaper. Brightness, contrast, saturation, warmth, blur and vignette.
 
-👆 מחוות — החלקה למעלה לאפליקציות, למטה להתראות, הקשה כפולה לכיבוי המסך.
+👆 Gestures — Swipe up for apps, swipe down for notifications, double-tap to turn the screen off.
 
-🎨 עיצוב מלא — 12 ערכות נושא, Material You, צבעים מותאמים, 16 גופנים, 12 צורות אייקונים, חבילות אייקונים, עיצוב שעון ותצוגה מקדימה בזמן אמת.
+🎨 Full Customization — 12 theme presets, Material You, custom colors, 16 fonts, 12 icon shapes, icon packs, clock styles and a live preview.
 
-📰 עמוד חדשות — RSS מובנה עם 12 מקורות (ynet, Google News, BBC, CNN ועוד) ופידים משלך.
+📰 News Page — Built-in RSS with 12 sources (ynet, Google News, BBC, CNN and more) plus your own feeds.
 
-🔒 אבטחה מתקדמת — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה של אייקונים.
+🔒 Advanced Security — App lock with PIN, password, pattern, fingerprint or face authentication. Hidden private folder. Icon layout lock.
 
-💾 גיבוי — מקומי או לשרת NAS פרטי, עם תזמון והצפנה אופציונלית בסיסמה.
+💾 Backups — Local or to your own NAS, with scheduling and optional password encryption.
 
-🧩 ווידג'טים — הוסף כל ווידג'ט מהמערכת, הגדר אותו ובחר לו גובה של שורה עד ארבע שורות.
+🧩 Widgets — Add any system widget, set it up, and make it one to four rows tall.
 
-📱 עמודים מותאמים — צור עמודים חדשים, שנה סדר, הפעל או כבה עמודים.
+📱 Custom Pages — Create new pages, reorder them, turn pages on or off.
 
-👁️ פרטיות — בלי חשבון, בלי אנליטיקס, בלי פרסומות. הקוד גלוי לעיון ב-GitHub.
+👁️ Privacy — No account, no analytics, no ads. The source code is open to read on GitHub.
 
-⚡ חסכוני בסוללה — רענון כל 15 דקות ורק כשמסך הבית מוצג, ממשק Jetpack Compose יעיל.
+⚡ Battery Friendly — Refreshes every 15 minutes and only while the home screen is visible; efficient Jetpack Compose UI.
 
 ## Category
 Personalization
@@ -59,7 +61,7 @@ work profile, private space, jewish calendar
 
 ---
 
-# מדיניות פרטיות / Privacy Policy — summary
+# Privacy Policy — summary
 
 The full, binding policy is published at
 <https://drummingbird1.github.io/NoveLauncher/privacy.html> (source:
@@ -98,7 +100,7 @@ solvaris2@gmail.com
 
 ---
 
-# תנאי שימוש / Terms of Service — summary
+# Terms of Service — summary
 
 The full terms are published at
 <https://drummingbird1.github.io/NoveLauncher/terms.html> (source:

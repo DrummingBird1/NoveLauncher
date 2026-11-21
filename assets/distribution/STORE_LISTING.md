@@ -1,5 +1,8 @@
 # Google Play Store — Listing Content
 
+English is the primary version. The Hebrew listing is in
+[STORE_LISTING.he.md](STORE_LISTING.he.md); keep the two in agreement.
+
 ## App Title (max 30 chars)
 **NoveLauncher - Smart Launcher**
 
@@ -7,13 +10,10 @@
 
 ## Short Description (max 80 chars — used in search results)
 **EN:** AI-powered launcher that learns your habits and organizes your phone for you
-**HE:** לאנצ'ר חכם עם AI שלומד את ההרגלים שלך ומסדר את הטלפון בשבילך
 
 ---
 
 ## Full Description (max 4000 chars)
-
-### English Version
 
 🚀 **NoveLauncher — The Smart Launcher That Learns You**
 
@@ -61,54 +61,6 @@ NoveLauncher is a private Android launcher that organizes your home screen aroun
 
 ---
 
-### Hebrew Version (גרסה עברית)
-
-🚀 **NoveLauncher — הלאנצ'ר החכם שלומד אותך**
-
-NoveLauncher הוא לאנצ'ר אנדרואיד פרטי שמסדר את מסך הבית לפי הדרך שבה אתה באמת משתמש בטלפון. הוא לומד את ההרגלים שלך על המכשיר ומציב את האפליקציות הנכונות בזמן הנכון — בלי חשבון ובלי הגדרות.
-
-✨ **מה מיוחד ב-NoveLauncher?**
-
-🧠 **AI מקומי** — האפליקציות מדורגות לפי שעה ביום, תדירות, שימוש אחרון וקטגוריה, ו"מומלצות עכשיו" לומדת מאילו הצעות אתה באמת פותח. הכל רץ על הטלפון — נתוני השימוש שלך לא מועלים לשום מקום.
-
-📂 **תיקיות חכמות** — אפליקציות מתמיינות אוטומטית: עבודה, חברה, פנאי, משחקים, קניות, בריאות, חינוך ועוד.
-
-💼 **פרופיל עבודה ומרחב פרטי** — אפליקציות העבודה שומרות על התג שלהן ואפשר להשהות אותן בלחיצה. המרחב הפרטי של אנדרואיד 15 מקבל אזור נפרד שאפשר לנעול, ולא מתערבב בהצעות.
-
-⚡ **קיצורי דרך** — לחיצה ארוכה על אפליקציה פותחת את קיצורי הדרך שלה: הודעה חדשה, מסלול שמור, פעולה מהירה.
-
-🔍 **חיפוש חכם** — אפליקציות, אנשי קשר והגדרות מתיבה אחת. מוצא אפליקציות גם כשכותבים בעברית או באנגלית, סולח על שגיאות הקלדה, מבין ראשי תיבות — ועונה מיד על חישובים והמרות יחידות.
-
-🕯️ **לוח עברי ומצב שבת** — תאריך עברי, חגים (ארץ ישראל או חוץ לארץ), זמני הדלקת נרות וצאת שבת שמחושבים בטלפון. מצב שבת מסתיר הצעות מסיחות ותגי התראות מהדלקת הנרות ועד צאת הכוכבים.
-
-🖼️ **רקעים** — תמונות משלך או מעברי צבע מובנים: רקע אחד לכל המסכים, לפי עמוד, לפי שעה, לפי יום בשבוע — או רקע חי. בהירות, ניגודיות, רוויה, חמימות, טשטוש וויניאטה.
-
-👆 **מחוות** — החלקה למעלה לאפליקציות, החלקה למטה להתראות, הקשה כפולה לכיבוי המסך.
-
-🎨 **התאמה אישית מלאה** — 12 ערכות נושא, Material You, צבעים מותאמים, 16 גופנים, 12 צורות אייקון, שעון דיגיטלי, אנלוגי או מינימלי, ותצוגה מקדימה בזמן אמת.
-
-🧷 **חבילות אייקונים** — החלת כל חבילת אייקונים תואמת Nova / ADW / Lawnchair.
-
-📰 **עמוד חדשות** — RSS מובנה עם 12 מקורות בעברית ובאנגלית (ynet, וואלה, BBC, Google News ועוד), וגם פידים משלך. או להציג אפליקציית חדשות חיצונית.
-
-🔒 **אבטחה מתקדמת** — נעילת אפליקציות ב-PIN, סיסמה, דפוס, טביעת אצבע או זיהוי פנים. תיקייה פרטית מוסתרת. נעילת פריסה נגד הזזה בטעות.
-
-💾 **גיבויים** — מקומי או ל-NAS שלך — עם תזמון אוטומטי והצפנה אופציונלית בסיסמה.
-
-🧩 **ווידג'טים** — הוסף כל ווידג'ט, הגדר אותו ובחר לו גובה של שורה עד ארבע שורות.
-
-📱 **עמודים מותאמים** — צור עמודים חדשים, שנה סדר, הפעל או כבה עמודים.
-
-📊 **סטטיסטיקות שימוש** — איך אתה מבלה את הזמן, לפי יום, שבוע או חודש.
-
-👁️ **פרטיות לפני הכל** — בלי חשבון, בלי אנליטיקס, בלי פרסומות, בלי מעקב. האפליקציה מתחברת לרשת רק בשביל מזג האוויר, פידי החדשות שבחרת, גיבויים שהגדרת ובדיקת עדכונים אופציונלית.
-
-⚡ **חסכוני בסוללה** — רענון כל 15 דקות, ורק כשמסך הבית מוצג.
-
-🌍 **רב-לשוני** — עברית, אנגלית, ערבית, צרפתית, רוסית, ספרדית וגרמנית — עם תמיכה מלאה ב-RTL.
-
----
-
 ## Category
 **Personalization**
 
@@ -123,37 +75,20 @@ gestures, icon packs, jewish calendar, shabbat mode
 
 ## What's New (release notes for v10.1.0, max 500 chars)
 
-**EN**
 - Clock styles: digital, analog or minimal
 - 16 fonts that really change the look, for the whole interface and for folders
 - Pin up to five apps to the dock from the long-press menu
 - Approximate location is asked for only when you turn on weather or Shabbat times
 - Fixed: the language picker on Android 8–12
 
-**HE**
-- סגנונות שעון: דיגיטלי, אנלוגי או מינימלי
-- 16 גופנים שבאמת משנים את המראה, בכל הממשק ובתיקיות
-- הצמדת עד חמש אפליקציות ל-Dock מתפריט הלחיצה הארוכה
-- מיקום משוער מתבקש רק כשמדליקים מזג אוויר או זמני שבת
-- תוקן: בורר השפה ב-Android 8–12
-
 ## What's New (earlier release: v10.0.0, kept for reference)
 
-**EN**
 - Work profile & Private Space support, plus app shortcuts on long-press
 - Wallpapers: your photos or gradients, per page, hour or weekday
 - Gestures: swipe up for apps, down for notifications, double-tap to turn the screen off
 - Smarter search: Hebrew ↔ English names, typos, calculator, unit conversion
 - Jewish calendar with candle-lighting times, and Shabbat mode
 - Fixed: Statistics shows real data, icon packs apply, the language picker works
-
-**HE**
-- תמיכה בפרופיל עבודה ובמרחב פרטי, וקיצורי דרך בלחיצה ארוכה
-- רקעים: תמונות משלך או מעברי צבע, לפי עמוד, שעה או יום בשבוע
-- מחוות: למעלה לאפליקציות, למטה להתראות, הקשה כפולה לכיבוי המסך
-- חיפוש חכם יותר: עברית ↔ אנגלית, שגיאות הקלדה, מחשבון והמרת יחידות
-- לוח עברי עם זמני הדלקת נרות, ומצב שבת
-- תוקן: הסטטיסטיקות מציגות נתונים אמיתיים, חבילות אייקונים מוחלות, בחירת השפה עובדת
 
 ## Pricing
 **Free** (no in-app purchases planned, no ads)

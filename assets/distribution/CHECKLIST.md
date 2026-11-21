@@ -12,7 +12,7 @@
 ### Documents
 - [x] **Privacy Policy** — published at https://drummingbird1.github.io/NoveLauncher/privacy.html (source `../../docs/privacy.html`; copies in `PRIVACY_POLICY.md` / `.html`)
 - [x] **Terms of Service** — published at https://drummingbird1.github.io/NoveLauncher/terms.html (copy in `TERMS_OF_SERVICE.md`)
-- [x] **Store Listing copy** — `STORE_LISTING.md` (Hebrew + English, with the v10.1.0 release notes)
+- [x] **Store Listing copy** — `STORE_LISTING.md` (English, with the v10.1.0 release notes; Hebrew in `STORE_LISTING.he.md`)
 - [x] **Permission declarations** — `PLAY_POLICY_NOTES.md` (ready-to-paste answers for every sensitive permission)
 - [x] ~~Google Drive OAuth clients~~ — not needed: Drive backup is switched off in 10.x (`DRIVE_BACKUP_ENABLED = false`). If Drive is ever turned on, follow `GOOGLE_DRIVE_SETUP.md` and register the **Play app signing key's** SHA-1 too (Play Console → Test and release → App integrity).
 
@@ -155,8 +155,8 @@ assets/
 │   ├── apkpure/               — APKPure-sized copies
 │   └── raw/                   — Raw captures
 └── distribution/
-    ├── STORE_LISTING.md          — App description (HE + EN) + release notes
-    ├── LISTING.md                — Hebrew-first listing + privacy/terms summaries
+    ├── STORE_LISTING.md          — App description (English) + release notes; Hebrew in STORE_LISTING.he.md
+    ├── LISTING.md                — Short-form listing + privacy/terms summaries (English); Hebrew in LISTING.he.md
     ├── PRIVACY_POLICY.md / .html — Copies of the published privacy policy
     ├── TERMS_OF_SERVICE.md       — Copy of the published terms
     ├── PRIVACY_URL_GUIDE.md      — How the privacy policy is hosted
